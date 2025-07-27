@@ -1,0 +1,26 @@
+{
+  "name": "processmetalanguage",
+  "version": "1.0.0",
+  "description": "ProcessMetaLanguage - Système méta-langage graphique pour traçabilité industrielle",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": ["excalidraw", "obsidian", "traceability", "epcis", "meta-language"],
+  "author": "Rolland MELET & Claude Code",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "components/**/*.js",
+      "!node_modules/**"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": ["text", "lcov", "html"]
+  }
+}
