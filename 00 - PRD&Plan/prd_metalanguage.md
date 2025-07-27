@@ -1186,3 +1186,99 @@ Les **7 groupes de développement** (Section 14.3) sont enrichis :
 **Cette extension UI garantit des spécifications exhaustives pour une implémentation fidèle aux intentions de conception.**
 
 ---
+
+---
+
+## 16. Maintenance Documentation - Responsabilités des Agents de Production
+
+### 16.1. Obligation de Maintenance du README.md
+
+**EXIGENCE CRITIQUE :** Tous les agents de développement et de production du ProcessMetaLanguage ont l'obligation contractuelle de maintenir le fichier `README.md` à la racine du projet en parfaite synchronisation avec la réalité fonctionnelle du système.
+
+### 16.2. Responsabilités Spécifiques
+
+#### 16.2.1. Mise à Jour Continue
+* **REQ-DOC.1 :** Le README.md doit être mis à jour **quotidiennement** pendant les phases de développement actif
+* **REQ-DOC.2 :** Toute modification de structure de projet doit être immédiatement répercutée dans la section "Structure du Projet"
+* **REQ-DOC.3 :** Les instructions d'installation doivent être testées et validées à chaque modification de dépendances
+* **REQ-DOC.4 :** Les exemples d'usage doivent être fonctionnels et exécutables en permanence
+
+#### 16.2.2. Validation Qualité Documentation
+* **REQ-DOC.5 :** Aucun lien brisé n'est autorisé dans le README.md - validation automatique requise
+* **REQ-DOC.6 :** Les numéros de versions doivent être synchronisés dans tous les documents (README, PRD, package.json, etc.)
+* **REQ-DOC.7 :** Tous les exemples de code JavaScript doivent être syntaxiquement corrects et testés
+* **REQ-DOC.8 :** Les métriques de performance doivent refléter les mesures réelles du système
+
+#### 16.2.3. Cohérence Multi-Documents
+* **REQ-DOC.9 :** Le README.md doit rester cohérent avec le PRD et les documents de référence
+* **REQ-DOC.10 :** Toute évolution d'architecture doit être documentée simultanément dans README.md et Architecture-Etat-Actions-DeuxNiveaux.md
+* **REQ-DOC.11 :** Les nouveaux templates EPCIS 2.0 doivent être référencés dans le README.md dès leur ajout
+
+### 16.3. Processus de Validation README
+
+#### 16.3.1. Contrôles Automatisés
+* **Tests d'installation :** Scripts automatiques vérifiant que les instructions d'installation fonctionnent
+* **Validation liens :** Vérification automatique de tous les liens internes et externes
+* **Tests exemples :** Exécution automatique de tous les exemples de code présents
+* **Cohérence versions :** Vérification automatique de la synchronisation des numéros de versions
+
+#### 16.3.2. Revues Manuelles
+* **Revue hebdomadaire :** Validation complète de la cohérence et de la qualité du README.md
+* **Revue pré-release :** Validation exhaustive avant chaque livrable majeur
+* **Tests utilisateur :** Validation que de nouveaux utilisateurs peuvent suivre le README.md avec succès
+
+### 16.4. Sanctions en Cas de Non-Respect
+
+#### 16.4.1. Critères de Non-Conformité
+* README.md non synchronisé avec la réalité du code pendant plus de 48h
+* Instructions d'installation non fonctionnelles
+* Exemples d'usage défaillants ou obsolètes
+* Liens brisés ou informations erronées
+
+#### 16.4.2. Processus de Correction
+* **Alerte immédiate :** Notification automatique en cas de détection d'incohérence
+* **Correction obligatoire :** Maximum 24h pour corriger les problèmes critiques
+* **Escalade :** Intervention du Product Owner si non-correction dans les délais
+
+### 16.5. Outils et Automatisation
+
+#### 16.5.1. Outils Requis
+* **Linters markdown :** Validation syntaxe et format
+* **Testeurs liens :** Vérification automatique accessibilité
+* **Validateurs installation :** Tests automatisés des procédures
+* **Comparateurs versions :** Détection des désynchronisations
+
+#### 16.5.2. Intégration CI/CD
+* **Tests pré-commit :** Validation README.md avant chaque commit
+* **Tests post-merge :** Vérification cohérence après intégration
+* **Rapports qualité :** Dashboard de suivi de la qualité documentation
+
+### 16.6. Formation des Agents
+
+#### 16.6.1. Compétences Requises
+* **Markdown avancé :** Maîtrise syntaxe et bonnes pratiques
+* **Documentation technique :** Rédaction claire et précise
+* **Tests utilisateur :** Capacité à valider l'expérience utilisateur
+
+#### 16.6.2. Ressources Formation
+* Guide de style markdown du projet
+* Templates et exemples de documentation
+* Checklist de validation qualité
+* Outils recommandés et leur configuration
+
+### 16.7. Métriques de Qualité Documentation
+
+#### 16.7.1. KPIs README.md
+* **Temps synchronisation :** Délai entre modification code et mise à jour README
+* **Taux liens valides :** Pourcentage de liens fonctionnels
+* **Succès installation :** Taux de réussite nouveaux utilisateurs
+* **Satisfaction documentation :** Score qualité utilisateurs
+
+#### 16.7.2. Reporting
+* **Dashboard temps réel :** Statut qualité documentation
+* **Rapports hebdomadaires :** Évolution métriques
+* **Alertes automatiques :** Notification problèmes critiques
+
+**La qualité et l'exactitude du README.md sont essentielles au succès du ProcessMetaLanguage. Cette responsabilité ne peut être déléguée ou négligée.**
+
+---
