@@ -25,19 +25,19 @@ Décomposition effectuée selon les principes task-master MCP :
 ### Agent: frontend
 #### Composants Graphiques de Base
 
-- [ ] **TASK-F001** : Créer module hexagone OBJECT standardisé
-  - **Livrable** : `components/object-creator.js` + tests unitaires + JSDoc
-  - **Critères** : Hexagone 120x80px + couleurs configurables + métadonnées auto + tag #process-object
-  - **MCP Tools** : filesystem + github + serena
-  - **Durée estimée** : 1 jour
-  - **Dépendances** : Aucune
+- [x] **TASK-F001** : Créer module hexagone OBJECT standardisé
+  - **Livrable** : `components/object-creator.js` + tests unitaires + JSDoc ✅
+  - **Critères** : Hexagone 120x80px + couleurs configurables + métadonnées auto + tag #process-object ✅
+  - **MCP Tools** : filesystem + github + serena ✅
+  - **Durée estimée** : 1 jour ✅
+  - **Dépendances** : Aucune ✅
 
-- [ ] **TASK-F002** : Créer module bannière STATE superposée
-  - **Livrable** : `components/state-creator.js` + tests + JSDoc complet
-  - **Critères** : Bannière 80x40px + superposition hexagone + couleur unique + tag #process-state
-  - **MCP Tools** : filesystem + github + serena
-  - **Durée estimée** : 0.5 jour
-  - **Dépendances** : TASK-F001 terminée
+- [x] **TASK-F002** : Créer module bannière STATE superposée
+  - **Livrable** : `components/state-creator.js` + tests + JSDoc complet ✅
+  - **Critères** : Bannière 80x40px + superposition hexagone + couleur unique + tag #process-state ✅
+  - **MCP Tools** : filesystem + github + serena ✅
+  - **Durée estimée** : 0.5 jour ✅
+  - **Dépendances** : TASK-F001 terminée ✅
 
 - [ ] **TASK-F003** : Créer module rectangle ACTION arrondi
   - **Livrable** : `components/action-creator.js` + tests + JSDoc + examples
