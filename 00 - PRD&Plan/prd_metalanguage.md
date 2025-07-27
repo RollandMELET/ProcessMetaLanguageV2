@@ -783,3 +783,406 @@ Ce fichier servira de **source unique de vérité** pour toute implémentation u
 ---
 
 <!-- END OF FILE: PRD-ProcessMetaLanguage-1.0.0.md -->
+
+---
+
+## 14. Méthodologie de Développement - Boucles Rapides et Feedback Continu
+
+### 14.1. Philosophie de Développement
+Le ProcessMetaLanguage doit être développé selon une approche **itérative avec boucles de feedback rapides**, privilégiant les démonstrations fonctionnelles fréquentes plutôt que les longues sessions de développement en tunnel.
+
+### 14.2. Cycle de Développement Standard
+
+#### 14.2.1. Séquence de Travail Type (1-3 jours maximum)
+```
+1. DÉVELOPPEMENT FONCTIONNEL
+   ├── Sélection d'un groupe logique de fonctions (scope réduit)
+   ├── Développement des fonctions core
+   └── Intégration dans l'environnement Obsidian
+
+2. CRÉATION FONCTION TEST UTILISATEUR
+   ├── Script de test simple et intuitif
+   ├── Cas d'usage concret et représentatif
+   └── Interface de test accessible (boutons, menus, etc.)
+
+3. TEST UTILISATEUR IMMÉDIAT
+   ├── Démonstration fonctionnelle en direct
+   ├── Test par l'utilisateur final (Rolland)
+   └── Collecte feedback en temps réel
+
+4. ANALYSE FEEDBACK
+   ├── Si feedback = "OK" → Passage au TDD + Fonction suivante
+   ├── Si feedback ≠ "OK" → Modifications immédiates + Re-test
+   └── Boucle jusqu'à validation utilisateur
+
+5. FORMALISATION TDD (uniquement si validation OK)
+   ├── Création tests automatisés
+   ├── Documentation technique
+   └── Commit de la fonctionnalité validée
+```
+
+#### 14.2.2. Durée Maximum par Boucle
+* **Développement initial :** 1-2 jours maximum
+* **Test utilisateur :** 15-30 minutes par session
+* **Ajustements post-feedback :** Même journée si possible
+* **Formalisation TDD :** 1/2 journée maximum
+
+### 14.3. Groupes Logiques de Fonctions - Découpage ProcessMetaLanguage
+
+#### 14.3.1. Groupe 1 : Création Composant de Base (Semaine 1)
+**Fonctions :**
+- Création d'un hexagone OBJET avec ExcalidrawAutomate
+- Application des métadonnées et tags standardisés
+- Génération du fichier markdown associé de base
+
+**Test Utilisateur :**
+- Script bouton "Créer Objet Test"
+- Vérification visuelle hexagone + fichier généré
+- Validation de la correspondance graphique ↔ markdown
+
+#### 14.3.2. Groupe 2 : Template de Base et Personnalisation (Semaine 1-2)
+**Fonctions :**
+- Sélection template depuis interface
+- Personnalisation des propriétés (nom, type, couleur)
+- Application du template sélectionné
+
+**Test Utilisateur :**
+- Interface de sélection de templates
+- Création d'objet avec template personnalisé
+- Validation du résultat vs. attentes
+
+#### 14.3.3. Groupe 3 : États et Action Principale (Semaine 2)
+**Fonctions :**
+- Création fanion ÉTAT sur hexagone existant
+- Génération automatique ACTION_PRINCIPALE
+- Structure markdown État + Action Principale
+
+**Test Utilisateur :**
+- Ajout d'état sur objet existant
+- Vérification architecture à deux niveaux
+- Validation exposition des données
+
+#### 14.3.4. Groupe 4 : Actions Secondaires et Transitions (Semaine 2-3)
+**Fonctions :**
+- Création ACTION_SECONDAIRE liée à un état
+- Détection des flèches de transition
+- Génération workflow de transition
+
+**Test Utilisateur :**
+- Création d'action avec transition vers nouvel état
+- Test de la détection automatique des relations
+- Validation de la logique de workflow
+
+#### 14.3.5. Groupe 5 : Synchronisation et Détection (Semaine 3)
+**Fonctions :**
+- Script de synchronisation canvas → markdown
+- Détection des modifications graphiques
+- Mise à jour automatique des fichiers
+
+**Test Utilisateur :**
+- Modification graphique d'éléments existants
+- Déclenchement synchronisation
+- Vérification cohérence mise à jour
+
+#### 14.3.6. Groupe 6 : Templates EPCIS 2.0 (Semaine 3-4)
+**Fonctions :**
+- Import vocabulaire EPCIS 2.0
+- Interface de sélection business steps
+- Application correspondances CBV
+
+**Test Utilisateur :**
+- Sélection template EPCIS (ex: "receiving")
+- Création composant avec métadonnées EPCIS
+- Validation conformité standard
+
+#### 14.3.7. Groupe 7 : Génération Workflow Final (Semaine 4)
+**Fonctions :**
+- Compilation de tous les composants
+- Génération matrice des flux
+- Export markdown consolidé
+
+**Test Utilisateur :**
+- Génération workflow complet sur processus test
+- Validation qualité documentation générée
+- Test d'utilisabilité pour implémentation
+
+### 14.4. Protocole de Test Utilisateur
+
+#### 14.4.1. Format des Sessions de Test
+* **Durée :** 15-30 minutes maximum par groupe de fonctions
+* **Format :** Démonstration en direct + test hands-on
+* **Documentation :** Capture d'écran + notes de feedback immédiat
+* **Critères :** Clarté, intuitivité, correspondence attentes
+
+#### 14.4.2. Types de Feedback Acceptés
+* **"OK"** → Passage au groupe suivant après TDD
+* **"Presque, mais..."** → Ajustements spécifiques + re-test dans la journée
+* **"Non, ce n'est pas ça"** → Redesign complet + nouveau test
+* **"OK mais à améliorer"** → Note pour itération future + passage au suivant
+
+#### 14.4.3. Gestion des Blocages
+* **Blocage technique** → Escalade immédiate + solution alternative
+* **Incompréhension besoin** → Re-clarification + nouveau prototype
+* **Limitation outil** → Évaluation workaround + décision continue/pivot
+
+### 14.5. Livrables par Boucle
+
+#### 14.5.1. À chaque Validation Utilisateur
+* **Code fonctionnel** testé et validé
+* **Script de test utilisateur** réutilisable
+* **Documentation** de la fonction (markdown)
+* **Tests automatisés** (TDD) post-validation
+
+#### 14.5.2. Accumulation Progressive
+* **Palette de fonctions** utilisables en continu
+* **Bibliothèque de tests** pour regression testing
+* **Documentation** vivante et à jour
+* **Feedback log** pour leçons apprises
+
+### 14.6. Avantages de cette Approche
+
+#### 14.6.1. Pour l'Utilisateur (Rolland)
+* **Contrôle continu** sur l'évolution du produit
+* **Compréhension progressive** des fonctionnalités
+* **Feedback valorisé** et intégré immédiatement
+* **Réduction du risque** de développement hors-cible
+
+#### 14.6.2. Pour le Développement
+* **Réduction des refactorisations** massives
+* **Validation continue** des choix techniques
+* **Motivation maintenue** par les succès fréquents
+* **Apprentissage accéléré** des besoins réels
+
+### 14.7. Adaptation du Planning
+
+Le planning initial (sections 7.1-7.2) est adaptable selon cette méthodologie :
+* **Jalons flexibles** basés sur validation utilisateur
+* **Sprints courts** de 3-5 jours maximum
+* **Points de synchronisation** hebdomadaires
+* **Adaptation continue** du scope selon feedback
+
+**Cette méthodologie garantit un développement aligné sur vos besoins réels et une appropriation progressive de l'outil.**
+
+---
+
+---
+
+## 15. Spécifications d'Interface Utilisateur - Schémas UI Associés aux Actions
+
+### 15.1. Objectif
+Le ProcessMetaLanguage doit permettre d'associer aux **ACTIONS** (principales et secondaires) des **schémas d'interface utilisateur** complets, incluant wireframes, maquettes et références visuelles. Cette fonctionnalité garantit des spécifications exhaustives pour l'implémentation des interfaces finales.
+
+### 15.2. Types de Schémas UI Supportés
+
+#### 15.2.1. Wireframes Excalidraw Intégrés
+* **Description :** Wireframes créés directement dans Excalidraw au sein du même canvas que le processus
+* **Avantages :** Cohérence visuelle, synchronisation automatique, modification en temps réel
+* **Format :** Éléments Excalidraw avec tags spécifiques `#ui-wireframe-{action-id}`
+* **Contenu :** Formulaires, boutons, champs de saisie, éléments d'interface
+
+#### 15.2.2. Images de Référence
+* **Description :** Screenshots, mockups, photos d'interfaces existantes servant de référence
+* **Formats supportés :** PNG, JPG, WebP, SVG
+* **Utilisation :** Inspiration design, spécifications basées sur existant, benchmarks
+* **Stockage :** Dossier `/ui-references/` dans le projet avec liens relatifs
+
+#### 15.2.3. Fichiers d'Interface Graphique
+* **Description :** Fichiers de design complets (Figma, Sketch, Adobe XD, etc.)
+* **Formats supportés :** 
+  - Figma (liens URL vers fichiers/frames spécifiques)
+  - Sketch (.sketch) avec exports PNG/SVG
+  - Adobe XD (liens Cloud ou exports)
+  - Fichiers HTML/CSS statiques pour démos
+* **Intégration :** Liens directs + exports statiques pour référence
+
+### 15.3. Association Schémas ↔ Actions
+
+#### 15.3.1. Niveau Action Principale
+```yaml
+action_principale:
+  name: "Consulter_Etat_Production"
+  ui_schemas:
+    wireframes:
+      - type: "excalidraw_embedded"
+        location: "canvas_coords: x:450, y:200"
+        tag: "#ui-wireframe-consulter-production"
+        description: "Interface de consultation avec tableaux données"
+    references:
+      - type: "image"
+        file: "./ui-references/dashboard-production-reference.png"
+        description: "Exemple dashboard similaire industrie automobile"
+    mockups:
+      - type: "figma"
+        url: "https://figma.com/file/abc123/frame-consultation-production"
+        description: "Maquette détaillée interface consultation"
+```
+
+#### 15.3.2. Niveau Actions Secondaires
+```yaml
+action_secondaire:
+  name: "Valider_Controle_Qualite"
+  ui_schemas:
+    wireframes:
+      - type: "excalidraw_embedded"
+        tag: "#ui-wireframe-validation-qc"
+        description: "Formulaire de saisie critères qualité + validation"
+    workflow_ui:
+      - step: "saisie_donnees"
+        wireframe_tag: "#ui-step-saisie-qc"
+        description: "Écran saisie mesures qualité"
+      - step: "validation_criteres"
+        wireframe_tag: "#ui-step-validation-qc"
+        description: "Écran validation conformité critères"
+      - step: "confirmation_transition"
+        wireframe_tag: "#ui-step-confirmation-qc"
+        description: "Écran confirmation changement état"
+```
+
+#### 15.3.3. Niveau Sous-Actions (Workflow Interne)
+* **Granularité fine :** Chaque sous-action peut avoir son propre schéma UI
+* **Continuité UX :** Maintien de la cohérence visuelle entre les étapes
+* **Navigation :** Spécification des transitions UI entre sous-actions
+
+### 15.4. Structure de Stockage UI
+
+#### 15.4.1. Organisation des Fichiers
+```
+ProcessMetaLanguage/
+├── processus-exemple.excalidraw     # Canvas principal avec wireframes intégrés
+├── ui-references/                   # Images et fichiers de référence
+│   ├── actions-principales/
+│   │   ├── consultation-etat.png
+│   │   └── navigation-menu.jpg
+│   ├── actions-secondaires/
+│   │   ├── formulaire-saisie.png
+│   │   ├── validation-controle.png
+│   │   └── confirmation-transition.png
+│   └── workflow-etapes/
+│       ├── step1-saisie.png
+│       ├── step2-validation.png
+│       └── step3-confirmation.png
+├── ui-mockups/                      # Fichiers design détaillés
+│   ├── figma-exports/
+│   ├── sketch-files/
+│   └── html-demos/
+└── markdown-generated/              # Documentation avec UI intégrée
+    ├── actions/
+    └── workflow-final.md
+```
+
+#### 15.4.2. Conventions de Nommage
+* **Tags Excalidraw :** `#ui-wireframe-{action-name}` ou `#ui-step-{step-name}`
+* **Fichiers images :** `{action-name}-{type}.{ext}` (ex: `validation-qc-form.png`)
+* **Liens Figma :** Inclure frame/page spécifique dans l'URL
+* **Descriptions :** Obligatoires pour chaque élément UI
+
+### 15.5. Intégration dans les Templates Markdown
+
+#### 15.5.1. Template Action Enrichi avec UI
+```markdown
+---
+type: process-action
+action-level: secondaire
+ui_schemas_count: 3
+ui_wireframes_embedded: 2
+---
+
+# Action : Valider Contrôle Qualité
+
+## Interface Utilisateur
+
+### Wireframes Intégrés
+![Wireframe Validation QC](excalidraw://canvas#ui-wireframe-validation-qc)
+*Localisation dans le canvas : Coordonnées (450, 300)*
+
+**Description :** Formulaire de saisie des critères de qualité avec :
+- Champs mesures (température, poids, dimensions)
+- Liste déroulante conformité (Conforme/Non-conforme/À revoir)
+- Zone commentaires obligatoire si non-conforme
+- Boutons validation/annulation
+
+### Références Visuelles
+![Référence Dashboard](./ui-references/validation-controle-reference.png)
+*Source : Interface similaire ERP SAP QM*
+
+### Maquettes Détaillées
+- **Figma :** [Frame Validation QC](https://figma.com/file/abc123/validation-qc-frame)
+- **Sketch Export :** `./ui-mockups/validation-qc-detailed.png`
+
+## Workflow UI Interne
+
+### Étape 1 : Saisie des Données
+![UI Step 1](excalidraw://canvas#ui-step-saisie-qc)
+- **Interface :** Formulaire structuré avec validation temps réel
+- **Champs obligatoires :** Identifiant lot, mesures critiques
+- **Validation :** Contrôles automatiques limites tolérances
+
+### Étape 2 : Validation Critères  
+![UI Step 2](excalidraw://canvas#ui-step-validation-qc)
+- **Interface :** Écran de synthèse avec indicateurs visuels
+- **Affichage :** Statut conformité par critère (vert/orange/rouge)
+- **Actions :** Boutons "Valider", "Rejeter", "Demander expertise"
+
+### Étape 3 : Confirmation Transition
+![UI Step 3](excalidraw://canvas#ui-step-confirmation-qc)
+- **Interface :** Écran de confirmation avec résumé
+- **Informations :** Changement d'état proposé, impacts
+- **Sécurité :** Double confirmation pour transitions critiques
+```
+
+### 15.6. Exigences Fonctionnelles UI
+
+#### 15.6.1. Création et Association
+* **REQ-UI.1 :** Le système doit permettre de créer des wireframes directement dans le canvas Excalidraw avec tags automatiques
+* **REQ-UI.2 :** Les wireframes doivent être associables aux actions par simple sélection/drag&drop
+* **REQ-UI.3 :** Support d'import d'images de référence avec preview dans la documentation générée
+* **REQ-UI.4 :** Intégration de liens Figma/Sketch avec validation d'accessibilité
+
+#### 15.6.2. Synchronisation et Génération
+* **REQ-UI.5 :** Les schémas UI doivent être inclus automatiquement dans la documentation markdown générée
+* **REQ-UI.6 :** Mise à jour automatique des liens et références lors de modifications
+* **REQ-UI.7 :** Export des wireframes Excalidraw en images PNG/SVG pour documentation autonome
+* **REQ-UI.8 :** Validation de l'existence des fichiers référencés lors de la synchronisation
+
+#### 15.6.3. Gestion des Versions
+* **REQ-UI.9 :** Versioning des schémas UI synchronisé avec les versions des actions
+* **REQ-UI.10 :** Détection des modifications UI et propagation dans la documentation
+* **REQ-UI.11 :** Archivage des anciennes versions de wireframes/mockups
+* **REQ-UI.12 :** Comparaison visuelle entre versions (diff UI)
+
+### 15.7. Intégration dans la Méthodologie de Développement
+
+#### 15.7.1. Ajout aux Groupes Logiques
+Les **7 groupes de développement** (Section 14.3) sont enrichis :
+
+* **Groupe 2 (Templates) :** + Création wireframes basiques
+* **Groupe 4 (Actions Secondaires) :** + Association schémas UI complets  
+* **Groupe 5 (Synchronisation) :** + Sync wireframes et références
+* **Groupe 7 (Workflow Final) :** + Export UI consolidated
+
+#### 15.7.2. Tests Utilisateur UI
+* **Validation wireframes :** Cohérence avec intentions fonctionnelles
+* **Test références :** Pertinence des inspirations visuelles
+* **Vérification liens :** Accessibilité des fichiers Figma/Sketch
+* **Preview documentation :** Qualité rendu final avec UI intégrée
+
+### 15.8. Avantages pour l'Implémentation
+
+#### 15.8.1. Pour les Agents IA d'Implémentation
+* **Spécifications complètes :** Logique métier + interface utilisateur
+* **Références visuelles :** Compréhension exacte des attentes UI
+* **Détails interaction :** Wireframes précis pour génération code
+
+#### 15.8.2. Pour les Développeurs Humains
+* **Vision d'ensemble :** Process + UI dans un seul document
+* **Références design :** Sources d'inspiration et contraintes visuelles
+* **Spécifications UX :** Workflow utilisateur détaillé
+
+#### 15.8.3. Pour les Équipes Qualité
+* **Validation complète :** Process métier + expérience utilisateur
+* **Tests d'acceptance :** Critères fonctionnels + ergonomiques
+* **Documentation audit :** Traçabilité des décisions UI/UX
+
+**Cette extension UI garantit des spécifications exhaustives pour une implémentation fidèle aux intentions de conception.**
+
+---
