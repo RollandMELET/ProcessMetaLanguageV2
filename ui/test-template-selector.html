@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Template Selector EPCIS 2.0</title>
+    <style>
+        /* Simulation des variables CSS d'Obsidian */
+        :root {
+            --background-primary: #ffffff;
+            --background-secondary: #f5f5f5;
+            --background-modifier-border: #e0e0e0;
+            --background-modifier-hover: #f0f0f0;
+            --text-normal: #333333;
+            --text-muted: #666666;
+            --interactive-accent: #4A90E2;
+            --interactive-accent-hover: #357ABD;
+            --font-interface: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-interface);
+            margin: 0;
+            padding: 20px;
+            background: var(--background-secondary);
+            color: var(--text-normal);
+        }
+
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--background-primary);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--background-modifier-border);
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .test-button {
+            padding: 10px 20px;
+            background: var(--interactive-accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .test-button:hover {
+            background: var(--interactive-accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .test-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: var(--background-secondary);
+            padding: 16px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .info-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--interactive-accent);
+            margin-bottom: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .logs {
+            background: #1e1e1e;
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+        }
+
+        .log-info { color: #61dafb; }
+        .log-success { color: #4CAF50; }
+        .log-error { color: #f44336; }
+        .log-warn { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 Test - Template Selector EPCIS 2.0</h1>
+            <p>Interface de sélection avancée des templates ProcessMetaLanguage</p>
+        </div>
+
+        <div class="test-info">
+            <div class="info-card">
+                <div class="info-number" id="business-steps-count">41</div>
+                <div class="info-label">Business Steps</div>
+            </div>
+            <div class="info-card">
+                <div class="info-number" id="dispositions-count">25</div>
+                <div class="info-label">Dispositions</div>
+            </div>
+            <div class="info-card">
+                <div class="info-number" id="total-templates">66</div>
+                <div class="info-label">Total Templates</div>
+            </div>
+            <div class="info-card">
+                <div class="info-number" id="selected-count">0</div>
+                <div class="info-label">Sélectionnés</div>
+            </div>
+        </div>
+
+        <div class="test-buttons">
+            <button class="test-button" onclick="openTemplateSelector()">
+                🏷️ Ouvrir Sélecteur Templates
+            </button>
+            <button class="test-button" onclick="testSearchFunction()">
+                🔍 Test Recherche
+            </button>
+            <button class="test-button" onclick="testFiltersFunction()">
+                🔧 Test Filtres
+            </button>
+            <button class="test-button" onclick="clearLogs()">
+                🗑️ Effacer Logs
+            </button>
+        </div>
+
+        <div class="logs" id="logs">
+            <div class="log-entry log-info">[INFO] Interface de test chargée</div>
+            <div class="log-entry log-info">[INFO] 66 templates EPCIS 2.0 disponibles</div>
+            <div class="log-entry log-info">[INFO] Prêt pour les tests...</div>
+        </div>
+    </div>
+
+    <!-- Import du TemplateSelector -->
+    <script type="module">
+        import { TemplateSelector } from './template-selector.js';
+
+        // Variables globales pour les tests
+        window.templateSelector = null;
+        window.selectedTemplates = [];
+
+        // Mock de l'app Obsidian pour les tests
+        const mockApp = {
+            vault: {
+                adapter: {
+                    fs: null
+                }
+            }
+        };
+
+        // Fonction pour ouvrir le sélecteur de templates
+        window.openTemplateSelector = async function() {
+            try {
+                log('Initialisation du sélecteur de templates...', 'info');
+                
+                window.templateSelector = new TemplateSelector(mockApp, {
+                    templatesPath: '../templates/epcis/',
+                    onSelect: (templates) => {
+                        window.selectedTemplates = templates;
+                        log(`${templates.length} template(s) sélectionné(s):`, 'success');
+                        templates.forEach(t => {
+                            log(`  - ${t.name} (${t.type})`, 'success');
+                        });
+                        
+                        // Mettre à jour le compteur
+                        document.getElementById('selected-count').textContent = templates.length;
+                        
+                        // Simuler l'application des templates
+                        setTimeout(() => {
+                            log('Templates appliqués avec succès au canvas', 'success');
+                        }, 500);
+                    },
+                    multiSelect: true
+                });
+
+                await window.templateSelector.show();
+                log('Sélecteur ouvert avec succès', 'success');
+                
+            } catch (error) {
+                log(`Erreur: ${error.message}`, 'error');
+                console.error('Erreur ouverture sélecteur:', error);
+            }
+        };
+
+        // Test de la fonction de recherche
+        window.testSearchFunction = function() {
+            log('Test de la fonction de recherche...', 'info');
+            
+            const searchTerms = ['receiving', 'logistics', 'quality', 'damaged'];
+            let currentTerm = 0;
+            
+            const testNext = () => {
+                if (currentTerm < searchTerms.length && window.templateSelector) {
+                    const term = searchTerms[currentTerm];
+                    log(`Test recherche: "${term}"`, 'info');
+                    
+                    // Simuler la saisie
+                    if (window.templateSelector.searchInput) {
+                        window.templateSelector.searchInput.value = term;
+                        window.templateSelector.handleSearchInput();
+                    }
+                    
+                    currentTerm++;
+                    setTimeout(testNext, 1500);
+                } else {
+                    log('Tests de recherche terminés', 'success');
+                }
+            };
+            
+            if (window.templateSelector && window.templateSelector.isVisible) {
+                testNext();
+            } else {
+                log('Ouvrez d\'abord le sélecteur de templates', 'warn');
+            }
+        };
+
+        // Test des filtres
+        window.testFiltersFunction = function() {
+            log('Test des filtres...', 'info');
+            
+            if (window.templateSelector && window.templateSelector.isVisible) {
+                // Test filtres catégorie
+                const categories = ['logistics', 'manufacturing', 'retail', 'all'];
+                let currentCategory = 0;
+                
+                const testNextFilter = () => {
+                    if (currentCategory < categories.length) {
+                        const category = categories[currentCategory];
+                        log(`Test filtre catégorie: "${category}"`, 'info');
+                        
+                        // Simuler le changement de filtre
+                        window.templateSelector.activeFilters.category = category;
+                        window.templateSelector.applyFilters();
+                        
+                        currentCategory++;
+                        setTimeout(testNextFilter, 1000);
+                    } else {
+                        log('Tests de filtres terminés', 'success');
+                    }
+                };
+                
+                testNextFilter();
+            } else {
+                log('Ouvrez d\'abord le sélecteur de templates', 'warn');
+            }
+        };
+
+        // Fonction de logging
+        window.log = function(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        };
+
+        // Effacer les logs
+        window.clearLogs = function() {
+            document.getElementById('logs').innerHTML = '';
+            log('Logs effacés', 'info');
+        };
+
+        // Tests automatiques au chargement
+        window.addEventListener('load', () => {
+            log('Page de test chargée', 'success');
+            log('Modules importés avec succès', 'success');
+            
+            // Test de disponibilité des fichiers
+            setTimeout(async () => {
+                try {
+                    const response = await fetch('../templates/epcis/epcis-unified-index.json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        const total = data.epcis_unified_index?.metadata?.total_elements;
+                        log(`Index EPCIS chargé: ${total} templates disponibles`, 'success');
+                        
+                        // Mettre à jour les compteurs
+                        if (data.epcis_unified_index?.metadata) {
+                            const meta = data.epcis_unified_index.metadata;
+                            document.getElementById('business-steps-count').textContent = meta.total_business_steps;
+                            document.getElementById('dispositions-count').textContent = meta.total_dispositions;
+                            document.getElementById('total-templates').textContent = meta.total_elements;
+                        }
+                    } else {
+                        log('Impossible de charger l\'index EPCIS', 'warn');
+                    }
+                } catch (error) {
+                    log(`Erreur chargement index: ${error.message}`, 'error');
+                }
+            }, 500);
+        });
+
+    </script>
+</body>
+</html>
