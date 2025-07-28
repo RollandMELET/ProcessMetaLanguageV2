@@ -39,12 +39,12 @@ Décomposition effectuée selon les principes task-master MCP :
   - **Durée estimée** : 0.5 jour ✅
   - **Dépendances** : TASK-F001 terminée ✅
 
-- [ ] **TASK-F003** : Créer module rectangle ACTION arrondi
-  - **Livrable** : `components/action-creator.js` + tests + JSDoc + examples
-  - **Critères** : Rectangle 140x60px arrondi + couleurs types actions + tag #process-action
-  - **MCP Tools** : filesystem + github + serena
-  - **Durée estimée** : 0.5 jour
-  - **Dépendances** : TASK-F001 terminée
+- [x] **TASK-F003** : Créer module rectangle ACTION arrondi
+  - **Livrable** : `components/action-creator.js` + tests + JSDoc + examples ✅
+  - **Critères** : Rectangle 140x60px arrondi + couleurs types actions + tag #process-action ✅
+  - **MCP Tools** : filesystem + github + serena ✅
+  - **Durée estimée** : 0.5 jour ✅
+  - **Dépendances** : TASK-F001 terminée ✅
 
 - [ ] **TASK-F004** : Créer palette outils ExcalidrawAutomate
   - **Livrable** : `ui/components-palette.js` + interface buttons + shortcuts
