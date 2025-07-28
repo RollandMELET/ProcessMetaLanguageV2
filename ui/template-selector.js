@@ -1,13 +1,16 @@
 // <!-- START OF FILE: template-selector.js -->
 // FILENAME: template-selector.js
-// Version: 1.0.0
-// Date: 2025-07-28 17:00
+// Version: 1.1.0
+// Date: 2025-07-28 18:45
 // Author: Rolland MELET & Claude Code
-// Description: Interface de sélection avancée des templates EPCIS 2.0 avec search, filters et preview
+// Description: Interface de sélection avancée des templates EPCIS 2.0 avec search, filters, preview et personnalisation
+
+// Import du panneau de personnalisation
+import { CustomizationPanel } from './customization-panel.js';
 
 /**
  * Interface modale avancée pour sélectionner des templates EPCIS 2.0
- * Supporte recherche textuelle, filtres par catégorie/type et preview avec métadonnées
+ * Supporte recherche textuelle, filtres par catégorie/type, preview avec métadonnées et personnalisation
  * @class
  */
 export class TemplateSelector {
@@ -70,6 +73,10 @@ export class TemplateSelector {
         this.loadingState = false;
         this.favoriteTemplates = new Set();
         this.recentSelections = [];
+
+        // Panneau de personnalisation
+        this.customizationPanel = null;
+        this.customTemplates = new Map();
 
         // Bind methods
         this.handleKeyboard = this.handleKeyboard.bind(this);
@@ -226,7 +233,10 @@ export class TemplateSelector {
             });
         }
 
-        console.log(`Templates chargés: ${this.templates.size} (Business Steps + Dispositions)`);
+        // Charger les templates personnalisés
+        await this.loadCustomTemplates();
+
+        console.log(`Templates chargés: ${this.templates.size} (Business Steps + Dispositions + Personnalisés)`);
     }
 
     /**
@@ -965,9 +975,9 @@ export class TemplateSelector {
         icon.style.fontSize = '18px';
 
         const typeBadge = document.createElement('span');
-        typeBadge.textContent = template.type === 'business_step' ? 'BS' : 'DISP';
+        typeBadge.textContent = template.isCustom ? 'CUSTOM' : (template.type === 'business_step' ? 'BS' : 'DISP');
         typeBadge.style.cssText = `
-            background: ${template.color};
+            background: ${template.isCustom ? '#9C27B0' : template.color};
             color: white;
             font-size: 10px;
             font-weight: 600;
@@ -1193,12 +1203,18 @@ export class TemplateSelector {
 
                 ${this.renderCompatibilityInfo(template)}
 
-                <div class="preview-actions" style="margin-top: 20px; text-align: center;">
+                <div class="preview-actions" style="margin-top: 20px; text-align: center; display: flex; gap: 8px; justify-content: center;">
                     <button onclick="window.templateSelector?.toggleTemplateSelection('${template.id}')" 
                             style="padding: 6px 12px; background: ${this.selectedTemplates.has(template.id) ? 'var(--interactive-accent)' : 'var(--background-primary)'}; 
                                    color: ${this.selectedTemplates.has(template.id) ? 'white' : 'var(--text-normal)'}; 
                                    border: 1px solid var(--background-modifier-border); border-radius: 4px; cursor: pointer; font-size: 12px;">
                         ${this.selectedTemplates.has(template.id) ? '✓ Sélectionné' : 'Sélectionner'}
+                    </button>
+                    <button onclick="window.templateSelector?.customizeTemplate('${template.id}')" 
+                            style="padding: 6px 12px; background: var(--background-secondary); 
+                                   color: var(--text-normal); 
+                                   border: 1px solid var(--background-modifier-border); border-radius: 4px; cursor: pointer; font-size: 12px;">
+                        🎨 Personnaliser
                     </button>
                 </div>
             </div>
@@ -1452,6 +1468,261 @@ export class TemplateSelector {
     }
 
     /**
+     * Ouvre le panneau de personnalisation pour un template
+     * @param {string} templateId - ID du template à personnaliser
+     * @sideEffect Crée et affiche le panneau de personnalisation
+     * @example
+     * // Personnaliser le template receiving
+     * selector.customizeTemplate('receiving');
+     */
+    customizeTemplate(templateId) {
+        const template = this.templates.get(templateId);
+        if (!template) {
+            console.error('Template introuvable:', templateId);
+            return;
+        }
+
+        // Créer le panneau de personnalisation si nécessaire
+        if (!this.customizationPanel) {
+            this.customizationPanel = new CustomizationPanel(this.app, {
+                epcisValidator: this.loadEPCISValidator(),
+                onSave: (customTemplate) => this.handleCustomTemplateSave(customTemplate),
+                onCancel: () => this.handleCustomizationCancel(),
+                customTemplatesPath: this.options.templatesPath + 'custom/'
+            });
+        }
+
+        // Masquer temporairement le sélecteur
+        this.modal.style.display = 'none';
+
+        // Afficher le panneau de personnalisation
+        this.customizationPanel.show(template);
+    }
+
+    /**
+     * Charge le validateur EPCIS pour la personnalisation
+     * @private
+     * @returns {Object|null} Instance du validateur EPCIS
+     */
+    loadEPCISValidator() {
+        try {
+            // Tenter de charger le validateur EPCIS existant
+            if (window.EPCISValidator) {
+                return new window.EPCISValidator();
+            }
+            
+            // Fallback: validateur simple
+            return {
+                validate: (template) => {
+                    const errors = [];
+                    const warnings = [];
+                    
+                    if (!template.name || template.name.length < 3) {
+                        errors.push('Le nom doit contenir au moins 3 caractères');
+                    }
+                    
+                    if (!template.category) {
+                        errors.push('La catégorie est obligatoire');
+                    }
+                    
+                    if (!template.eventType) {
+                        warnings.push('Le type d\'événement EPCIS est recommandé');
+                    }
+                    
+                    return {
+                        valid: errors.length === 0,
+                        errors,
+                        warnings
+                    };
+                }
+            };
+        } catch (error) {
+            console.warn('Validateur EPCIS non disponible, utilisation du validateur de base');
+            return null;
+        }
+    }
+
+    /**
+     * Gère la sauvegarde d'un template personnalisé
+     * @private
+     * @param {Object} customTemplate - Template personnalisé à sauvegarder
+     * @sideEffect Ajoute le template aux templates disponibles et met à jour l'interface
+     * @returns {Promise<void>}
+     */
+    async handleCustomTemplateSave(customTemplate) {
+        try {
+            // Générer un ID unique pour le template personnalisé
+            const customId = `custom_${customTemplate.originalTemplateId}_${Date.now()}`;
+            customTemplate.id = customId;
+            customTemplate.isCustom = true;
+
+            // Sauvegarder dans la Map des templates personnalisés
+            this.customTemplates.set(customId, customTemplate);
+
+            // Ajouter à la liste des templates disponibles
+            this.templates.set(customId, {
+                ...customTemplate,
+                searchableText: `${customTemplate.name} ${customTemplate.category} ${customTemplate.description} custom personnalisé`.toLowerCase()
+            });
+
+            console.log('Template personnalisé sauvegardé:', customTemplate);
+
+            // Sauvegarder sur disque (si possible)
+            await this.saveCustomTemplateToFile(customTemplate);
+
+            // Rendre le template visible
+            this.applyFilters();
+            this.updateStats();
+
+            // Fermer le panneau de personnalisation et réafficher le sélecteur
+            if (this.customizationPanel) {
+                this.customizationPanel.hide();
+            }
+            if (this.modal) {
+                this.modal.style.display = 'flex';
+            }
+
+            // Message de succès
+            this.updateStatus('Template personnalisé créé avec succès', 'success');
+
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde du template personnalisé:', error);
+            this.updateStatus('Erreur lors de la sauvegarde', 'error');
+        }
+    }
+
+    /**
+     * Gère l'annulation de la personnalisation
+     * @private
+     * @sideEffect Restaure l'affichage du sélecteur
+     */
+    handleCustomizationCancel() {
+        // Fermer le panneau de personnalisation
+        if (this.customizationPanel) {
+            this.customizationPanel.hide();
+        }
+        
+        // Réafficher le sélecteur
+        if (this.modal) {
+            this.modal.style.display = 'flex';
+        }
+    }
+
+    /**
+     * Sauvegarde un template personnalisé sur fichier
+     * @private
+     * @param {Object} customTemplate - Template à sauvegarder
+     * @returns {Promise<void>}
+     */
+    async saveCustomTemplateToFile(customTemplate) {
+        try {
+            // Construire le contenu YAML du template personnalisé
+            const yamlContent = this.buildCustomTemplateYAML(customTemplate);
+            
+            // Construire le nom de fichier
+            const fileName = `${customTemplate.id}.yaml`;
+            const filePath = `${this.options.templatesPath}custom/${fileName}`;
+
+            // Note: Dans un environnement Obsidian réel, utiliser l'API Vault
+            // Pour l'instant, stocker dans localStorage comme fallback
+            const customTemplatesStorage = JSON.parse(localStorage.getItem('processMetaLanguage_customTemplates') || '{}');
+            customTemplatesStorage[customTemplate.id] = {
+                template: customTemplate,
+                yamlContent: yamlContent,
+                savedAt: new Date().toISOString()
+            };
+            localStorage.setItem('processMetaLanguage_customTemplates', JSON.stringify(customTemplatesStorage));
+
+            console.log(`Template personnalisé sauvegardé: ${fileName}`);
+
+        } catch (error) {
+            console.warn('Impossible de sauvegarder le fichier template:', error);
+            // Ne pas échouer si la sauvegarde fichier échoue
+        }
+    }
+
+    /**
+     * Construit le contenu YAML d'un template personnalisé
+     * @private
+     * @param {Object} customTemplate - Template personnalisé
+     * @returns {string} Contenu YAML
+     */
+    buildCustomTemplateYAML(customTemplate) {
+        return `# Template Personnalisé ProcessMetaLanguage
+# Basé sur: ${customTemplate.originalTemplateId}
+# Créé le: ${customTemplate.customizedAt}
+
+template_id: "${customTemplate.id}"
+template_name: "${customTemplate.name}"
+description: "${customTemplate.description}"
+category: "${customTemplate.category}"
+is_custom: true
+original_template_id: "${customTemplate.originalTemplateId}"
+
+# Apparence visuelle
+appearance:
+  color: "${customTemplate.color}"
+  icon: "${customTemplate.icon}"
+
+# Métadonnées EPCIS 2.0
+epcis_metadata:
+  event_type: "${customTemplate.eventType}"
+  action: "${customTemplate.action}"
+  business_step: "${customTemplate.businessStep}"
+  disposition: "${customTemplate.disposition}"
+  
+# Champs configurables
+fields:
+  required: [${(customTemplate.requiredFields || []).map(f => `"${f}"`).join(', ')}]
+  optional: [${(customTemplate.optionalFields || []).map(f => `"${f}"`).join(', ')}]
+
+# Configuration workflow
+workflow:
+  estimated_duration: "${customTemplate.estimatedDuration}"
+  priority: "${customTemplate.priority}"
+  transitions: [${(customTemplate.transitions || []).map(t => `"${t}"`).join(', ')}]
+  business_constraints: 
+${(customTemplate.businessConstraints || []).map(c => `    - "${c}"`).join('\n')}
+
+# Métadonnées de création
+metadata:
+  created_at: "${customTemplate.customizedAt}"
+  version: "1.0.0"
+  processmetalanguage_version: "1.0.0"
+`;
+    }
+
+    /**
+     * Charge les templates personnalisés sauvegardés
+     * @private
+     * @sideEffect Ajoute les templates personnalisés à la liste disponible
+     * @returns {Promise<void>}
+     */
+    async loadCustomTemplates() {
+        try {
+            // Charger depuis localStorage
+            const customTemplatesStorage = JSON.parse(localStorage.getItem('processMetaLanguage_customTemplates') || '{}');
+            
+            Object.values(customTemplatesStorage).forEach(({ template }) => {
+                if (template && template.id) {
+                    this.customTemplates.set(template.id, template);
+                    this.templates.set(template.id, {
+                        ...template,
+                        searchableText: `${template.name} ${template.category} ${template.description} custom personnalisé`.toLowerCase()
+                    });
+                }
+            });
+
+            if (Object.keys(customTemplatesStorage).length > 0) {
+                console.log(`${Object.keys(customTemplatesStorage).length} templates personnalisés chargés`);
+            }
+
+        } catch (error) {
+            console.warn('Erreur lors du chargement des templates personnalisés:', error);
+        }
+    }
+
+    /**
      * Obtient la couleur pour une catégorie
      * @private
      * @param {string} category - Catégorie
@@ -1645,6 +1916,12 @@ export class TemplateSelector {
     destroy() {
         this.hide();
         
+        // Nettoyer le panneau de personnalisation
+        if (this.customizationPanel) {
+            this.customizationPanel.destroy();
+            this.customizationPanel = null;
+        }
+        
         // Nettoyer les styles
         const styles = document.getElementById('template-selector-styles');
         if (styles) {
@@ -1660,6 +1937,7 @@ export class TemplateSelector {
         this.templates.clear();
         this.filteredTemplates.clear();
         this.selectedTemplates.clear();
+        this.customTemplates.clear();
     }
 }
 

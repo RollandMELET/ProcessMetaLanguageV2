@@ -143,12 +143,13 @@ Décomposition effectuée selon les principes task-master MCP :
   - **Durée estimée** : 1.5 jour
   - **Dépendances** : TASK-D001, TASK-D002 terminées
 
-- [ ] **TASK-F006** : Créer panneau personnalisation templates
-  - **Livrable** : `ui/customization-panel.js` + formulaires + validation temps réel
-  - **Critères** : Édition propriétés + validation + preview changements + application
-  - **MCP Tools** : filesystem + github + serena
-  - **Durée estimée** : 2 jours
-  - **Dépendances** : TASK-F005 terminée
+- [x] **TASK-F006** : Créer panneau personnalisation templates ✅
+  - **Livrable** : `ui/customization-panel.js` + formulaires + validation temps réel ✅
+  - **Critères** : Édition propriétés + validation + preview changements + application ✅
+  - **MCP Tools** : filesystem + github + serena ✅
+  - **Durée estimée** : 2 jours ✅
+  - **Dépendances** : TASK-F005 terminée ✅
+  - **Livrables créés** : customization-panel.js + intégration template-selector.js + tests unitaires ✅
 
 ### Agent: backend
 #### Gestion Avancée Templates
