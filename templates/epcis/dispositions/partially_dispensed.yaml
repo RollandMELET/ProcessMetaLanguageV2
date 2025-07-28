@@ -1,0 +1,59 @@
+# <!-- START OF FILE: partially_dispensed.yaml -->
+# FILENAME: partially_dispensed.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "partially_dispensed" - Partiellement dispensé conforme CBV 2.0
+
+disposition_id: "partially_dispensed"
+disposition_name: "Partially Dispensed"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been partially dispensed with remaining quantity still available"
+  fr: "Objet partiellement dispensé avec quantité restante encore disponible"
+
+state_category: "operational"
+state_type: "transitional"
+
+processmetalanguage_mapping:
+  state_color: "#CDDC39" # Vert lime
+  banner_style: "dashed"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["dispensing", "consuming", "storing", "tracking_quantity"]
+  can_result_from: ["dispensing", "partial_consumption", "splitting"]
+
+workflow_transitions:
+  typical_next_states: ["dispensed", "consumed", "stored", "empty"]
+  prohibited_states: ["destroyed", "expired"]
+  
+quality_indicators:
+  is_sellable: true
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/partially_dispensed-to-dispensed", "/api/transitions/partially_dispensed-to-consumed"]
+
+examples:
+  - object_type: "bulk_material"
+    scenario: "Matériau en vrac partiellement utilisé"
+    typical_duration: "until_fully_consumed"
+  - object_type: "multi_dose_container"
+    scenario: "Conteneur multi-doses partiellement utilisé"
+    typical_duration: "usage_period"
+    
+validation:
+  state_constraints: ["must_track_remaining_quantity", "must_have_usage_log"]
+  business_rules: ["partial_dispensing_requires_quantity_tracking", "remaining_amount_monitoring"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: partially_dispensed.yaml -->

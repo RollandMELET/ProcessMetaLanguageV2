@@ -1,0 +1,66 @@
+# <!-- START OF FILE: dispensing_pharmacy.yaml -->
+# FILENAME: dispensing_pharmacy.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:40
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Dispensing Pharmacy (Dispensation pharmacie)
+
+business_step_id: "dispensing_pharmacy"
+business_step_name: "Dispensing Pharmacy"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The specialized act of dispensing pharmaceutical products in pharmacy environments with regulatory compliance"
+  fr: "Action spécialisée de dispensation de produits pharmaceutiques en environnement pharmacie avec conformité réglementaire"
+
+category: "pharmaceutical"
+typical_objects:
+  - "prescription-drug"
+  - "otc-medication"
+  - "controlled-substance"
+  - "vaccine"
+  - "medical-device"
+
+common_dispositions:
+  before: ["verified", "approved", "available"]
+  after: ["dispensed", "patient_counseled", "documented"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#9C27B0"
+  icon: "💊"
+  workflow_position: "exit"
+
+api_generation:
+  endpoint: "/api/dispensing-pharmacy"
+  method: "POST"
+  required_params: ["object_id", "patient_id", "pharmacist", "prescription_id"]
+  optional_params: ["insurance_info", "counseling_provided", "interaction_check", "refills_remaining"]
+
+examples:
+  - scenario: "Prescription medication dispensing"
+    before_state: "verified"
+    after_state: "dispensed"
+    description: "Antibiotic prescription filled and dispensed with patient counseling"
+  - scenario: "Controlled substance dispensing"
+    before_state: "approved"
+    after_state: "documented"
+    description: "Opioid medication dispensed with DEA tracking documentation"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["possessing_party"]
+  destination_types: ["possessing_party"]
+  
+created_at: "2025-07-28T12:40:00Z"
+updated_at: "2025-07-28T12:40:00Z"
+
+# <!-- END OF FILE: dispensing_pharmacy.yaml -->

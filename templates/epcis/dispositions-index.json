@@ -1,0 +1,325 @@
+{
+  "dispositions_index": {
+    "metadata": {
+      "title": "EPCIS 2.0 Dispositions Index - ProcessMetaLanguage",
+      "version": "1.0.0",
+      "created_at": "2025-07-28T10:00:00.000Z",
+      "cbv_standard_version": "2.0",
+      "epcis_standard_version": "2.0",
+      "total_dispositions": 25,
+      "categories": ["operational", "logistical", "quality", "lifecycle"],
+      "types": ["positive", "negative", "neutral", "transitional"]
+    },
+    
+    "dispositions": {
+      "active": {
+        "file": "active.yaml",
+        "category": "operational",
+        "type": "positive",
+        "color": "#4CAF50",
+        "description": "État opérationnel actif",
+        "is_sellable": true,
+        "requires_action": false,
+        "compatible_business_steps": ["storing", "shipping", "transforming", "inspecting", "packing"]
+      },
+      
+      "container_closed": {
+        "file": "container_closed.yaml",
+        "category": "logistical",
+        "type": "positive", 
+        "color": "#607D8B",
+        "description": "Conteneur fermé et scellé",
+        "is_sellable": true,
+        "requires_action": false,
+        "compatible_business_steps": ["shipping", "storing", "transporting", "loading"]
+      },
+      
+      "container_open": {
+        "file": "container_open.yaml",
+        "category": "logistical",
+        "type": "transitional",
+        "color": "#795548",
+        "description": "Conteneur ouvert et accessible",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["loading", "unloading", "inspecting", "packing", "unpacking"]
+      },
+      
+      "damaged": {
+        "file": "damaged.yaml",
+        "category": "quality",
+        "type": "negative",
+        "color": "#F44336",
+        "description": "Défaillant ou endommagé",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["inspecting", "repairing", "destroying", "rejecting"]
+      },
+      
+      "destroyed": {
+        "file": "destroyed.yaml",
+        "category": "lifecycle",
+        "type": "negative",
+        "color": "#424242",
+        "description": "Détruit définitivement",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["destroying"]
+      },
+      
+      "dispensed": {
+        "file": "dispensed.yaml",
+        "category": "lifecycle",
+        "type": "positive",
+        "color": "#8BC34A",
+        "description": "Distribué ou dispensé",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["dispensing", "retail_selling", "shipping"]
+      },
+      
+      "encoded": {
+        "file": "encoded.yaml",
+        "category": "operational",
+        "type": "positive",
+        "color": "#3F51B5",
+        "description": "Encodé avec marquage traçabilité",
+        "is_sellable": true,
+        "requires_action": false,
+        "compatible_business_steps": ["encoding", "commissioning", "shipping", "storing"]
+      },
+      
+      "expired": {
+        "file": "expired.yaml",
+        "category": "quality",
+        "type": "negative",
+        "color": "#9C27B0",
+        "description": "Expiré ou périmé",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["destroying", "disposing", "inspecting"]
+      },
+      
+      "in_progress": {
+        "file": "in_progress.yaml",
+        "category": "operational",
+        "type": "transitional",
+        "color": "#FF9800",
+        "description": "En cours de traitement",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["transforming", "assembling", "packing", "inspecting", "encoding"]
+      },
+      
+      "in_transit": {
+        "file": "in_transit.yaml",
+        "category": "logistical",
+        "type": "transitional",
+        "color": "#2196F3",
+        "description": "En transport ou déplacement",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["transporting", "shipping", "departing", "arriving"]
+      },
+      
+      "inactive": {
+        "file": "inactive.yaml",
+        "category": "operational",
+        "type": "neutral",
+        "color": "#757575",
+        "description": "Temporairement inactif",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["storing", "inspecting", "commissioning", "activating"]
+      },
+      
+      "non_sellable": {
+        "file": "non_sellable.yaml",
+        "category": "quality",
+        "type": "negative",
+        "color": "#E91E63",
+        "description": "Non vendable pour contraintes",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["inspecting", "quarantining", "destroying", "returning"]
+      },
+      
+      "partially_dispensed": {
+        "file": "partially_dispensed.yaml",
+        "category": "operational",
+        "type": "transitional",
+        "color": "#CDDC39",
+        "description": "Partiellement dispensé",
+        "is_sellable": true,
+        "requires_action": false,
+        "compatible_business_steps": ["dispensing", "consuming", "storing", "tracking_quantity"]
+      },
+      
+      "recalled": {
+        "file": "recalled.yaml",
+        "category": "quality",
+        "type": "negative",
+        "color": "#B71C1C",
+        "description": "Rappelé pour défaut",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["destroying", "returning", "inspecting", "quarantining"]
+      },
+      
+      "reserved": {
+        "file": "reserved.yaml",
+        "category": "logistical",
+        "type": "neutral",
+        "color": "#FF5722",
+        "description": "Réservé ou alloué",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["picking", "shipping", "allocating", "releasing_reservation"]
+      },
+      
+      "retail_sold": {
+        "file": "retail_sold.yaml",
+        "category": "lifecycle",
+        "type": "positive",
+        "color": "#00BCD4",
+        "description": "Vendu au détail",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["retail_selling", "consuming", "tracking_usage"]
+      },
+      
+      "returned": {
+        "file": "returned.yaml",
+        "category": "logistical",
+        "type": "neutral",
+        "color": "#9C27B0",
+        "description": "Retourné par client",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["receiving", "inspecting", "restocking", "disposing"]
+      },
+      
+      "sellable_accessible": {
+        "file": "sellable_accessible.yaml",
+        "category": "operational",
+        "type": "positive",
+        "color": "#4CAF50",
+        "description": "Vendable et accessible",
+        "is_sellable": true,
+        "requires_action": false,
+        "compatible_business_steps": ["selling", "retail_selling", "picking", "shipping"]
+      },
+      
+      "sellable_not_accessible": {
+        "file": "sellable_not_accessible.yaml",
+        "category": "logistical",
+        "type": "neutral",
+        "color": "#FFC107",
+        "description": "Vendable mais non accessible",
+        "is_sellable": true,
+        "requires_action": true,
+        "compatible_business_steps": ["moving", "retrieving", "accessing", "inspecting"]
+      },
+      
+      "stolen": {
+        "file": "stolen.yaml",
+        "category": "lifecycle",
+        "type": "negative",
+        "color": "#D32F2F",
+        "description": "Volé ou perdu",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["reporting_loss", "investigating", "insurance_claim"]
+      },
+      
+      "unavailable": {
+        "file": "unavailable.yaml",
+        "category": "operational",
+        "type": "neutral",
+        "color": "#616161",
+        "description": "Temporairement indisponible",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["inspecting", "maintenance", "repairing", "releasing"]
+      },
+      
+      "unknown": {
+        "file": "unknown.yaml",
+        "category": "operational",
+        "type": "neutral",
+        "color": "#9E9E9E",
+        "description": "État indéterminé",
+        "is_sellable": false,
+        "requires_action": true,
+        "compatible_business_steps": ["inspecting", "cycle_counting", "sensor_reporting"]
+      },
+      
+      "consumed": {
+        "file": "consumed.yaml",
+        "category": "lifecycle",
+        "type": "positive",
+        "color": "#689F38",
+        "description": "Consommé ou utilisé",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["consuming", "tracking_usage", "waste_processing"]
+      },
+      
+      "installed": {
+        "file": "installed.yaml",
+        "category": "operational",
+        "type": "positive",
+        "color": "#8E24AA",
+        "description": "Installé en place",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["installing", "commissioning", "testing", "operating"]
+      },
+      
+      "disposed": {
+        "file": "disposed.yaml",
+        "category": "lifecycle",
+        "type": "negative",
+        "color": "#795548",
+        "description": "Mis au rebut selon réglementations",
+        "is_sellable": false,
+        "requires_action": false,
+        "compatible_business_steps": ["waste_processing", "recycling", "environmental_reporting"]
+      }
+    },
+    
+    "statistics": {
+      "by_category": {
+        "operational": 8,
+        "logistical": 7,
+        "quality": 5,
+        "lifecycle": 5
+      },
+      "by_type": {
+        "positive": 9,
+        "negative": 8,
+        "neutral": 5,
+        "transitional": 3
+      },
+      "sellable_count": 6,
+      "requires_action_count": 12
+    },
+    
+    "workflow_patterns": {
+      "common_transitions": {
+        "active": ["in_progress", "in_transit", "stored"],
+        "in_progress": ["active", "completed", "damaged"],
+        "in_transit": ["active", "receiving", "damaged"],
+        "damaged": ["recalled", "destroyed", "repairing"],
+        "expired": ["destroyed", "disposed", "quarantine"],
+        "recalled": ["destroyed", "returned", "quarantine"]
+      },
+      
+      "terminal_states": ["destroyed", "consumed", "disposed"],
+      
+      "high_priority_states": ["damaged", "recalled", "stolen", "expired", "non_sellable"],
+      
+      "quality_related": ["damaged", "expired", "recalled", "non_sellable", "returned"]
+    }
+  }
+}

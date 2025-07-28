@@ -1,0 +1,66 @@
+# <!-- START OF FILE: disaggregating.yaml -->
+# FILENAME: disaggregating.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:45
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Disaggregating (Désagrégation/séparation)
+
+business_step_id: "disaggregating"
+business_step_name: "Disaggregating"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of separating an aggregate unit back into its individual component objects"
+  fr: "Action de séparation d'une unité agrégée en ses objets composants individuels"
+
+category: "logistics"
+typical_objects:
+  - "case"
+  - "pallet"
+  - "container"
+  - "bundle"
+  - "kit"
+
+common_dispositions:
+  before: ["aggregated", "consolidated", "grouped"]
+  after: ["disaggregated", "individual", "separated"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#2196F3"
+  icon: "📂"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/disaggregating"
+  method: "POST"
+  required_params: ["parent_id", "extracted_objects", "reason", "operator"]
+  optional_params: ["partial_disaggregation", "remaining_objects", "condition_check", "destination"]
+
+examples:
+  - scenario: "Case unpacking for retail display"
+    before_state: "aggregated"
+    after_state: "disaggregated"
+    description: "Shipping case opened and products separated for shelving"
+  - scenario: "Pallet breakdown for distribution"
+    before_state: "consolidated"
+    after_state: "individual"
+    description: "Pallet disaggregated into individual cases for store delivery"
+
+epcis_event_type: "AggregationEvent"
+epcis_action: "DELETE"
+
+validation:
+  mandatory_fields: ["parentID", "childEPCs", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location", "possessing_party"]
+  destination_types: ["location", "possessing_party"]
+  
+created_at: "2025-07-28T12:45:00Z"
+updated_at: "2025-07-28T12:45:00Z"
+
+# <!-- END OF FILE: disaggregating.yaml -->

@@ -1,0 +1,66 @@
+# <!-- START OF FILE: transforming.yaml -->
+# FILENAME: transforming.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:10
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Transforming (Transformation/fabrication)
+
+business_step_id: "transforming"
+business_step_name: "Transforming"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of converting raw materials or components into different products through manufacturing processes"
+  fr: "Action de conversion de matières premières ou composants en produits différents via processus de fabrication"
+
+category: "manufacturing"
+typical_objects:
+  - "raw-material"
+  - "component"
+  - "work-in-progress"
+  - "finished-product"
+  - "batch"
+
+common_dispositions:
+  before: ["active", "in_progress"]
+  after: ["in_progress", "completed"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#FF9800"
+  icon: "⚙️"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/transforming"
+  method: "POST"
+  required_params: ["input_objects", "output_objects", "process_type", "operator"]
+  optional_params: ["temperature", "pressure", "duration", "quality_parameters"]
+
+examples:
+  - scenario: "Steel sheet to automotive part"
+    before_state: "active"
+    after_state: "in_progress"
+    description: "Steel sheets transformed into car door panels"
+  - scenario: "Raw milk to cheese processing"
+    before_state: "in_progress"
+    after_state: "completed"
+    description: "Dairy transformation process completion"
+
+epcis_event_type: "TransformationEvent"
+epcis_action: "ADD"
+
+validation:
+  mandatory_fields: ["inputEPCList", "outputEPCList", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location", "possessing_party"]
+  destination_types: ["location", "possessing_party"]
+  
+created_at: "2025-07-28T12:10:00Z"
+updated_at: "2025-07-28T12:10:00Z"
+
+# <!-- END OF FILE: transforming.yaml -->

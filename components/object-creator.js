@@ -473,9 +473,66 @@ function getAvailableObjectTypes() {
     }));
 }
 
+/**
+ * Classe wrapper pour la création d'objets compatible avec la palette UI
+ * @class
+ */
+export class ObjectCreator {
+    /**
+     * Crée une instance d'ObjectCreator
+     * @param {Object} excalidrawAPI - API ExcalidrawAutomate
+     */
+    constructor(excalidrawAPI) {
+        this.ea = excalidrawAPI;
+        this.createdCount = 0;
+    }
+
+    /**
+     * Crée un objet avec l'API simplifiée pour la palette
+     * @param {string} objectName - Nom de l'objet
+     * @param {string} objectType - Type d'objet EPCIS
+     * @param {Object} position - Position {x, y}
+     * @param {Object} metadata - Métadonnées supplémentaires
+     * @returns {Promise<string>} ID de l'objet créé
+     */
+    async createObject(objectName, objectType, position, metadata = {}) {
+        const objectId = await createObjectComponent(
+            this.ea,
+            objectName,
+            objectType,
+            position,
+            metadata
+        );
+        this.createdCount++;
+        return objectId;
+    }
+
+    /**
+     * Obtient le nombre d'objets créés
+     * @returns {number} Nombre d'objets créés
+     */
+    getCreatedCount() {
+        return this.createdCount;
+    }
+}
+
 // Export des fonctions pour tests et utilisation externe
+export {
+    createObjectComponent,
+    getObjectMetadata,
+    updateObjectMetadata,
+    deleteObjectComponent,
+    getAvailableObjectTypes,
+    calculateHexagonPoints,
+    generateObjectId,
+    OBJECT_CONFIG,
+    OBJECT_TYPE_COLORS
+};
+
+// Compatibilité CommonJS
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
+        ObjectCreator,
         createObjectComponent,
         getObjectMetadata,
         updateObjectMetadata,

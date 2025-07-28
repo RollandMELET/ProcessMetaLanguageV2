@@ -1,0 +1,510 @@
+{
+  "index_metadata": {
+    "version": "1.0.0",
+    "created_at": "2025-07-28T12:50:00Z",
+    "updated_at": "2025-07-28T12:50:00Z",
+    "author": "Rolland MELET & Claude Code",
+    "description": "Index de recherche pour 41 business steps EPCIS 2.0 CBV 2.0",
+    "total_business_steps": 41,
+    "epcis_version": "2.0",
+    "cbv_version": "2.0",
+    "gs1_compliance": true
+  },
+  
+  "categories": {
+    "logistics": {
+      "description": "Supply chain and logistics operations",
+      "color_code": "#2196F3",
+      "icon": "🚛",
+      "count": 16,
+      "business_steps": [
+        "receiving", "shipping", "storing", "picking", "transporting",
+        "loading", "unloading", "entering", "exiting", "departing",
+        "arriving", "dispensing", "decoding", "sensor_reporting",
+        "cycle_counting", "commissioning", "decommissioning",
+        "installing", "uninstalling", "aggregating", "disaggregating", "kill"
+      ]
+    },
+    
+    "manufacturing": {
+      "description": "Production and manufacturing processes", 
+      "color_code": "#FF9800",
+      "icon": "⚙️",
+      "count": 15,
+      "business_steps": [
+        "transforming", "assembling", "disassembling", "packing",
+        "unpacking", "inspecting", "accepting", "rejecting",
+        "repairing", "replacing", "destroying", "encoding"
+      ]
+    },
+    
+    "retail": {
+      "description": "Retail and consumer transactions",
+      "color_code": "#4CAF50", 
+      "icon": "🛒",
+      "count": 3,
+      "business_steps": [
+        "consuming", "retail_selling", "dispensing"
+      ]
+    },
+    
+    "pharmaceutical": {
+      "description": "Pharmaceutical and healthcare specialized processes",
+      "color_code": "#9C27B0",
+      "icon": "💊", 
+      "count": 4,
+      "business_steps": [
+        "dispensing_pharmacy", "encoding_pharma", 
+        "commissioning_pharma", "decommissioning_pharma"
+      ]
+    }
+  },
+  
+  "business_steps": {
+    "accepting": {
+      "file": "accepting.yaml",
+      "category": "manufacturing",
+      "description": "Approving objects after inspection or verification",
+      "action_type": "secondary",
+      "workflow_position": "control",
+      "common_objects": ["raw-material", "finished-product", "component"],
+      "typical_transitions": ["needs_inspection → accepted", "pending → active"]
+    },
+    
+    "aggregating": {
+      "file": "aggregating.yaml", 
+      "category": "logistics",
+      "description": "Combining multiple objects into single aggregate unit",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["individual-product", "package", "case"],
+      "typical_transitions": ["active → aggregated", "ready → consolidated"]
+    },
+    
+    "arriving": {
+      "file": "arriving.yaml",
+      "category": "logistics", 
+      "description": "Objects reaching their intended destination",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["shipment", "container", "vehicle"],
+      "typical_transitions": ["in_transit → arrived", "departed → delivered"]
+    },
+    
+    "assembling": {
+      "file": "assembling.yaml",
+      "category": "manufacturing",
+      "description": "Combining components to create complex products",
+      "action_type": "secondary", 
+      "workflow_position": "intermediate",
+      "common_objects": ["component", "sub-assembly", "finished-product"],
+      "typical_transitions": ["active → in_progress", "in_progress → completed"]
+    },
+    
+    "commissioning": {
+      "file": "commissioning.yaml",
+      "category": "logistics",
+      "description": "Putting objects into active service or operation",
+      "action_type": "secondary",
+      "workflow_position": "intermediate", 
+      "common_objects": ["equipment", "machinery", "infrastructure"],
+      "typical_transitions": ["installed → commissioned", "tested → active"]
+    },
+    
+    "commissioning_pharma": {
+      "file": "commissioning_pharma.yaml",
+      "category": "pharmaceutical",
+      "description": "Specialized pharmaceutical commissioning with regulatory approval",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["prescription-drug", "medical-device", "vaccine"],
+      "typical_transitions": ["approved → commissioned", "validated → market_ready"]
+    },
+    
+    "consuming": {
+      "file": "consuming.yaml", 
+      "category": "retail",
+      "description": "Using up or depleting objects through consumption",
+      "action_type": "secondary",
+      "workflow_position": "exit",
+      "common_objects": ["consumable-product", "food-product", "pharmaceutical"],
+      "typical_transitions": ["dispensed → consumed", "active → depleted"]
+    },
+    
+    "cycle_counting": {
+      "file": "cycle_counting.yaml",
+      "category": "logistics",
+      "description": "Periodic inventory counts to verify quantities",
+      "action_type": "primary",
+      "workflow_position": "control",
+      "common_objects": ["inventory-item", "stored-product", "raw-material"],
+      "typical_transitions": ["stored → counted", "available → verified"]
+    },
+    
+    "decoding": {
+      "file": "decoding.yaml",
+      "category": "logistics", 
+      "description": "Reading and interpreting identification codes or tags",
+      "action_type": "primary",
+      "workflow_position": "control",
+      "common_objects": ["tagged-product", "encoded-package", "barcoded-item"],
+      "typical_transitions": ["encoded → scanned", "tagged → tracked"]
+    },
+    
+    "decommissioning": {
+      "file": "decommissioning.yaml",
+      "category": "logistics",
+      "description": "Taking objects out of active service",
+      "action_type": "secondary",
+      "workflow_position": "exit",
+      "common_objects": ["equipment", "machinery", "expired-product"], 
+      "typical_transitions": ["active → decommissioned", "in_service → retired"]
+    },
+    
+    "decommissioning_pharma": {
+      "file": "decommissioning_pharma.yaml",
+      "category": "pharmaceutical",
+      "description": "Specialized pharmaceutical decommissioning for regulatory reasons",
+      "action_type": "secondary", 
+      "workflow_position": "exit",
+      "common_objects": ["recalled-drug", "expired-pharmaceutical", "unsafe-medical-device"],
+      "typical_transitions": ["recalled → decommissioned", "expired → quarantined"]
+    },
+    
+    "departing": {
+      "file": "departing.yaml",
+      "category": "logistics",
+      "description": "Objects beginning journey from one location to another", 
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["shipment", "container", "vehicle"],
+      "typical_transitions": ["loaded → departed", "ready_for_shipment → in_transit"]
+    },
+    
+    "destroying": {
+      "file": "destroying.yaml",
+      "category": "manufacturing",
+      "description": "Permanently eliminating objects through controlled destruction",
+      "action_type": "secondary",
+      "workflow_position": "exit",
+      "common_objects": ["expired-product", "defective-product", "recalled-product"],
+      "typical_transitions": ["expired → destroyed", "recalled → disposed"]
+    },
+    
+    "disaggregating": {
+      "file": "disaggregating.yaml",
+      "category": "logistics",
+      "description": "Separating aggregate unit into individual component objects",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["case", "pallet", "container"],
+      "typical_transitions": ["aggregated → disaggregated", "consolidated → individual"]
+    },
+    
+    "disassembling": {
+      "file": "disassembling.yaml", 
+      "category": "manufacturing",
+      "description": "Separating complex products into individual components",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["finished-product", "sub-assembly", "defective-product"],
+      "typical_transitions": ["completed → active", "damaged → disposed"]
+    },
+    
+    "dispensing": {
+      "file": "dispensing.yaml",
+      "category": "retail",
+      "description": "Distributing objects to end users per requirements",
+      "action_type": "secondary",
+      "workflow_position": "exit",
+      "common_objects": ["pharmaceutical", "medical-device", "controlled-substance"],
+      "typical_transitions": ["available → dispensed", "verified → distributed"]
+    },
+    
+    "dispensing_pharmacy": {
+      "file": "dispensing_pharmacy.yaml",
+      "category": "pharmaceutical", 
+      "description": "Specialized pharmaceutical dispensing with regulatory compliance",
+      "action_type": "secondary",
+      "workflow_position": "exit",
+      "common_objects": ["prescription-drug", "otc-medication", "controlled-substance"],
+      "typical_transitions": ["verified → dispensed", "approved → documented"]
+    },
+    
+    "encoding": {
+      "file": "encoding.yaml",
+      "category": "manufacturing",
+      "description": "Applying identification codes, tags, or markers to objects",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["raw-material", "finished-product", "component"],
+      "typical_transitions": ["untagged → encoded", "active → tagged"]
+    },
+    
+    "encoding_pharma": {
+      "file": "encoding_pharma.yaml",
+      "category": "pharmaceutical",
+      "description": "Specialized pharmaceutical-grade identification and serialization",
+      "action_type": "secondary",
+      "workflow_position": "intermediate", 
+      "common_objects": ["prescription-drug", "vaccine", "biological-product"],
+      "typical_transitions": ["manufactured → serialized", "tested → trackable"]
+    },
+    
+    "entering": {
+      "file": "entering.yaml",
+      "category": "logistics",
+      "description": "Objects crossing into defined area or location boundary",
+      "action_type": "primary",
+      "workflow_position": "control",
+      "common_objects": ["tracked-vehicle", "container", "pallet"],
+      "typical_transitions": ["in_transit → entered", "approaching → inside"]
+    },
+    
+    "exiting": {
+      "file": "exiting.yaml",
+      "category": "logistics",
+      "description": "Objects crossing out of defined area or location boundary",
+      "action_type": "primary",
+      "workflow_position": "control",
+      "common_objects": ["tracked-vehicle", "container", "pallet"],
+      "typical_transitions": ["inside → exited", "present → in_transit"]
+    },
+    
+    "inspecting": {
+      "file": "inspecting.yaml",
+      "category": "manufacturing",
+      "description": "Examining objects to verify quality, condition, or compliance",
+      "action_type": "primary",
+      "workflow_position": "control",
+      "common_objects": ["raw-material", "finished-product", "component"],
+      "typical_transitions": ["needs_inspection → accepted", "in_progress → rejected"]
+    },
+    
+    "installing": {
+      "file": "installing.yaml",
+      "category": "logistics",
+      "description": "Placing and setting up objects in operational location",
+      "action_type": "secondary", 
+      "workflow_position": "intermediate",
+      "common_objects": ["equipment", "machinery", "component"],
+      "typical_transitions": ["delivered → installed", "ready_for_installation → pending_commissioning"]
+    },
+    
+    "kill": {
+      "file": "kill.yaml",
+      "category": "logistics",
+      "description": "Permanently disabling or deactivating EPC tag or identifier",
+      "action_type": "secondary",
+      "workflow_position": "exit",
+      "common_objects": ["epc-tag", "rfid-tag", "smart-label"],
+      "typical_transitions": ["active → killed", "trackable → unreadable"]
+    },
+    
+    "loading": {
+      "file": "loading.yaml",
+      "category": "logistics", 
+      "description": "Placing objects onto transport vehicles or containers",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["pallet", "container", "package"],
+      "typical_transitions": ["ready_for_shipment → loaded", "picked → in_transit"]
+    },
+    
+    "packing": {
+      "file": "packing.yaml",
+      "category": "manufacturing",
+      "description": "Placing products into containers or protective enclosures",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["finished-product", "component", "package"],
+      "typical_transitions": ["completed → packed", "active → ready_for_shipment"]
+    },
+    
+    "picking": {
+      "file": "picking.yaml",
+      "category": "logistics",
+      "description": "Selecting and removing objects from storage",
+      "action_type": "secondary",
+      "workflow_position": "intermediate", 
+      "common_objects": ["raw-material", "finished-product", "component"],
+      "typical_transitions": ["stored → active", "reserved → in_progress"]
+    },
+    
+    "receiving": {
+      "file": "receiving.yaml",
+      "category": "logistics",
+      "description": "Receiving goods from supplier or external party",
+      "action_type": "secondary",
+      "workflow_position": "entry",
+      "common_objects": ["raw-material", "finished-product", "packaging"],
+      "typical_transitions": ["in_transit → active", "unknown → needs_inspection"]
+    },
+    
+    "rejecting": {
+      "file": "rejecting.yaml",
+      "category": "manufacturing",
+      "description": "Disapproving objects that do not meet required standards",
+      "action_type": "secondary",
+      "workflow_position": "control",
+      "common_objects": ["raw-material", "finished-product", "defective-product"],
+      "typical_transitions": ["needs_inspection → rejected", "active → quarantined"]
+    },
+    
+    "repairing": {
+      "file": "repairing.yaml",
+      "category": "manufacturing",
+      "description": "Fixing damaged or defective objects to restore functionality",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["defective-product", "damaged-product", "equipment"],
+      "typical_transitions": ["damaged → repaired", "needs_rework → active"]
+    },
+    
+    "replacing": {
+      "file": "replacing.yaml",
+      "category": "manufacturing",
+      "description": "Substituting one object with another due to defects or upgrades",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["component", "defective-product", "expired-product"],
+      "typical_transitions": ["defective → replaced", "expired → disposed"]
+    },
+    
+    "retail_selling": {
+      "file": "retail_selling.yaml",
+      "category": "retail",
+      "description": "Selling products directly to end consumers through retail",
+      "action_type": "secondary", 
+      "workflow_position": "exit",
+      "common_objects": ["consumer-product", "retail-item", "packaged-good"],
+      "typical_transitions": ["on_shelf → sold", "available → purchased"]
+    },
+    
+    "sensor_reporting": {
+      "file": "sensor_reporting.yaml",
+      "category": "logistics",
+      "description": "Collecting and reporting environmental data from sensors",
+      "action_type": "primary",
+      "workflow_position": "control",
+      "common_objects": ["monitored-shipment", "temperature-sensitive-product", "pharmaceutical"],
+      "typical_transitions": ["in_transit → monitored", "stored → alert_triggered"]
+    },
+    
+    "shipping": {
+      "file": "shipping.yaml",
+      "category": "logistics", 
+      "description": "Sending goods from one location to another",
+      "action_type": "secondary",
+      "workflow_position": "exit",
+      "common_objects": ["finished-product", "package", "shipment"],
+      "typical_transitions": ["active → in_transit", "reserved → shipped"]
+    },
+    
+    "storing": {
+      "file": "storing.yaml",
+      "category": "logistics",
+      "description": "Placing objects in storage location for preservation",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["raw-material", "finished-product", "component"],
+      "typical_transitions": ["active → stored", "in_progress → reserved"]
+    },
+    
+    "transforming": {
+      "file": "transforming.yaml",
+      "category": "manufacturing",
+      "description": "Converting raw materials into different products through manufacturing",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["raw-material", "component", "work-in-progress"],
+      "typical_transitions": ["active → in_progress", "in_progress → completed"]
+    },
+    
+    "transporting": {
+      "file": "transporting.yaml",
+      "category": "logistics",
+      "description": "Moving objects from one location to another during transit",
+      "action_type": "primary",
+      "workflow_position": "intermediate",
+      "common_objects": ["shipment", "container", "pallet"],
+      "typical_transitions": ["in_transit → in_transit"]
+    },
+    
+    "uninstalling": {
+      "file": "uninstalling.yaml",
+      "category": "logistics",
+      "description": "Removing objects from operational location and dismantling setup",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["equipment", "machinery", "decommissioned-asset"],
+      "typical_transitions": ["installed → uninstalled", "faulty → ready_for_transport"]
+    },
+    
+    "unloading": {
+      "file": "unloading.yaml",
+      "category": "logistics",
+      "description": "Removing objects from transport vehicles or containers",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["pallet", "container", "package"],
+      "typical_transitions": ["loaded → unloaded", "in_transit → received"]
+    },
+    
+    "unpacking": {
+      "file": "unpacking.yaml",
+      "category": "manufacturing",
+      "description": "Removing products from containers or protective enclosures",
+      "action_type": "secondary",
+      "workflow_position": "intermediate",
+      "common_objects": ["package", "case", "pallet"],
+      "typical_transitions": ["packed → active", "in_transit → available"]
+    },
+    
+    "void_shipping": {
+      "file": "void_shipping.yaml",
+      "category": "logistics",
+      "description": "Canceling or voiding previously initiated shipping transaction",
+      "action_type": "secondary",
+      "workflow_position": "intermediate", 
+      "common_objects": ["shipment", "package", "container"],
+      "typical_transitions": ["ready_for_shipment → voided", "shipped → returned_to_stock"]
+    }
+  },
+  
+  "search_tags": {
+    "action_type": {
+      "primary": [
+        "inspecting", "decoding", "sensor_reporting", "cycle_counting",
+        "entering", "exiting", "transporting"
+      ],
+      "secondary": [
+        "receiving", "shipping", "storing", "picking", "loading", "unloading",
+        "transforming", "assembling", "disassembling", "packing", "unpacking",
+        "accepting", "rejecting", "repairing", "replacing", "destroying",
+        "encoding", "commissioning", "decommissioning", "installing", "uninstalling",
+        "departing", "arriving", "dispensing", "consuming", "retail_selling",
+        "aggregating", "disaggregating", "kill", "void_shipping",
+        "dispensing_pharmacy", "encoding_pharma", "commissioning_pharma", "decommissioning_pharma"
+      ]
+    },
+    
+    "workflow_position": {
+      "entry": ["receiving"],
+      "intermediate": [
+        "storing", "picking", "loading", "unloading", "transforming", "assembling",
+        "disassembling", "packing", "unpacking", "repairing", "replacing", "encoding",
+        "commissioning", "installing", "uninstalling", "departing", "arriving",
+        "aggregating", "disaggregating", "void_shipping", "encoding_pharma", "commissioning_pharma"
+      ],
+      "control": [
+        "inspecting", "decoding", "sensor_reporting", "cycle_counting",
+        "entering", "exiting", "accepting", "rejecting"
+      ],
+      "exit": [
+        "shipping", "destroying", "decommissioning", "dispensing", "consuming",
+        "retail_selling", "kill", "dispensing_pharmacy", "decommissioning_pharma"
+      ]
+    }
+  }
+}

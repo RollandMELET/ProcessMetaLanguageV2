@@ -1,0 +1,59 @@
+# <!-- START OF FILE: consumed.yaml -->
+# FILENAME: consumed.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "consumed" - Consommé/utilisé conforme CBV 2.0
+
+disposition_id: "consumed"
+disposition_name: "Consumed"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been consumed or used up and is no longer available"
+  fr: "Objet consommé ou utilisé et plus disponible"
+
+state_category: "lifecycle"
+state_type: "positive"
+
+processmetalanguage_mapping:
+  state_color: "#689F38" # Vert olive
+  banner_style: "solid"
+  priority: "low"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["consuming", "tracking_usage", "waste_processing"]
+  can_result_from: ["consuming", "using", "dispensing"]
+
+workflow_transitions:
+  typical_next_states: ["disposed", "waste_processed", "recycled"]
+  prohibited_states: ["active", "sellable_accessible", "in_progress"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/consumed-to-disposed", "/api/transitions/consumed-to-waste_processed"]
+
+examples:
+  - object_type: "raw_material"
+    scenario: "Matière première consommée dans production"
+    typical_duration: "permanent"
+  - object_type: "pharmaceutical_dose"
+    scenario: "Dose médicament consommée par patient"
+    typical_duration: "permanent"
+    
+validation:
+  state_constraints: ["must_have_consumption_record", "must_have_consumption_date"]
+  business_rules: ["consumed_items_require_usage_tracking", "consumption_audit_trail_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: consumed.yaml -->

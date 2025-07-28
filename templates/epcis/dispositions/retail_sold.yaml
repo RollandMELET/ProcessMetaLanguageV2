@@ -1,0 +1,59 @@
+# <!-- START OF FILE: retail_sold.yaml -->
+# FILENAME: retail_sold.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "retail_sold" - Vendu au détail conforme CBV 2.0
+
+disposition_id: "retail_sold"
+disposition_name: "Retail Sold"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been sold at retail level to end consumer"
+  fr: "Objet vendu au niveau détail au consommateur final"
+
+state_category: "lifecycle"
+state_type: "positive"
+
+processmetalanguage_mapping:
+  state_color: "#00BCD4" # Cyan
+  banner_style: "solid"
+  priority: "low"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["retail_selling", "consuming", "tracking_usage"]
+  can_result_from: ["retail_selling", "point_of_sale"]
+
+workflow_transitions:
+  typical_next_states: ["consumed", "returned", "disposed"]
+  prohibited_states: ["recalled", "in_progress", "reserved"]
+  
+quality_indicators:
+  is_sellable: false # Déjà vendu
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/retail_sold-to-consumed", "/api/transitions/retail_sold-to-returned"]
+
+examples:
+  - object_type: "consumer_product"
+    scenario: "Produit consommateur vendu en magasin"
+    typical_duration: "consumer_usage_period"
+  - object_type: "pharmaceutical_otc"
+    scenario: "Médicament sans ordonnance vendu pharmacie"
+    typical_duration: "patient_treatment"
+    
+validation:
+  state_constraints: ["must_have_sale_record", "must_have_customer_info"]
+  business_rules: ["retail_sales_require_receipt", "consumer_tracking_optional"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: retail_sold.yaml -->

@@ -1,0 +1,66 @@
+# <!-- START OF FILE: departing.yaml -->
+# FILENAME: departing.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:30
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Departing (Départ)
+
+business_step_id: "departing"
+business_step_name: "Departing"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of objects beginning their journey from one location to another, initiating transit"
+  fr: "Action d'objets commençant leur voyage d'un lieu vers un autre, initiant le transit"
+
+category: "logistics"
+typical_objects:
+  - "shipment"
+  - "container"
+  - "vehicle"
+  - "pallet"
+  - "package"
+
+common_dispositions:
+  before: ["loaded", "ready_for_shipment"]
+  after: ["departed", "in_transit"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#2196F3"
+  icon: "🚀"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/departing"
+  method: "POST"
+  required_params: ["object_id", "origin_location", "destination", "departure_time"]
+  optional_params: ["route", "estimated_arrival", "driver", "manifest"]
+
+examples:
+  - scenario: "Truck departure from warehouse"
+    before_state: "loaded"
+    after_state: "departed"
+    description: "Delivery truck departs distribution center for customer routes"
+  - scenario: "Container ship departure"
+    before_state: "ready_for_shipment"
+    after_state: "in_transit"
+    description: "Container vessel departs port for international destination"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location", "possessing_party"]
+  destination_types: ["location", "possessing_party"]
+  
+created_at: "2025-07-28T12:30:00Z"
+updated_at: "2025-07-28T12:30:00Z"
+
+# <!-- END OF FILE: departing.yaml -->

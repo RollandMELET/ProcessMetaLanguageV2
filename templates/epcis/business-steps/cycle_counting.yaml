@@ -1,0 +1,66 @@
+# <!-- START OF FILE: cycle_counting.yaml -->
+# FILENAME: cycle_counting.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:25
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Cycle Counting (Comptage cyclique)
+
+business_step_id: "cycle_counting"
+business_step_name: "Cycle Counting"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of performing periodic inventory counts to verify quantities and maintain accurate stock records"
+  fr: "Action de comptage périodique d'inventaire pour vérifier quantités et maintenir registres de stock précis"
+
+category: "logistics"
+typical_objects:
+  - "inventory-item"
+  - "stored-product"
+  - "raw-material"
+  - "finished-product"
+  - "component"
+
+common_dispositions:
+  before: ["stored", "active", "available"]
+  after: ["counted", "verified", "adjusted"]
+
+processmetalanguage_mapping:
+  action_type: "primary"
+  color_code: "#2196F3"
+  icon: "📋"
+  workflow_position: "control"
+
+api_generation:
+  endpoint: "/api/cycle-counting"
+  method: "POST"
+  required_params: ["location_id", "counter", "expected_quantity", "actual_quantity"]
+  optional_params: ["variance", "adjustment_reason", "recount_required", "notes"]
+
+examples:
+  - scenario: "Weekly warehouse inventory count"
+    before_state: "stored"
+    after_state: "counted"
+    description: "Raw materials counted in section A showing 95% accuracy"
+  - scenario: "Discrepancy investigation count"
+    before_state: "available"
+    after_state: "adjusted"
+    description: "Finished goods count reveals shortage requiring adjustment"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location"]
+  destination_types: ["location"]
+  
+created_at: "2025-07-28T12:25:00Z"
+updated_at: "2025-07-28T12:25:00Z"
+
+# <!-- END OF FILE: cycle_counting.yaml -->

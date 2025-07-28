@@ -1,0 +1,66 @@
+# <!-- START OF FILE: commissioning.yaml -->
+# FILENAME: commissioning.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:20
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Commissioning (Mise en service)
+
+business_step_id: "commissioning"
+business_step_name: "Commissioning"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of putting an object into active service or operation for its intended purpose"
+  fr: "Action de mise en service actif d'un objet pour son usage prévu"
+
+category: "logistics"
+typical_objects:
+  - "equipment"
+  - "machinery"
+  - "infrastructure"
+  - "serialized-product"
+  - "asset"
+
+common_dispositions:
+  before: ["installed", "tested", "accepted"]
+  after: ["commissioned", "active", "in_service"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#4CAF50"
+  icon: "🔌"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/commissioning"
+  method: "POST"
+  required_params: ["object_id", "commissioner", "service_date", "location"]
+  optional_params: ["warranty_start", "maintenance_schedule", "operator_training", "documentation"]
+
+examples:
+  - scenario: "Manufacturing equipment commissioning"
+    before_state: "installed"
+    after_state: "commissioned"
+    description: "Production line robot activated for operation"
+  - scenario: "Medical device activation"
+    before_state: "tested"
+    after_state: "in_service"
+    description: "MRI machine commissioned at hospital"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["possessing_party", "location"]
+  destination_types: ["possessing_party", "location"]
+  
+created_at: "2025-07-28T12:20:00Z"
+updated_at: "2025-07-28T12:20:00Z"
+
+# <!-- END OF FILE: commissioning.yaml -->

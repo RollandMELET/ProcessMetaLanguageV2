@@ -1,0 +1,66 @@
+# <!-- START OF FILE: disassembling.yaml -->
+# FILENAME: disassembling.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:10
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Disassembling (Démontage/désassemblage)
+
+business_step_id: "disassembling"
+business_step_name: "Disassembling"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of separating a complex product or assembly into its individual components or parts"
+  fr: "Action de séparation d'un produit complexe ou assemblage en ses composants ou pièces individuels"
+
+category: "manufacturing"
+typical_objects:
+  - "finished-product"
+  - "sub-assembly"
+  - "component"
+  - "defective-product"
+  - "returned-product"
+
+common_dispositions:
+  before: ["completed", "damaged", "returned"]
+  after: ["active", "damaged", "disposed"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#FF9800"
+  icon: "🔨"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/disassembling"
+  method: "POST"
+  required_params: ["parent_object", "extracted_components", "reason", "operator"]
+  optional_params: ["condition_assessment", "recycling_disposition", "repair_notes"]
+
+examples:
+  - scenario: "Electronic device repair disassembly"
+    before_state: "damaged"
+    after_state: "active"
+    description: "Smartphone disassembled for component replacement"
+  - scenario: "End-of-life product recycling"
+    before_state: "returned"
+    after_state: "disposed"
+    description: "Automobile disassembled for parts recovery and recycling"
+
+epcis_event_type: "AggregationEvent"
+epcis_action: "DELETE"
+
+validation:
+  mandatory_fields: ["parentID", "childEPCs", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location", "possessing_party"]
+  destination_types: ["location", "possessing_party"]
+  
+created_at: "2025-07-28T12:10:00Z"
+updated_at: "2025-07-28T12:10:00Z"
+
+# <!-- END OF FILE: disassembling.yaml -->

@@ -1,0 +1,59 @@
+# <!-- START OF FILE: recalled.yaml -->
+# FILENAME: recalled.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "recalled" - Rappelé/retiré conforme CBV 2.0
+
+disposition_id: "recalled"
+disposition_name: "Recalled"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been recalled due to quality, safety, or regulatory issues"
+  fr: "Objet rappelé pour problèmes de qualité, sécurité ou conformité réglementaire"
+
+state_category: "quality"
+state_type: "negative"
+
+processmetalanguage_mapping:
+  state_color: "#B71C1C" # Rouge foncé - Cohérent avec state-creator.js
+  banner_style: "solid"
+  priority: "high"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["destroying", "returning", "inspecting", "quarantining"]
+  can_result_from: ["inspecting", "retail_selling", "shipping"]
+
+workflow_transitions:
+  typical_next_states: ["destroyed", "returned", "quarantine"]
+  prohibited_states: ["active", "sellable_accessible", "retail_sold"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/recalled-to-destroyed", "/api/transitions/recalled-to-returned"]
+
+examples:
+  - object_type: "automotive_part"
+    scenario: "Pièce automobile rappelée pour défaut sécurité"
+    typical_duration: "recall_campaign_duration"
+  - object_type: "consumer_product"
+    scenario: "Produit consommateur retiré du marché"
+    typical_duration: "regulatory_period"
+    
+validation:
+  state_constraints: ["must_have_recall_notice", "must_have_batch_info"]
+  business_rules: ["recall_requires_traceability", "recall_notification_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: recalled.yaml -->

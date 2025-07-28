@@ -1,0 +1,59 @@
+# <!-- START OF FILE: stolen.yaml -->
+# FILENAME: stolen.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "stolen" - Volé/perdu conforme CBV 2.0
+
+disposition_id: "stolen"
+disposition_name: "Stolen"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been stolen or lost and is no longer under authorized control"
+  fr: "Objet volé ou perdu et plus sous contrôle autorisé"
+
+state_category: "lifecycle"
+state_type: "negative"
+
+processmetalanguage_mapping:
+  state_color: "#D32F2F" # Rouge très foncé
+  banner_style: "solid"
+  priority: "high"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["reporting_loss", "investigating", "insurance_claim"]
+  can_result_from: ["security_breach", "transport_incident", "inventory_loss"]
+
+workflow_transitions:
+  typical_next_states: ["investigating", "insurance_processing", "written_off"]
+  prohibited_states: ["active", "sellable_accessible", "in_progress"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/stolen-to-investigating", "/api/transitions/stolen-to-written_off"]
+
+examples:
+  - object_type: "high_value_item"
+    scenario: "Article de valeur volé pendant transport"
+    typical_duration: "investigation_period"
+  - object_type: "inventory_shrinkage"
+    scenario: "Perte inventaire non expliquée"
+    typical_duration: "audit_investigation"
+    
+validation:
+  state_constraints: ["must_have_incident_report", "must_have_discovery_date"]
+  business_rules: ["stolen_items_require_authorities_notification", "security_review_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: stolen.yaml -->

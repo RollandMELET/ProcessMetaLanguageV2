@@ -1,0 +1,66 @@
+# <!-- START OF FILE: arriving.yaml -->
+# FILENAME: arriving.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:30
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Arriving (Arrivée)
+
+business_step_id: "arriving"
+business_step_name: "Arriving"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of objects reaching their intended destination, completing transit phase"
+  fr: "Action d'objets atteignant leur destination prévue, complétant la phase de transit"
+
+category: "logistics"
+typical_objects:
+  - "shipment"
+  - "container"
+  - "vehicle"
+  - "pallet"
+  - "package"
+
+common_dispositions:
+  before: ["in_transit", "departed"]
+  after: ["arrived", "delivered", "ready_for_unloading"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#2196F3"
+  icon: "🎯"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/arriving"
+  method: "POST"
+  required_params: ["object_id", "destination_location", "arrival_time", "condition"]
+  optional_params: ["delays", "damage_report", "receiver", "next_action"]
+
+examples:
+  - scenario: "Truck arrival at customer location"
+    before_state: "in_transit"
+    after_state: "arrived"
+    description: "Delivery truck arrives at retail store for goods delivery"
+  - scenario: "Container ship arrival at port"
+    before_state: "departed"
+    after_state: "ready_for_unloading"
+    description: "Container vessel arrives at destination port"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location", "possessing_party"]
+  destination_types: ["location", "possessing_party"]
+  
+created_at: "2025-07-28T12:30:00Z"
+updated_at: "2025-07-28T12:30:00Z"
+
+# <!-- END OF FILE: arriving.yaml -->

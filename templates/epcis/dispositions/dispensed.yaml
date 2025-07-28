@@ -1,0 +1,59 @@
+# <!-- START OF FILE: dispensed.yaml -->
+# FILENAME: dispensed.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "dispensed" - Distribué/dispensé conforme CBV 2.0
+
+disposition_id: "dispensed"
+disposition_name: "Dispensed"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been dispensed or distributed to end user or next stage"
+  fr: "Objet distribué ou dispensé à l'utilisateur final ou étape suivante"
+
+state_category: "lifecycle"
+state_type: "positive"
+
+processmetalanguage_mapping:
+  state_color: "#8BC34A" # Vert clair
+  banner_style: "solid"
+  priority: "low"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["dispensing", "retail_selling", "shipping"]
+  can_result_from: ["dispensing", "dispensing_pharmacy", "picking"]
+
+workflow_transitions:
+  typical_next_states: ["consumed", "retail_sold", "returned"]
+  prohibited_states: ["recalled", "expired", "in_progress"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/dispensed-to-consumed", "/api/transitions/dispensed-to-retail_sold"]
+
+examples:
+  - object_type: "pharmaceutical"
+    scenario: "Médicament distribué par pharmacie"
+    typical_duration: "patient_usage_period"
+  - object_type: "material_supply"
+    scenario: "Fourniture distribuée à poste de travail"
+    typical_duration: "consumption_period"
+    
+validation:
+  state_constraints: ["must_have_recipient", "must_have_dispense_record"]
+  business_rules: ["dispensed_items_require_tracking", "dispense_authorization_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: dispensed.yaml -->

@@ -1,0 +1,59 @@
+# <!-- START OF FILE: reserved.yaml -->
+# FILENAME: reserved.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "reserved" - Réservé/alloué conforme CBV 2.0
+
+disposition_id: "reserved"
+disposition_name: "Reserved"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object is reserved or allocated for specific use or customer"
+  fr: "Objet réservé ou alloué pour usage spécifique ou client particulier"
+
+state_category: "logistical"
+state_type: "neutral"
+
+processmetalanguage_mapping:
+  state_color: "#FF5722" # Orange foncé
+  banner_style: "solid"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["picking", "shipping", "allocating", "releasing_reservation"]
+  can_result_from: ["reserving", "allocating", "ordering"]
+
+workflow_transitions:
+  typical_next_states: ["picked", "shipped", "active", "unreserved"]
+  prohibited_states: ["sellable_accessible", "dispensed"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/reserved-to-picked", "/api/transitions/reserved-to-shipped"]
+
+examples:
+  - object_type: "inventory_item"
+    scenario: "Article réservé pour commande client"
+    typical_duration: "order_fulfillment_time"
+  - object_type: "raw_material"
+    scenario: "Matière première allouée production"
+    typical_duration: "production_schedule"
+    
+validation:
+  state_constraints: ["must_have_reservation_details", "must_have_expiry_date"]
+  business_rules: ["reservations_require_customer_link", "reservation_expiry_monitoring"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: reserved.yaml -->

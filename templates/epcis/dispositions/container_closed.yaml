@@ -1,0 +1,59 @@
+# <!-- START OF FILE: container_closed.yaml -->
+# FILENAME: container_closed.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "container_closed" - Conteneur fermé conforme CBV 2.0
+
+disposition_id: "container_closed"
+disposition_name: "Container Closed"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Container is properly closed and sealed, ready for transport or storage"
+  fr: "Conteneur correctement fermé et scellé, prêt pour transport ou stockage"
+
+state_category: "logistical"
+state_type: "positive"
+
+processmetalanguage_mapping:
+  state_color: "#607D8B" # Bleu-gris
+  banner_style: "solid"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["shipping", "storing", "transporting", "loading"]
+  can_result_from: ["packing", "sealing", "closing"]
+
+workflow_transitions:
+  typical_next_states: ["in_transit", "stored", "shipped"]
+  prohibited_states: ["container_open", "dispensed"]
+  
+quality_indicators:
+  is_sellable: true
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/container_closed-to-in_transit", "/api/transitions/container_closed-to-stored"]
+
+examples:
+  - object_type: "shipping_container"
+    scenario: "Conteneur maritime scellé pour expédition"
+    typical_duration: "transport_duration"
+  - object_type: "pharmaceutical_package"
+    scenario: "Emballage pharmaceutique fermé hermétiquement"
+    typical_duration: "shelf_life"
+    
+validation:
+  state_constraints: ["must_have_seal_number", "must_have_closure_timestamp"]
+  business_rules: ["sealed_containers_require_integrity_check", "closure_verification_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: container_closed.yaml -->

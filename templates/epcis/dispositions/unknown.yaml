@@ -1,0 +1,59 @@
+# <!-- START OF FILE: unknown.yaml -->
+# FILENAME: unknown.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "unknown" - État indéterminé conforme CBV 2.0
+
+disposition_id: "unknown"
+disposition_name: "Unknown"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object state cannot be determined or is unclear due to lack of information"
+  fr: "État de l'objet indéterminable ou flou par manque d'informations"
+
+state_category: "operational"
+state_type: "neutral"
+
+processmetalanguage_mapping:
+  state_color: "#9E9E9E" # Gris - Cohérent avec state-creator.js
+  banner_style: "dashed"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["inspecting", "cycle_counting", "sensor_reporting"]
+  can_result_from: ["receiving", "sensor_reporting", "system_error"]
+
+workflow_transitions:
+  typical_next_states: ["active", "damaged", "in_progress", "quarantine"]
+  prohibited_states: [] # Peut transitionner vers n'importe quel état après clarification
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/unknown-to-active", "/api/transitions/unknown-to-damaged"]
+
+examples:
+  - object_type: "inventory_item"
+    scenario: "Article inventaire sans information état récente"
+    typical_duration: "until_inspection"
+  - object_type: "sensor_monitored"
+    scenario: "Objet avec capteur défaillant, état non déterminable"
+    typical_duration: "until_sensor_repair"
+    
+validation:
+  state_constraints: ["requires_investigation", "temporary_state_only"]
+  business_rules: ["unknown_state_requires_resolution", "investigation_deadline_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: unknown.yaml -->

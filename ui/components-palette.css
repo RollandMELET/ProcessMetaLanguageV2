@@ -1,0 +1,261 @@
+/* <!-- START OF FILE: components-palette.css -->
+/* FILENAME: components-palette.css
+/* Version: 1.0.0
+/* Date: 2025-07-28 16:30
+/* Author: Rolland MELET & Claude Code
+/* Description: Styles CSS pour la palette d'outils ProcessMetaLanguage
+
+/* ===== PALETTE CONTAINER ===== */
+.process-metalanguage-palette {
+    /* Variables personnalisables */
+    --pml-palette-width: 220px;
+    --pml-palette-padding: 12px;
+    --pml-border-radius: 8px;
+    --pml-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    
+    /* Couleurs des composants */
+    --pml-object-color: #4A90E2;
+    --pml-state-color: #7ED321;
+    --pml-action-color: #F5A623;
+    
+    /* Animation */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* État collapsed de la palette */
+.process-metalanguage-palette.collapsed {
+    transform: translateX(calc(100% - 40px));
+}
+
+.process-metalanguage-palette.collapsed .pml-component-button {
+    display: none;
+}
+
+/* ===== HEADER ===== */
+.pml-palette-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    cursor: move; /* Permettre le drag de la palette */
+}
+
+.pml-palette-header:active {
+    cursor: grabbing;
+}
+
+/* Bouton de fermeture */
+.pml-close-button {
+    transition: all 0.2s ease;
+}
+
+.pml-close-button:hover {
+    transform: rotate(90deg);
+}
+
+/* ===== COMPONENT BUTTONS ===== */
+.pml-component-button {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+/* Effet ripple au clic */
+.pml-component-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.pml-component-button:active::after {
+    width: 100px;
+    height: 100px;
+}
+
+/* États des boutons */
+.pml-component-button:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pml-component-button.active {
+    background: var(--background-modifier-hover) !important;
+    border-color: var(--interactive-accent) !important;
+}
+
+.pml-component-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Couleurs spécifiques par type */
+.pml-component-button.pml-object:hover {
+    border-color: var(--pml-object-color);
+}
+
+.pml-component-button.pml-state:hover {
+    border-color: var(--pml-state-color);
+}
+
+.pml-component-button.pml-action:hover {
+    border-color: var(--pml-action-color);
+}
+
+/* ===== PREVIEW CANVAS ===== */
+.pml-component-button canvas {
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.pml-component-button:hover canvas {
+    transform: scale(1.1);
+}
+
+/* ===== STATUS BAR ===== */
+.pml-status-bar {
+    transition: color 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pml-status-bar.success {
+    color: var(--text-success);
+}
+
+.pml-status-bar.error {
+    color: var(--text-error);
+}
+
+.pml-status-bar.loading {
+    color: var(--text-accent);
+}
+
+/* Animation de chargement */
+.pml-status-bar.loading::after {
+    content: '...';
+    animation: loading-dots 1.5s infinite;
+}
+
+@keyframes loading-dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60%, 100% { content: '...'; }
+}
+
+/* ===== RACCOURCIS CLAVIER ===== */
+.pml-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--background-primary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: var(--font-monospace);
+    font-size: 11px;
+    border: 1px solid var(--background-modifier-border);
+}
+
+/* ===== THÈME SOMBRE ===== */
+.theme-dark .process-metalanguage-palette {
+    --pml-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.theme-dark .pml-component-button:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes palette-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.process-metalanguage-palette {
+    animation: palette-slide-in 0.3s ease-out;
+}
+
+/* Animation de création de composant */
+@keyframes component-created {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pml-component-button.creating {
+    animation: component-created 0.3s ease;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .process-metalanguage-palette {
+        --pml-palette-width: 180px;
+        --pml-palette-padding: 8px;
+        font-size: 14px;
+    }
+    
+    .pml-component-button {
+        padding: 8px;
+    }
+    
+    .pml-component-button canvas {
+        display: none; /* Masquer les previews sur mobile */
+    }
+}
+
+/* ===== ACCESSIBILITÉ ===== */
+.pml-component-button:focus {
+    outline: 2px solid var(--interactive-accent);
+    outline-offset: 2px;
+}
+
+.pml-component-button:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Mode haute visibilité */
+@media (prefers-contrast: high) {
+    .process-metalanguage-palette {
+        border-width: 2px;
+    }
+    
+    .pml-component-button {
+        border-width: 2px;
+    }
+}
+
+/* Animation réduite */
+@media (prefers-reduced-motion: reduce) {
+    .process-metalanguage-palette,
+    .pml-component-button,
+    .pml-close-button {
+        transition: none;
+    }
+    
+    @keyframes palette-slide-in {
+        from, to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+}
+
+/* <!-- END OF FILE: components-palette.css --> */

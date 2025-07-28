@@ -1,0 +1,59 @@
+# <!-- START OF FILE: sellable_accessible.yaml -->
+# FILENAME: sellable_accessible.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "sellable_accessible" - Vendable accessible conforme CBV 2.0
+
+disposition_id: "sellable_accessible"
+disposition_name: "Sellable Accessible"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object is sellable and accessible for immediate sale or distribution"
+  fr: "Objet vendable et accessible pour vente ou distribution immédiate"
+
+state_category: "operational"
+state_type: "positive"
+
+processmetalanguage_mapping:
+  state_color: "#4CAF50" # Vert (similaire à active mais distinct)
+  banner_style: "solid"
+  priority: "high"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["selling", "retail_selling", "picking", "shipping"]
+  can_result_from: ["inspecting", "storing", "restocking"]
+
+workflow_transitions:
+  typical_next_states: ["retail_sold", "shipped", "picked", "reserved"]
+  prohibited_states: ["recalled", "expired", "damaged"]
+  
+quality_indicators:
+  is_sellable: true
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/sellable_accessible-to-retail_sold", "/api/transitions/sellable_accessible-to-shipped"]
+
+examples:
+  - object_type: "retail_product"
+    scenario: "Produit en rayon prêt pour vente"
+    typical_duration: "shelf_life"
+  - object_type: "warehouse_stock"
+    scenario: "Stock entrepôt disponible expédition"
+    typical_duration: "inventory_turnover"
+    
+validation:
+  state_constraints: ["must_be_quality_approved", "must_have_valid_pricing"]
+  business_rules: ["sellable_items_require_quality_check", "pricing_validation_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: sellable_accessible.yaml -->

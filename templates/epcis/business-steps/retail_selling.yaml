@@ -1,0 +1,66 @@
+# <!-- START OF FILE: retail_selling.yaml -->
+# FILENAME: retail_selling.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:35
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Retail Selling (Vente détail)
+
+business_step_id: "retail_selling"
+business_step_name: "Retail Selling"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of selling products directly to end consumers through retail transactions"
+  fr: "Action de vente de produits directement aux consommateurs finaux via transactions de détail"
+
+category: "retail"
+typical_objects:
+  - "consumer-product"
+  - "retail-item"
+  - "packaged-good"
+  - "branded-product"
+  - "merchandise"
+
+common_dispositions:
+  before: ["available", "on_shelf", "active"]
+  after: ["sold", "purchased", "owned_by_consumer"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#4CAF50"
+  icon: "🛒"
+  workflow_position: "exit"
+
+api_generation:
+  endpoint: "/api/retail-selling"
+  method: "POST"
+  required_params: ["object_id", "customer", "price", "transaction_id"]
+  optional_params: ["payment_method", "discount", "warranty", "receipt_number"]
+
+examples:
+  - scenario: "Grocery store checkout"
+    before_state: "on_shelf"
+    after_state: "sold"
+    description: "Food items scanned and sold at supermarket checkout"
+  - scenario: "Electronics store sale"
+    before_state: "available"
+    after_state: "purchased"
+    description: "Smartphone sold with warranty to customer"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["possessing_party"]
+  destination_types: ["possessing_party"]
+  
+created_at: "2025-07-28T12:35:00Z"
+updated_at: "2025-07-28T12:35:00Z"
+
+# <!-- END OF FILE: retail_selling.yaml -->

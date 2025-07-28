@@ -1,0 +1,59 @@
+# <!-- START OF FILE: installed.yaml -->
+# FILENAME: installed.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "installed" - Installé/en place conforme CBV 2.0
+
+disposition_id: "installed"
+disposition_name: "Installed"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been installed and is in its operational location"
+  fr: "Objet installé et en place à son emplacement opérationnel"
+
+state_category: "operational"
+state_type: "positive"
+
+processmetalanguage_mapping:
+  state_color: "#8E24AA" # Violet foncé
+  banner_style: "solid"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["installing", "commissioning", "testing", "operating"]
+  can_result_from: ["installing", "commissioning", "replacement"]
+
+workflow_transitions:
+  typical_next_states: ["active", "operational", "maintenance"]
+  prohibited_states: ["in_transit", "destroyed", "recalled"]
+  
+quality_indicators:
+  is_sellable: false # Déjà installé
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/installed-to-active", "/api/transitions/installed-to-operational"]
+
+examples:
+  - object_type: "equipment_component"
+    scenario: "Composant équipement installé en production"
+    typical_duration: "operational_lifetime"
+  - object_type: "building_system"
+    scenario: "Système bâtiment installé et opérationnel"
+    typical_duration: "system_lifecycle"
+    
+validation:
+  state_constraints: ["must_have_installation_record", "must_have_location_details"]
+  business_rules: ["installed_items_require_commissioning", "installation_verification_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: installed.yaml -->

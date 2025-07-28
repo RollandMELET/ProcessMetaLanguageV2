@@ -1,0 +1,66 @@
+# <!-- START OF FILE: picking.yaml -->
+# FILENAME: picking.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:00
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Picking (Prélèvement/collecte)
+
+business_step_id: "picking"
+business_step_name: "Picking"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of selecting and removing objects from storage for further processing or shipment"
+  fr: "Action de sélection et retrait d'objets du stockage pour traitement ultérieur ou expédition"
+
+category: "logistics"
+typical_objects:
+  - "raw-material"
+  - "finished-product"
+  - "component"
+  - "packaging"
+  - "work-in-progress"
+
+common_dispositions:
+  before: ["stored", "reserved"]
+  after: ["active", "in_progress"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#2196F3"
+  icon: "🎯"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/picking"
+  method: "POST"
+  required_params: ["object_id", "pick_location", "quantity", "destination"]
+  optional_params: ["order_number", "priority", "picker_id"]
+
+examples:
+  - scenario: "Raw material picking for production"
+    before_state: "stored"
+    after_state: "in_progress"
+    description: "Components picked from warehouse for assembly line"
+  - scenario: "Finished product picking for shipment"
+    before_state: "reserved"
+    after_state: "active"
+    description: "Products selected for customer order fulfillment"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location"]
+  destination_types: ["location"]
+  
+created_at: "2025-07-28T12:00:00Z"
+updated_at: "2025-07-28T12:00:00Z"
+
+# <!-- END OF FILE: picking.yaml -->

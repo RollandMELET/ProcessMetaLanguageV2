@@ -1,0 +1,66 @@
+# <!-- START OF FILE: packing.yaml -->
+# FILENAME: packing.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:10
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Packing (Conditionnement/emballage)
+
+business_step_id: "packing"
+business_step_name: "Packing"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of placing products into containers, packages, or other protective enclosures for storage or shipment"
+  fr: "Action de placement de produits dans contenants, emballages ou autres enceintes protectrices pour stockage ou expédition"
+
+category: "manufacturing"
+typical_objects:
+  - "finished-product"
+  - "component"
+  - "package"
+  - "case"
+  - "pallet"
+
+common_dispositions:
+  before: ["active", "completed"]
+  after: ["packed", "ready_for_shipment"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#FF9800"
+  icon: "📦"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/packing"
+  method: "POST"
+  required_params: ["product_id", "package_id", "package_type", "quantity"]
+  optional_params: ["weight", "dimensions", "packing_material", "expiry_date"]
+
+examples:
+  - scenario: "Pharmaceutical product packaging"
+    before_state: "completed"
+    after_state: "packed"
+    description: "Medicine bottles packed into shipping cases"
+  - scenario: "Food product case packing"
+    before_state: "active"
+    after_state: "ready_for_shipment"
+    description: "Individual food items packed into retail cases"
+
+epcis_event_type: "AggregationEvent"
+epcis_action: "ADD"
+
+validation:
+  mandatory_fields: ["parentID", "childEPCs", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location", "possessing_party"]
+  destination_types: ["location", "possessing_party"]
+  
+created_at: "2025-07-28T12:10:00Z"
+updated_at: "2025-07-28T12:10:00Z"
+
+# <!-- END OF FILE: packing.yaml -->

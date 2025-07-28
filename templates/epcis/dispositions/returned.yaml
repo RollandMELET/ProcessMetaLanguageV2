@@ -1,0 +1,59 @@
+# <!-- START OF FILE: returned.yaml -->
+# FILENAME: returned.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "returned" - Retourné conforme CBV 2.0
+
+disposition_id: "returned"
+disposition_name: "Returned"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been returned by customer or sent back to previous stage"
+  fr: "Objet retourné par client ou renvoyé à étape précédente"
+
+state_category: "logistical"
+state_type: "neutral"
+
+processmetalanguage_mapping:
+  state_color: "#9C27B0" # Violet clair
+  banner_style: "dashed"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["receiving", "inspecting", "restocking", "disposing"]
+  can_result_from: ["returning", "customer_return", "reject_shipment"]
+
+workflow_transitions:
+  typical_next_states: ["inspecting", "restocked", "damaged", "disposed"]
+  prohibited_states: ["retail_sold", "consumed"]
+  
+quality_indicators:
+  is_sellable: false # Nécessite inspection
+  is_usable: false # Nécessite vérification
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/returned-to-inspecting", "/api/transitions/returned-to-restocked"]
+
+examples:
+  - object_type: "customer_return"
+    scenario: "Produit retourné par client insatisfait"
+    typical_duration: "return_processing_time"
+  - object_type: "defective_shipment"
+    scenario: "Expédition retournée pour défaut"
+    typical_duration: "quality_investigation"
+    
+validation:
+  state_constraints: ["must_have_return_reason", "must_have_return_date"]
+  business_rules: ["returns_require_inspection", "return_processing_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: returned.yaml -->

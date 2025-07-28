@@ -898,9 +898,73 @@ async function createMainActionForState(stateId, metadata = {}) {
     }
 }
 
+/**
+ * Classe wrapper pour la création d'actions compatible avec la palette UI
+ * @class
+ */
+export class ActionCreator {
+    /**
+     * Crée une instance d'ActionCreator
+     * @param {Object} excalidrawAPI - API ExcalidrawAutomate
+     */
+    constructor(excalidrawAPI) {
+        this.ea = excalidrawAPI;
+        this.createdCount = 0;
+    }
+
+    /**
+     * Crée une action avec l'API simplifiée pour la palette
+     * @param {string} businessStep - Type d'action (business step EPCIS)
+     * @param {Object} position - Position {x, y}
+     * @param {Object} options - Options supplémentaires
+     * @returns {Promise<string>} ID de l'action créée
+     */
+    async createAction(businessStep, position, options = {}) {
+        const actionId = await createActionComponent(
+            this.ea,
+            businessStep,
+            position,
+            options
+        );
+        this.createdCount++;
+        return actionId;
+    }
+
+    /**
+     * Obtient le nombre d'actions créées
+     * @returns {number} Nombre d'actions créées
+     */
+    getCreatedCount() {
+        return this.createdCount;
+    }
+}
+
 // Export des fonctions pour tests et utilisation externe
+export {
+    createActionComponent,
+    createActionForState,
+    createMainActionForState,
+    getActionMetadata,
+    updateActionMetadata,
+    changeActionType,
+    deleteActionComponent,
+    getAvailableActionTypes,
+    getAvailableBusinessSteps,
+    findActionsByState,
+    calculateActionPosition,
+    generateActionId,
+    validateActionParameters,
+    resolveActionTypeConfig,
+    setupActionEventListeners,
+    ACTION_CONFIG,
+    ACTION_TYPE_COLORS,
+    EPCIS_BUSINESS_STEPS
+};
+
+// Compatibilité CommonJS
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
+        ActionCreator,
         createActionComponent,
         createActionForState,
         createMainActionForState,
@@ -913,9 +977,9 @@ if (typeof module !== 'undefined' && module.exports) {
         findActionsByState,
         calculateActionPosition,
         generateActionId,
-        validateActionParameters, // Ajout pour tests
-        resolveActionTypeConfig, // Ajout pour tests
-        setupActionEventListeners, // Ajout pour tests
+        validateActionParameters,
+        resolveActionTypeConfig,
+        setupActionEventListeners,
         ACTION_CONFIG,
         ACTION_TYPE_COLORS,
         EPCIS_BUSINESS_STEPS

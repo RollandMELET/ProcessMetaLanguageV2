@@ -1,0 +1,66 @@
+# <!-- START OF FILE: installing.yaml -->
+# FILENAME: installing.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:20
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Installing (Installation)
+
+business_step_id: "installing"
+business_step_name: "Installing"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of placing and setting up an object in its intended operational location"
+  fr: "Action de placement et configuration d'un objet en son lieu opérationnel prévu"
+
+category: "logistics"
+typical_objects:
+  - "equipment"
+  - "machinery"
+  - "component"
+  - "infrastructure"
+  - "system"
+
+common_dispositions:
+  before: ["delivered", "ready_for_installation"]
+  after: ["installed", "pending_commissioning"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#4CAF50"
+  icon: "🔧"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/installing"
+  method: "POST"
+  required_params: ["object_id", "installer", "location", "installation_type"]
+  optional_params: ["tools_used", "configuration", "testing_results", "documentation"]
+
+examples:
+  - scenario: "Manufacturing equipment installation"
+    before_state: "delivered"
+    after_state: "installed"
+    description: "CNC machine installed on production floor"
+  - scenario: "IT infrastructure setup"
+    before_state: "ready_for_installation"
+    after_state: "pending_commissioning"
+    description: "Network server installed in data center"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["possessing_party", "location"]
+  destination_types: ["possessing_party", "location"]
+  
+created_at: "2025-07-28T12:20:00Z"
+updated_at: "2025-07-28T12:20:00Z"
+
+# <!-- END OF FILE: installing.yaml -->

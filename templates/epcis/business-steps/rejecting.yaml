@@ -1,0 +1,66 @@
+# <!-- START OF FILE: rejecting.yaml -->
+# FILENAME: rejecting.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:15
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Rejecting (Rejet)
+
+business_step_id: "rejecting"
+business_step_name: "Rejecting"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of disapproving objects after inspection or verification, indicating they do not meet required standards"
+  fr: "Action de désapprobation d'objets après inspection ou vérification, indiquant qu'ils ne répondent pas aux standards requis"
+
+category: "manufacturing"
+typical_objects:
+  - "raw-material"
+  - "finished-product"
+  - "component"
+  - "work-in-progress"
+  - "defective-product"
+
+common_dispositions:
+  before: ["needs_inspection", "pending", "active"]
+  after: ["rejected", "quarantined", "needs_rework"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#FF9800"
+  icon: "❌"
+  workflow_position: "control"
+
+api_generation:
+  endpoint: "/api/rejecting"
+  method: "POST"
+  required_params: ["object_id", "inspector", "rejection_reason", "defects"]
+  optional_params: ["photos", "rework_instructions", "disposal_method", "supplier_notification"]
+
+examples:
+  - scenario: "Defective component rejection"
+    before_state: "needs_inspection"
+    after_state: "rejected"
+    description: "Electronic component fails electrical tests"
+  - scenario: "Quality control failure"
+    before_state: "active"
+    after_state: "quarantined"
+    description: "Food product contamination detected"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["possessing_party"]
+  destination_types: ["possessing_party"]
+  
+created_at: "2025-07-28T12:15:00Z"
+updated_at: "2025-07-28T12:15:00Z"
+
+# <!-- END OF FILE: rejecting.yaml -->

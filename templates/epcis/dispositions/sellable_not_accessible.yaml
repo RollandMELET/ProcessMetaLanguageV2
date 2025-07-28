@@ -1,0 +1,59 @@
+# <!-- START OF FILE: sellable_not_accessible.yaml -->
+# FILENAME: sellable_not_accessible.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "sellable_not_accessible" - Vendable non accessible conforme CBV 2.0
+
+disposition_id: "sellable_not_accessible"
+disposition_name: "Sellable Not Accessible"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object is sellable but not currently accessible for immediate sale"
+  fr: "Objet vendable mais non accessible actuellement pour vente immédiate"
+
+state_category: "logistical"
+state_type: "neutral"
+
+processmetalanguage_mapping:
+  state_color: "#FFC107" # Jaune (warning)
+  banner_style: "dashed"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["moving", "retrieving", "accessing", "inspecting"]
+  can_result_from: ["storing", "deep_storage", "archiving"]
+
+workflow_transitions:
+  typical_next_states: ["sellable_accessible", "in_transit", "active"]
+  prohibited_states: ["retail_sold", "dispensed"]
+  
+quality_indicators:
+  is_sellable: true
+  is_usable: true
+  requires_action: true # Nécessite action pour rendre accessible
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/sellable_not_accessible-to-sellable_accessible", "/api/transitions/sellable_not_accessible-to-in_transit"]
+
+examples:
+  - object_type: "deep_storage_item"
+    scenario: "Produit en stockage profond accessible sur demande"
+    typical_duration: "until_retrieval_request"
+  - object_type: "backordered_item"
+    scenario: "Article en rupture temporaire mais vendable"
+    typical_duration: "restocking_time"
+    
+validation:
+  state_constraints: ["must_have_location_reference", "must_have_accessibility_status"]
+  business_rules: ["inaccessible_items_require_retrieval_procedure", "accessibility_tracking_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: sellable_not_accessible.yaml -->

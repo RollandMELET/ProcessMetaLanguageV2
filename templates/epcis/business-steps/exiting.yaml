@@ -1,0 +1,66 @@
+# <!-- START OF FILE: exiting.yaml -->
+# FILENAME: exiting.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:30
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Exiting (Sortie)
+
+business_step_id: "exiting"
+business_step_name: "Exiting"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of objects crossing out of a defined area, zone, or location boundary"
+  fr: "Action d'objets franchissant hors d'une zone, aire ou limite de lieu défini"
+
+category: "logistics"
+typical_objects:
+  - "tracked-vehicle"
+  - "container"
+  - "pallet"
+  - "shipment"
+  - "asset"
+
+common_dispositions:
+  before: ["inside", "present", "entered"]
+  after: ["exited", "departed", "in_transit"]
+
+processmetalanguage_mapping:
+  action_type: "primary"
+  color_code: "#2196F3"
+  icon: "🚪"
+  workflow_position: "control"
+
+api_generation:
+  endpoint: "/api/exiting"
+  method: "POST"
+  required_params: ["object_id", "location_id", "exit_point", "timestamp"]
+  optional_params: ["next_destination", "exit_authorization", "duration_inside", "gate_operator"]
+
+examples:
+  - scenario: "Vehicle exiting facility gate"
+    before_state: "inside"
+    after_state: "exited"
+    description: "Loaded delivery truck exits manufacturing facility"
+  - scenario: "Container exiting port zone"
+    before_state: "present"
+    after_state: "in_transit"
+    description: "Shipping container exits port for inland transport"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location"]
+  destination_types: ["location"]
+  
+created_at: "2025-07-28T12:30:00Z"
+updated_at: "2025-07-28T12:30:00Z"
+
+# <!-- END OF FILE: exiting.yaml -->

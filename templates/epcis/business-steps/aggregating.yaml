@@ -1,0 +1,66 @@
+# <!-- START OF FILE: aggregating.yaml -->
+# FILENAME: aggregating.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:45
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Aggregating (Agrégation/regroupement)
+
+business_step_id: "aggregating"
+business_step_name: "Aggregating"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of combining multiple objects into a single aggregate unit for handling, tracking, or logistics purposes"
+  fr: "Action de combinaison de multiples objets en une unité agrégée unique pour manipulation, traçabilité ou logistique"
+
+category: "logistics"
+typical_objects:
+  - "individual-product"
+  - "package"
+  - "case"
+  - "pallet"
+  - "container"
+
+common_dispositions:
+  before: ["active", "available", "ready"]
+  after: ["aggregated", "consolidated", "grouped"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#2196F3"
+  icon: "📦"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/aggregating"
+  method: "POST"
+  required_params: ["parent_id", "child_objects", "aggregation_type", "operator"]
+  optional_params: ["total_weight", "total_volume", "handling_instructions", "shipping_requirements"]
+
+examples:
+  - scenario: "Products packed into case"
+    before_state: "active"
+    after_state: "aggregated"
+    description: "Individual bottles aggregated into shipping case"
+  - scenario: "Cases loaded onto pallet"
+    before_state: "ready"
+    after_state: "consolidated"
+    description: "Multiple cases aggregated onto transport pallet"
+
+epcis_event_type: "AggregationEvent"
+epcis_action: "ADD"
+
+validation:
+  mandatory_fields: ["parentID", "childEPCs", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location", "possessing_party"]
+  destination_types: ["location", "possessing_party"]
+  
+created_at: "2025-07-28T12:45:00Z"
+updated_at: "2025-07-28T12:45:00Z"
+
+# <!-- END OF FILE: aggregating.yaml -->

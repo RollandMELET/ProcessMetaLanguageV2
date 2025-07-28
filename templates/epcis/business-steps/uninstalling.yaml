@@ -1,0 +1,66 @@
+# <!-- START OF FILE: uninstalling.yaml -->
+# FILENAME: uninstalling.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:20
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Uninstalling (Désinstallation)
+
+business_step_id: "uninstalling"
+business_step_name: "Uninstalling"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of removing an object from its operational location and dismantling its setup"
+  fr: "Action de retrait d'un objet de son lieu opérationnel et démantèlement de son installation"
+
+category: "logistics"
+typical_objects:
+  - "equipment"
+  - "machinery"
+  - "component"
+  - "infrastructure"
+  - "decommissioned-asset"
+
+common_dispositions:
+  before: ["installed", "decommissioned", "faulty"]
+  after: ["uninstalled", "ready_for_transport", "available"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#4CAF50"
+  icon: "🔧"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/uninstalling"
+  method: "POST"
+  required_params: ["object_id", "technician", "removal_date", "reason"]
+  optional_params: ["condition_assessment", "parts_salvaged", "disposal_plan", "photos"]
+
+examples:
+  - scenario: "Equipment removal for upgrade"
+    before_state: "installed"
+    after_state: "uninstalled"
+    description: "Old production line removed for modernization"
+  - scenario: "Faulty component replacement"
+    before_state: "faulty"
+    after_state: "ready_for_transport"
+    description: "Defective server component removed for repair"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["possessing_party", "location"]
+  destination_types: ["possessing_party", "location"]
+  
+created_at: "2025-07-28T12:20:00Z"
+updated_at: "2025-07-28T12:20:00Z"
+
+# <!-- END OF FILE: uninstalling.yaml -->

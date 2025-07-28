@@ -44,13 +44,42 @@ const STATE_CONFIG = {
 };
 
 /**
- * Palette couleurs par disposition EPCIS 2.0
+ * Palette couleurs par disposition EPCIS 2.0 - 25 dispositions complètes CBV 2.0
  * @constant {Object}
  */
 const STATE_DISPOSITION_COLORS = {
+    // Dispositions EPCIS 2.0 officielles CBV 2.0 (25 total)
     "active": {
         background: "#4CAF50",
         description: "État opérationnel actif"
+    },
+    "container_closed": {
+        background: "#607D8B",
+        description: "Conteneur fermé et scellé"
+    },
+    "container_open": {
+        background: "#795548",
+        description: "Conteneur ouvert et accessible"
+    },
+    "damaged": {
+        background: "#F44336",
+        description: "Défaillant ou endommagé"
+    },
+    "destroyed": {
+        background: "#424242",
+        description: "Détruit définitivement"
+    },
+    "dispensed": {
+        background: "#8BC34A",
+        description: "Distribué ou dispensé"
+    },
+    "encoded": {
+        background: "#3F51B5",
+        description: "Encodé avec marquage traçabilité"
+    },
+    "expired": {
+        background: "#9C27B0",
+        description: "Expiré ou périmé"
     },
     "in_progress": {
         background: "#FF9800", 
@@ -60,26 +89,68 @@ const STATE_DISPOSITION_COLORS = {
         background: "#2196F3",
         description: "En déplacement ou transport"
     },
-    "damaged": {
-        background: "#F44336",
-        description: "Défaillant ou endommagé"
+    "inactive": {
+        background: "#757575",
+        description: "Temporairement inactif"
     },
-    "destroyed": {
-        background: "#424242",
-        description: "Détruit ou mis au rebut"
+    "non_sellable": {
+        background: "#E91E63",
+        description: "Non vendable pour contraintes"
     },
-    "expired": {
-        background: "#9C27B0",
-        description: "Expiré ou périmé"
+    "partially_dispensed": {
+        background: "#CDDC39",
+        description: "Partiellement dispensé"
     },
     "recalled": {
         background: "#B71C1C",
         description: "Rappelé pour défaut"
     },
+    "reserved": {
+        background: "#FF5722",
+        description: "Réservé ou alloué"
+    },
+    "retail_sold": {
+        background: "#00BCD4",
+        description: "Vendu au détail"
+    },
+    "returned": {
+        background: "#9C27B0",
+        description: "Retourné par client"
+    },
+    "sellable_accessible": {
+        background: "#4CAF50",
+        description: "Vendable et accessible"
+    },
+    "sellable_not_accessible": {
+        background: "#FFC107",
+        description: "Vendable mais non accessible"
+    },
+    "stolen": {
+        background: "#D32F2F",
+        description: "Volé ou perdu"
+    },
+    "unavailable": {
+        background: "#616161",
+        description: "Temporairement indisponible"
+    },
     "unknown": {
         background: "#9E9E9E",
         description: "État indéterminé"
     },
+    "consumed": {
+        background: "#689F38",
+        description: "Consommé ou utilisé"
+    },
+    "installed": {
+        background: "#8E24AA",
+        description: "Installé en place"
+    },
+    "disposed": {
+        background: "#795548",
+        description: "Mis au rebut selon réglementations"
+    },
+    
+    // Dispositions ProcessMetaLanguage étendues (compatibilité legacy)
     "completed": {
         background: "#388E3C",
         description: "Traitement terminé avec succès"
@@ -664,9 +735,71 @@ function findStatesByObject(objectId) {
     }
 }
 
+/**
+ * Classe wrapper pour la création d'états compatible avec la palette UI
+ * @class
+ */
+export class StateCreator {
+    /**
+     * Crée une instance de StateCreator
+     * @param {Object} excalidrawAPI - API ExcalidrawAutomate
+     */
+    constructor(excalidrawAPI) {
+        this.ea = excalidrawAPI;
+        this.createdCount = 0;
+    }
+
+    /**
+     * Crée un état avec l'API simplifiée pour la palette
+     * @param {string} stateName - Nom de l'état
+     * @param {string} disposition - Disposition EPCIS
+     * @param {Object} position - Position {x, y}
+     * @param {Object} metadata - Métadonnées supplémentaires
+     * @returns {Promise<string>} ID de l'état créé
+     */
+    async createState(stateName, disposition, position, metadata = {}) {
+        const stateId = await createStateComponent(
+            this.ea,
+            stateName,
+            disposition,
+            position,
+            metadata
+        );
+        this.createdCount++;
+        return stateId;
+    }
+
+    /**
+     * Obtient le nombre d'états créés
+     * @returns {number} Nombre d'états créés
+     */
+    getCreatedCount() {
+        return this.createdCount;
+    }
+}
+
 // Export des fonctions pour tests et utilisation externe
+export {
+    createStateComponent,
+    createStateOnObject,
+    getStateMetadata,
+    updateStateMetadata,
+    changeStateDisposition,
+    deleteStateComponent,
+    getAvailableDispositions,
+    findStatesByObject,
+    calculateStatePosition,
+    generateStateId,
+    validateStateParameters,
+    setupStateEventListeners,
+    STATE_CONFIG,
+    STATE_DISPOSITION_COLORS
+};
+
+// Compatibilité CommonJS
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
+        StateCreator,
         createStateComponent,
         createStateOnObject,
         getStateMetadata,
@@ -677,8 +810,8 @@ if (typeof module !== 'undefined' && module.exports) {
         findStatesByObject,
         calculateStatePosition,
         generateStateId,
-        validateStateParameters, // Ajout pour tests
-        setupStateEventListeners, // Ajout pour tests
+        validateStateParameters,
+        setupStateEventListeners,
         STATE_CONFIG,
         STATE_DISPOSITION_COLORS
     };

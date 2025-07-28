@@ -1,0 +1,66 @@
+# <!-- START OF FILE: encoding.yaml -->
+# FILENAME: encoding.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:25
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Encoding (Encodage/marquage)
+
+business_step_id: "encoding"
+business_step_name: "Encoding"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of applying identification codes, tags, or markers to objects for tracking and identification purposes"
+  fr: "Action d'application de codes d'identification, étiquettes ou marqueurs aux objets pour traçabilité et identification"
+
+category: "manufacturing"
+typical_objects:
+  - "raw-material"
+  - "finished-product"
+  - "component"
+  - "packaging"
+  - "batch"
+
+common_dispositions:
+  before: ["untagged", "active"]
+  after: ["encoded", "tagged", "identified"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#FF9800"
+  icon: "🏷️"
+  workflow_position: "intermediate"
+
+api_generation:
+  endpoint: "/api/encoding"
+  method: "POST"
+  required_params: ["object_id", "encoding_type", "identifier", "operator"]
+  optional_params: ["print_quality", "verification", "encoding_location", "batch_info"]
+
+examples:
+  - scenario: "Product barcode labeling"
+    before_state: "untagged"
+    after_state: "encoded"
+    description: "GS1-128 barcode applied to pharmaceutical packaging"
+  - scenario: "RFID tag attachment"
+    before_state: "active"
+    after_state: "tagged"
+    description: "RFID tag encoded and attached to automotive component"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["possessing_party"]
+  destination_types: ["possessing_party"]
+  
+created_at: "2025-07-28T12:25:00Z"
+updated_at: "2025-07-28T12:25:00Z"
+
+# <!-- END OF FILE: encoding.yaml -->

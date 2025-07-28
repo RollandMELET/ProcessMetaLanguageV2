@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<!-- START OF FILE: test-palette.html -->
+<!-- FILENAME: test-palette.html -->
+<!-- Version: 1.0.0 -->
+<!-- Date: 2025-07-28 16:30 -->
+<!-- Author: Rolland MELET & Claude Code -->
+<!-- Description: Page de test pour la palette ProcessMetaLanguage -->
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Palette ProcessMetaLanguage</title>
+    
+    <!-- Simulation des styles Obsidian -->
+    <style>
+        :root {
+            /* Thème clair */
+            --background-primary: #ffffff;
+            --background-secondary: #f5f5f5;
+            --background-modifier-border: #e0e0e0;
+            --background-modifier-hover: #ebebeb;
+            --text-normal: #2e3338;
+            --text-muted: #999999;
+            --text-accent: #7c3aed;
+            --text-success: #4caf50;
+            --text-error: #e91e63;
+            --interactive-accent: #7c3aed;
+            --font-interface: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-monospace: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+        }
+
+        /* Thème sombre */
+        body.theme-dark {
+            --background-primary: #202020;
+            --background-secondary: #2f2f2f;
+            --background-modifier-border: #404040;
+            --background-modifier-hover: #353535;
+            --text-normal: #dcddde;
+            --text-muted: #999999;
+            --text-accent: #9b6dff;
+            --text-success: #66bb6a;
+            --text-error: #ff5370;
+            --interactive-accent: #9b6dff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-interface);
+            background: var(--background-primary);
+            color: var(--text-normal);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header de test */
+        .test-header {
+            background: var(--background-secondary);
+            border-bottom: 1px solid var(--background-modifier-border);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .test-header h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .test-button {
+            padding: 6px 12px;
+            background: var(--background-primary);
+            border: 1px solid var(--background-modifier-border);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .test-button:hover {
+            background: var(--background-modifier-hover);
+        }
+
+        /* Canvas simulé */
+        .mock-excalidraw {
+            flex: 1;
+            position: relative;
+            background: var(--background-primary);
+            overflow: hidden;
+        }
+
+        .mock-canvas {
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--background-modifier-border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--background-modifier-border) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Console de test */
+        .test-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: var(--background-secondary);
+            border-top: 1px solid var(--background-modifier-border);
+            padding: 10px;
+            overflow-y: auto;
+            font-family: var(--font-monospace);
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+
+        .test-console.hidden {
+            transform: translateY(100%);
+        }
+
+        .console-entry {
+            margin: 2px 0;
+            padding: 2px 5px;
+        }
+
+        .console-entry.info {
+            color: var(--text-muted);
+        }
+
+        .console-entry.success {
+            color: var(--text-success);
+        }
+
+        .console-entry.error {
+            color: var(--text-error);
+        }
+
+        .console-entry.event {
+            color: var(--text-accent);
+        }
+
+        /* Toggle console button */
+        .toggle-console {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--interactive-accent);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+        }
+
+        /* Info panel */
+        .info-panel {
+            position: fixed;
+            left: 20px;
+            top: 80px;
+            width: 250px;
+            background: var(--background-secondary);
+            border: 1px solid var(--background-modifier-border);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 14px;
+        }
+
+        .info-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .info-panel ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .info-panel li {
+            margin: 5px 0;
+        }
+
+        .info-panel code {
+            background: var(--background-primary);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: var(--font-monospace);
+            font-size: 12px;
+        }
+    </style>
+
+    <!-- Import des styles de la palette -->
+    <link rel="stylesheet" href="./components-palette.css">
+</head>
+<body>
+    <!-- Header de test -->
+    <div class="test-header">
+        <h1>🧪 Test Palette ProcessMetaLanguage</h1>
+        <div class="test-controls">
+            <button class="test-button" onclick="toggleTheme()">🌓 Thème</button>
+            <button class="test-button" onclick="testCreation('object')">+ Object</button>
+            <button class="test-button" onclick="testCreation('state')">+ State</button>
+            <button class="test-button" onclick="testCreation('action')">+ Action</button>
+            <button class="test-button" onclick="togglePalette()">📱 Toggle Palette</button>
+        </div>
+    </div>
+
+    <!-- Canvas simulé -->
+    <div class="mock-excalidraw">
+        <div class="mock-canvas" id="mock-canvas"></div>
+    </div>
+
+    <!-- Panneau d'information -->
+    <div class="info-panel">
+        <h3>🎯 Instructions de Test</h3>
+        <ul>
+            <li>Utilisez les <strong>boutons</strong> de la palette</li>
+            <li>Testez les <strong>raccourcis</strong> :</li>
+            <ul>
+                <li><code>Ctrl+1</code> : Object</li>
+                <li><code>Ctrl+2</code> : State</li>
+                <li><code>Ctrl+3</code> : Action</li>
+                <li><code>Escape</code> : Annuler</li>
+            </ul>
+            <li>Vérifiez le <strong>feedback visuel</strong></li>
+            <li>Testez le <strong>drag & drop</strong> de la palette</li>
+            <li>Observez la <strong>console</strong> pour les logs</li>
+        </ul>
+    </div>
+
+    <!-- Console de test -->
+    <div class="test-console hidden" id="test-console">
+        <div class="console-entry info">🚀 Console de test ProcessMetaLanguage initialisée</div>
+    </div>
+
+    <!-- Toggle console -->
+    <button class="toggle-console" onclick="toggleConsole()">📋</button>
+
+    <!-- Scripts -->
+    <script type="module">
+        // Import des modules
+        import { ComponentsPalette } from './components-palette.js';
+        
+        // Mock des APIs nécessaires
+        window.ExcalidrawAutomate = {
+            createElement: (config) => {
+                const id = `elem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                logConsole(`createElement appelé: ${config.type}`, 'event');
+                return { id };
+            },
+            
+            addElementTags: (id, tags) => {
+                logConsole(`Tags ajoutés à ${id}: ${tags.join(', ')}`, 'info');
+            },
+            
+            getExcalidrawAPI: () => ({
+                getAppState: () => ({
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    scrollX: 0,
+                    scrollY: 0
+                })
+            })
+        };
+
+        // Mock de l'app Obsidian
+        window.mockApp = {
+            workspace: {
+                getActiveViewOfType: () => true
+            }
+        };
+
+        // Fonction de log console
+        window.logConsole = (message, type = 'info') => {
+            const console = document.getElementById('test-console');
+            const entry = document.createElement('div');
+            entry.className = `console-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            console.appendChild(entry);
+            console.scrollTop = console.scrollHeight;
+        };
+
+        // Initialisation de la palette
+        let palette = null;
+
+        window.initPalette = () => {
+            try {
+                palette = new ComponentsPalette(
+                    window.mockApp,
+                    window.ExcalidrawAutomate,
+                    {
+                        position: 'right',
+                        top: 100
+                    }
+                );
+                
+                // Override des méthodes de création pour le test
+                const originalCreateObject = palette.createObject.bind(palette);
+                palette.createObject = async function() {
+                    logConsole('🔷 Création Object déclenchée', 'success');
+                    await originalCreateObject();
+                    addMockElement('object');
+                };
+
+                const originalCreateState = palette.createState.bind(palette);
+                palette.createState = async function() {
+                    logConsole('🏷️ Création State déclenchée', 'success');
+                    await originalCreateState();
+                    addMockElement('state');
+                };
+
+                const originalCreateAction = palette.createAction.bind(palette);
+                palette.createAction = async function() {
+                    logConsole('⚡ Création Action déclenchée', 'success');
+                    await originalCreateAction();
+                    addMockElement('action');
+                };
+
+                palette.mount();
+                logConsole('✅ Palette montée avec succès', 'success');
+                
+            } catch (error) {
+                logConsole(`❌ Erreur: ${error.message}`, 'error');
+            }
+        };
+
+        // Fonction pour ajouter un élément mock au canvas
+        window.addMockElement = (type) => {
+            const canvas = document.getElementById('mock-canvas');
+            const element = document.createElement('div');
+            
+            const colors = {
+                object: '#4A90E2',
+                state: '#7ED321',
+                action: '#F5A623'
+            };
+            
+            const icons = {
+                object: '🔷',
+                state: '🏷️',
+                action: '⚡'
+            };
+            
+            element.style.cssText = `
+                position: absolute;
+                left: ${Math.random() * (canvas.offsetWidth - 100)}px;
+                top: ${Math.random() * (canvas.offsetHeight - 50)}px;
+                padding: 10px 20px;
+                background: ${colors[type]}20;
+                border: 2px solid ${colors[type]};
+                border-radius: 8px;
+                cursor: move;
+                user-select: none;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            `;
+            
+            element.innerHTML = `${icons[type]} ${type.charAt(0).toUpperCase() + type.slice(1)}-${Date.now().toString().slice(-4)}`;
+            
+            // Rendre l'élément draggable
+            let isDragging = false;
+            let startX, startY, initialX, initialY;
+            
+            element.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                initialX = element.offsetLeft;
+                initialY = element.offsetTop;
+                element.style.zIndex = 1000;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                
+                element.style.left = `${initialX + dx}px`;
+                element.style.top = `${initialY + dy}px`;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                element.style.zIndex = 'auto';
+            });
+            
+            canvas.appendChild(element);
+            
+            // Animation d'apparition
+            element.style.transform = 'scale(0)';
+            element.style.transition = 'transform 0.3s ease';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 10);
+        };
+
+        // Fonctions globales pour les boutons
+        window.toggleTheme = () => {
+            document.body.classList.toggle('theme-dark');
+            logConsole(`Thème basculé: ${document.body.classList.contains('theme-dark') ? 'sombre' : 'clair'}`, 'info');
+        };
+
+        window.testCreation = (type) => {
+            if (!palette) return;
+            
+            switch(type) {
+                case 'object':
+                    palette.createObject();
+                    break;
+                case 'state':
+                    palette.createState();
+                    break;
+                case 'action':
+                    palette.createAction();
+                    break;
+            }
+        };
+
+        window.togglePalette = () => {
+            if (!palette) {
+                initPalette();
+            } else {
+                palette.unmount();
+                palette = null;
+                logConsole('Palette démontée', 'info');
+            }
+        };
+
+        window.toggleConsole = () => {
+            const console = document.getElementById('test-console');
+            console.classList.toggle('hidden');
+        };
+
+        // Initialisation au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            logConsole('🎨 Page de test chargée', 'info');
+            logConsole('📦 Modules importés avec succès', 'success');
+            initPalette();
+        });
+
+        // Gestion des erreurs
+        window.addEventListener('error', (e) => {
+            logConsole(`❌ Erreur: ${e.message}`, 'error');
+        });
+    </script>
+</body>
+</html>
+<!-- END OF FILE: test-palette.html -->

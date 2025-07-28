@@ -1,0 +1,59 @@
+# <!-- START OF FILE: encoded.yaml -->
+# FILENAME: encoded.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "encoded" - Encodé/marqué conforme CBV 2.0
+
+disposition_id: "encoded"
+disposition_name: "Encoded"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been encoded with identification marks, codes, or tracking information"
+  fr: "Objet encodé avec marques d'identification, codes ou informations de traçabilité"
+
+state_category: "operational"
+state_type: "positive"
+
+processmetalanguage_mapping:
+  state_color: "#3F51B5" # Indigo
+  banner_style: "solid"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["encoding", "commissioning", "shipping", "storing"]
+  can_result_from: ["encoding", "encoding_pharma", "commissioning"]
+
+workflow_transitions:
+  typical_next_states: ["active", "stored", "shipped", "in_progress"]
+  prohibited_states: ["unknown", "destroyed"]
+  
+quality_indicators:
+  is_sellable: true
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/encoded-to-active", "/api/transitions/encoded-to-stored"]
+
+examples:
+  - object_type: "pharmaceutical_item"
+    scenario: "Médicament encodé avec numéro de série"
+    typical_duration: "product_lifecycle"
+  - object_type: "manufactured_part"
+    scenario: "Pièce manufacturée avec code traçabilité"
+    typical_duration: "usage_lifecycle"
+    
+validation:
+  state_constraints: ["must_have_encoding_data", "must_be_readable"]
+  business_rules: ["encoded_items_require_verification", "encoding_standards_compliance"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: encoded.yaml -->

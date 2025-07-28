@@ -1,0 +1,66 @@
+# <!-- START OF FILE: decoding.yaml -->
+# FILENAME: decoding.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:25
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Decoding (Décodage/lecture)
+
+business_step_id: "decoding"
+business_step_name: "Decoding"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of reading and interpreting identification codes, tags, or markers on objects"
+  fr: "Action de lecture et interprétation de codes d'identification, étiquettes ou marqueurs sur objets"
+
+category: "logistics"
+typical_objects:
+  - "tagged-product"
+  - "encoded-package"
+  - "labeled-component"
+  - "barcoded-item"
+  - "rfid-tagged-asset"
+
+common_dispositions:
+  before: ["encoded", "tagged", "identified"]
+  after: ["scanned", "verified", "tracked"]
+
+processmetalanguage_mapping:
+  action_type: "primary"
+  color_code: "#2196F3"
+  icon: "📱"
+  workflow_position: "control"
+
+api_generation:
+  endpoint: "/api/decoding"
+  method: "POST"
+  required_params: ["object_id", "scanner_id", "decoded_data", "operator"]
+  optional_params: ["scan_quality", "location", "timestamp", "verification_status"]
+
+examples:
+  - scenario: "Barcode scanning at checkout"
+    before_state: "encoded"
+    after_state: "scanned"
+    description: "Product barcode scanned for inventory tracking"
+  - scenario: "RFID gate reading"
+    before_state: "tagged"
+    after_state: "tracked"
+    description: "RFID tags read as pallets pass through dock door"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["location"]
+  destination_types: ["location"]
+  
+created_at: "2025-07-28T12:25:00Z"
+updated_at: "2025-07-28T12:25:00Z"
+
+# <!-- END OF FILE: decoding.yaml -->

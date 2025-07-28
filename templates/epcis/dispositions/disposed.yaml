@@ -1,0 +1,59 @@
+# <!-- START OF FILE: disposed.yaml -->
+# FILENAME: disposed.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "disposed" - Mis au rebut/éliminé conforme CBV 2.0
+
+disposition_id: "disposed"
+disposition_name: "Disposed"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been properly disposed of according to regulations"
+  fr: "Objet correctement éliminé selon réglementations"
+
+state_category: "lifecycle"
+state_type: "negative"
+
+processmetalanguage_mapping:
+  state_color: "#795548" # Marron foncé
+  banner_style: "solid"
+  priority: "low"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["waste_processing", "recycling", "environmental_reporting"]
+  can_result_from: ["disposing", "waste_management", "end_of_life"]
+
+workflow_transitions:
+  typical_next_states: [] # État terminal
+  prohibited_states: ["active", "sellable_accessible", "recalled"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: [] # État terminal
+
+examples:
+  - object_type: "waste_material"
+    scenario: "Déchet matériel éliminé selon normes environnementales"
+    typical_duration: "permanent"
+  - object_type: "expired_chemical"
+    scenario: "Produit chimique périmé traité centre agréé"
+    typical_duration: "permanent"
+    
+validation:
+  state_constraints: ["must_have_disposal_certificate", "must_comply_regulations"]
+  business_rules: ["disposal_requires_authorized_facility", "environmental_compliance_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: disposed.yaml -->

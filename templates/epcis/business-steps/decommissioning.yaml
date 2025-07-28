@@ -1,0 +1,66 @@
+# <!-- START OF FILE: decommissioning.yaml -->
+# FILENAME: decommissioning.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:20
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Decommissioning (Mise hors service)
+
+business_step_id: "decommissioning"
+business_step_name: "Decommissioning"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of taking an object out of active service or operation, typically at end of lifecycle"
+  fr: "Action de mise hors service actif d'un objet, typiquement en fin de cycle de vie"
+
+category: "logistics"
+typical_objects:
+  - "equipment"
+  - "machinery"
+  - "infrastructure"
+  - "expired-product"
+  - "obsolete-asset"
+
+common_dispositions:
+  before: ["active", "in_service", "commissioned"]
+  after: ["decommissioned", "retired", "pending_disposal"]
+
+processmetalanguage_mapping:
+  action_type: "secondary"
+  color_code: "#4CAF50"
+  icon: "🔌"
+  workflow_position: "exit"
+
+api_generation:
+  endpoint: "/api/decommissioning"
+  method: "POST"
+  required_params: ["object_id", "decommissioner", "retirement_date", "reason"]
+  optional_params: ["final_reading", "disposal_plan", "data_backup", "certificate"]
+
+examples:
+  - scenario: "Equipment end-of-life retirement"
+    before_state: "active"
+    after_state: "decommissioned"
+    description: "Industrial printer retired after 10 years service"
+  - scenario: "System upgrade decommissioning"
+    before_state: "in_service"
+    after_state: "pending_disposal"
+    description: "Legacy server decommissioned for replacement"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sourceList", "destinationList"]
+
+gs1_business_context:
+  source_types: ["possessing_party", "location"]
+  destination_types: ["possessing_party", "location"]
+  
+created_at: "2025-07-28T12:20:00Z"
+updated_at: "2025-07-28T12:20:00Z"
+
+# <!-- END OF FILE: decommissioning.yaml -->

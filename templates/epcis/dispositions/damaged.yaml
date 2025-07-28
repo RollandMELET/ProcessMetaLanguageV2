@@ -1,0 +1,59 @@
+# <!-- START OF FILE: damaged.yaml -->
+# FILENAME: damaged.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "damaged" - Endommagé/défaillant conforme CBV 2.0
+
+disposition_id: "damaged"
+disposition_name: "Damaged"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been damaged and may not function properly or meet quality standards"
+  fr: "Objet endommagé qui peut ne pas fonctionner correctement ou respecter les standards qualité"
+
+state_category: "quality"
+state_type: "negative"
+
+processmetalanguage_mapping:
+  state_color: "#F44336" # Rouge - Cohérent avec state-creator.js
+  banner_style: "solid"
+  priority: "high"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["inspecting", "repairing", "destroying", "rejecting"]
+  can_result_from: ["transporting", "handling", "storing", "inspecting"]
+
+workflow_transitions:
+  typical_next_states: ["recalled", "destroyed", "repairing", "quarantine"]
+  prohibited_states: ["active", "sellable_accessible"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/damaged-to-recalled", "/api/transitions/damaged-to-destroyed"]
+
+examples:
+  - object_type: "product"
+    scenario: "Produit endommagé pendant transport"
+    typical_duration: "investigation_period"
+  - object_type: "equipment"
+    scenario: "Équipement défaillant nécessitant réparation"
+    typical_duration: "repair_time"
+    
+validation:
+  state_constraints: ["must_have_damage_report", "must_have_inspector"]
+  business_rules: ["damaged_items_require_quarantine", "damage_assessment_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: damaged.yaml -->

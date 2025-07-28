@@ -1,0 +1,59 @@
+# <!-- START OF FILE: in_transit.yaml -->
+# FILENAME: in_transit.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "in_transit" - En transport/déplacement conforme CBV 2.0
+
+disposition_id: "in_transit"
+disposition_name: "In Transit"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object is being transported or moved between locations"
+  fr: "Objet en cours de transport ou de déplacement entre emplacements"
+
+state_category: "logistical"
+state_type: "transitional"
+
+processmetalanguage_mapping:
+  state_color: "#2196F3" # Bleu - Cohérent avec state-creator.js
+  banner_style: "solid"
+  priority: "high"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["transporting", "shipping", "departing", "arriving"]
+  can_result_from: ["loading", "shipping", "departing", "picking"]
+
+workflow_transitions:
+  typical_next_states: ["active", "receiving", "damaged", "arrived"]
+  prohibited_states: ["destroyed", "installed"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/in_transit-to-receiving", "/api/transitions/in_transit-to-damaged"]
+
+examples:
+  - object_type: "shipment"
+    scenario: "Colis en cours de livraison"
+    typical_duration: "days"
+  - object_type: "raw_material"
+    scenario: "Matière première transportée vers usine"
+    typical_duration: "hours"
+    
+validation:
+  state_constraints: ["must_have_carrier", "must_have_destination"]
+  business_rules: ["in_transit_requires_tracking_number", "transport_route_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: in_transit.yaml -->

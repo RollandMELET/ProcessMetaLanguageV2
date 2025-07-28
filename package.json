@@ -2,25 +2,34 @@
   "name": "processmetalanguage",
   "version": "1.0.0",
   "description": "ProcessMetaLanguage - Système méta-langage graphique pour traçabilité industrielle",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "node scripts/test-ui.js",
+    "test:ui-manual": "open ui/test-palette.html",
+    "build": "node scripts/build.js",
+    "dev": "vitest --ui"
   },
-  "keywords": ["excalidraw", "obsidian", "traceability", "epcis", "meta-language"],
+  "keywords": [
+    "excalidraw",
+    "obsidian",
+    "traceability",
+    "epcis",
+    "meta-language"
+  ],
   "author": "Rolland MELET & Claude Code",
   "license": "MIT",
   "devDependencies": {
-    "jest": "^29.7.0"
+    "@playwright/test": "^1.40.0",
+    "@vitest/ui": "^1.0.0",
+    "jsdom": "^23.0.0",
+    "playwright": "^1.40.0",
+    "vitest": "^1.0.0"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverageFrom": [
-      "components/**/*.js",
-      "!node_modules/**"
-    ],
-    "coverageDirectory": "coverage",
-    "coverageReporters": ["text", "lcov", "html"]
+  "dependencies": {
+    "js-yaml": "^4.1.0"
   }
 }

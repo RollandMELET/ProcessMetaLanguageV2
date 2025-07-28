@@ -1,0 +1,59 @@
+# <!-- START OF FILE: active.yaml -->
+# FILENAME: active.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "active" - État opérationnel actif conforme CBV 2.0
+
+disposition_id: "active"
+disposition_name: "Active"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object is active and operational, functioning normally within expected parameters"
+  fr: "Objet actif et opérationnel, fonctionnant normalement dans les paramètres attendus"
+
+state_category: "operational" # operational, logistical, quality, lifecycle
+state_type: "positive" # positive, negative, neutral, transitional
+
+processmetalanguage_mapping:
+  state_color: "#4CAF50" # Vert - Cohérent avec state-creator.js
+  banner_style: "solid" # solid, dashed, dotted
+  priority: "high" # high, medium, low
+  visibility: "always" # always, conditional, hidden
+
+compatible_business_steps:
+  can_lead_to: ["storing", "shipping", "transforming", "inspecting", "packing"]
+  can_result_from: ["receiving", "commissioning", "installing", "repairing"]
+
+workflow_transitions:
+  typical_next_states: ["in_progress", "in_transit", "storing"]
+  prohibited_states: ["destroyed", "expired"]
+  
+quality_indicators:
+  is_sellable: true
+  is_usable: true
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/active-to-in_progress", "/api/transitions/active-to-storing"]
+
+examples:
+  - object_type: "raw_material"
+    scenario: "Matière première en stock prête à utilisation"
+    typical_duration: "variable"
+  - object_type: "product"
+    scenario: "Produit fini disponible pour expédition"
+    typical_duration: "weeks"
+    
+validation:
+  state_constraints: ["must_have_location", "must_have_timestamp"]
+  business_rules: ["active_objects_must_be_traceable", "active_state_requires_valid_batch"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: active.yaml -->

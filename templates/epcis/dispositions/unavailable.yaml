@@ -1,0 +1,59 @@
+# <!-- START OF FILE: unavailable.yaml -->
+# FILENAME: unavailable.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "unavailable" - Indisponible conforme CBV 2.0
+
+disposition_id: "unavailable"
+disposition_name: "Unavailable"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object is temporarily unavailable for use or distribution"
+  fr: "Objet temporairement indisponible pour utilisation ou distribution"
+
+state_category: "operational"
+state_type: "neutral"
+
+processmetalanguage_mapping:
+  state_color: "#616161" # Gris foncé
+  banner_style: "dashed"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["inspecting", "maintenance", "repairing", "releasing"]
+  can_result_from: ["maintenance", "system_down", "resource_conflict"]
+
+workflow_transitions:
+  typical_next_states: ["active", "maintenance", "repaired", "available"]
+  prohibited_states: ["sellable_accessible", "dispensed"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/unavailable-to-active", "/api/transitions/unavailable-to-maintenance"]
+
+examples:
+  - object_type: "maintenance_equipment"
+    scenario: "Équipement en maintenance préventive"
+    typical_duration: "maintenance_window"
+  - object_type: "system_resource"
+    scenario: "Ressource système temporairement indisponible"
+    typical_duration: "system_recovery_time"
+    
+validation:
+  state_constraints: ["must_have_unavailability_reason", "must_have_expected_availability"]
+  business_rules: ["unavailable_items_require_status_monitoring", "availability_restoration_planned"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: unavailable.yaml -->

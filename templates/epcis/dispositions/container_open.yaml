@@ -1,0 +1,59 @@
+# <!-- START OF FILE: container_open.yaml -->
+# FILENAME: container_open.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "container_open" - Conteneur ouvert conforme CBV 2.0
+
+disposition_id: "container_open"
+disposition_name: "Container Open"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Container is open and accessible for loading, unloading, or inspection"
+  fr: "Conteneur ouvert et accessible pour chargement, déchargement ou inspection"
+
+state_category: "logistical"
+state_type: "transitional"
+
+processmetalanguage_mapping:
+  state_color: "#795548" # Marron
+  banner_style: "dashed"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["loading", "unloading", "inspecting", "packing", "unpacking"]
+  can_result_from: ["opening", "unsealing", "unpacking", "receiving"]
+
+workflow_transitions:
+  typical_next_states: ["container_closed", "loading", "unloading"]
+  prohibited_states: ["in_transit", "sealed"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: true
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/container_open-to-container_closed", "/api/transitions/container_open-to-loading"]
+
+examples:
+  - object_type: "warehouse_container"
+    scenario: "Conteneur ouvert pour opérations de manutention"
+    typical_duration: "operation_time"
+  - object_type: "transport_truck"
+    scenario: "Camion ouvert pour chargement/déchargement"
+    typical_duration: "loading_time"
+    
+validation:
+  state_constraints: ["must_have_access_log", "must_monitor_exposure"]
+  business_rules: ["open_containers_require_monitoring", "exposure_time_limits_apply"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: container_open.yaml -->

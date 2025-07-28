@@ -1,0 +1,59 @@
+# <!-- START OF FILE: in_progress.yaml -->
+# FILENAME: in_progress.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "in_progress" - En cours de traitement conforme CBV 2.0
+
+disposition_id: "in_progress"
+disposition_name: "In Progress"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object is currently being processed, transformed, or worked on"
+  fr: "Objet en cours de traitement, transformation ou manipulation"
+
+state_category: "operational"
+state_type: "transitional"
+
+processmetalanguage_mapping:
+  state_color: "#FF9800" # Orange - Cohérent avec state-creator.js
+  banner_style: "solid"
+  priority: "high"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["transforming", "assembling", "packing", "inspecting", "encoding"]
+  can_result_from: ["receiving", "picking", "unpacking", "installing"]
+
+workflow_transitions:
+  typical_next_states: ["active", "completed", "damaged", "in_transit"]
+  prohibited_states: ["destroyed", "unknown"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/in_progress-to-active", "/api/transitions/in_progress-to-completed"]
+
+examples:
+  - object_type: "raw_material"
+    scenario: "Matière première en cours de transformation"
+    typical_duration: "hours"
+  - object_type: "assembly"
+    scenario: "Assemblage en cours de montage"
+    typical_duration: "days"
+    
+validation:
+  state_constraints: ["must_have_process_definition", "must_have_operator"]
+  business_rules: ["in_progress_requires_start_time", "progress_tracking_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: in_progress.yaml -->

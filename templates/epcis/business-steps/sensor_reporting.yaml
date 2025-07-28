@@ -1,0 +1,66 @@
+# <!-- START OF FILE: sensor_reporting.yaml -->
+# FILENAME: sensor_reporting.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 12:25
+# Author: Rolland MELET & Claude Code
+# Description: Business step EPCIS 2.0 - Sensor Reporting (Rapport capteur)
+
+business_step_id: "sensor_reporting"
+business_step_name: "Sensor Reporting"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "The act of collecting and reporting environmental or condition data from sensors monitoring objects"
+  fr: "Action de collecte et rapport de données environnementales ou de condition depuis capteurs surveillant objets"
+
+category: "logistics"
+typical_objects:
+  - "monitored-shipment"
+  - "temperature-sensitive-product"
+  - "pharmaceutical"
+  - "food-product"
+  - "chemical"
+
+common_dispositions:
+  before: ["in_transit", "stored", "active"]
+  after: ["monitored", "alert_triggered", "compliant"]
+
+processmetalanguage_mapping:
+  action_type: "primary"
+  color_code: "#2196F3"
+  icon: "📊"
+  workflow_position: "control"
+
+api_generation:
+  endpoint: "/api/sensor-reporting"
+  method: "POST"
+  required_params: ["object_id", "sensor_id", "measurement_type", "value"]
+  optional_params: ["unit", "threshold", "location", "alert_status"]
+
+examples:
+  - scenario: "Cold chain temperature monitoring"
+    before_state: "in_transit"
+    after_state: "monitored"
+    description: "Temperature sensor reports 2°C for vaccine shipment"
+  - scenario: "Humidity monitoring in storage"
+    before_state: "stored"
+    after_state: "alert_triggered"
+    description: "Humidity sensor reports 85% exceeding threshold for electronics"
+
+epcis_event_type: "ObjectEvent"
+epcis_action: "OBSERVE"
+
+validation:
+  mandatory_fields: ["epc", "bizStep", "disposition", "eventTime", "eventTimeZoneOffset", "readPoint"]
+  optional_fields: ["bizLocation", "quantityList", "sensorElementList"]
+
+gs1_business_context:
+  source_types: ["location"]
+  destination_types: ["location"]
+  
+created_at: "2025-07-28T12:25:00Z"
+updated_at: "2025-07-28T12:25:00Z"
+
+# <!-- END OF FILE: sensor_reporting.yaml -->

@@ -1,0 +1,59 @@
+# <!-- START OF FILE: expired.yaml -->
+# FILENAME: expired.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "expired" - Expiré/périmé conforme CBV 2.0
+
+disposition_id: "expired"
+disposition_name: "Expired"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has passed its expiration date and is no longer suitable for use"
+  fr: "Objet ayant dépassé sa date d'expiration et plus apte à l'utilisation"
+
+state_category: "quality"
+state_type: "negative"
+
+processmetalanguage_mapping:
+  state_color: "#9C27B0" # Violet - Cohérent avec state-creator.js
+  banner_style: "solid"
+  priority: "high"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["destroying", "disposing", "inspecting"]
+  can_result_from: ["storing", "cycle_counting", "inspecting"]
+
+workflow_transitions:
+  typical_next_states: ["destroyed", "disposed", "quarantine"]
+  prohibited_states: ["active", "sellable_accessible", "in_progress"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/expired-to-destroyed", "/api/transitions/expired-to-disposed"]
+
+examples:
+  - object_type: "pharmaceutical"
+    scenario: "Médicament périmé nécessitant destruction"
+    typical_duration: "until_destroyed"
+  - object_type: "food_product"
+    scenario: "Produit alimentaire dépassant date limite"
+    typical_duration: "until_disposed"
+    
+validation:
+  state_constraints: ["must_have_expiry_date", "must_be_past_expiry"]
+  business_rules: ["expired_items_require_quarantine", "expiry_monitoring_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: expired.yaml -->

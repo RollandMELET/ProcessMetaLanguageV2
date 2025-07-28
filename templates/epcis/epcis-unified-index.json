@@ -1,0 +1,178 @@
+{
+  "epcis_unified_index": {
+    "metadata": {
+      "title": "EPCIS 2.0 Unified Index - ProcessMetaLanguage",
+      "description": "Index unifié combinant 41 business steps + 25 dispositions EPCIS 2.0",
+      "version": "1.0.0",
+      "created_at": "2025-07-28T10:00:00.000Z",
+      "cbv_standard_version": "2.0",
+      "epcis_standard_version": "2.0",
+      "gs1_compliance": true,
+      "total_business_steps": 41,
+      "total_dispositions": 25,
+      "total_elements": 66
+    },
+    
+    "search_capabilities": {
+      "full_text_search": true,
+      "category_filtering": true,
+      "workflow_analysis": true,
+      "color_mapping": true,
+      "compatibility_checking": true
+    },
+    
+    "business_steps_summary": {
+      "source_file": "business-steps-index.json",
+      "categories": ["operational", "logistical", "transformation", "quality", "commissioning"],
+      "total_count": 41,
+      "examples": ["receiving", "shipping", "transforming", "inspecting", "storing"]
+    },
+    
+    "dispositions_summary": {
+      "source_file": "dispositions-index.json", 
+      "categories": ["operational", "logistical", "quality", "lifecycle"],
+      "total_count": 25,
+      "examples": ["active", "in_progress", "in_transit", "damaged", "destroyed"]
+    },
+    
+    "workflow_mappings": {
+      "business_step_to_disposition": {
+        "receiving": ["active", "in_progress", "unknown", "damaged"],
+        "shipping": ["in_transit", "active", "container_closed"],
+        "storing": ["active", "inactive", "sellable_not_accessible"],
+        "transforming": ["in_progress", "active", "partially_dispensed"],
+        "inspecting": ["active", "damaged", "non_sellable", "expired"],
+        "packing": ["container_closed", "active", "in_progress"],
+        "unpacking": ["container_open", "active", "inspecting"],
+        "dispensing": ["dispensed", "partially_dispensed", "consumed"],
+        "destroying": ["destroyed", "disposed"],
+        "installing": ["installed", "active", "in_progress"],
+        "commissioning": ["encoded", "active", "in_progress"],
+        "retail_selling": ["retail_sold", "dispensed"]
+      },
+      
+      "disposition_to_business_step": {
+        "active": ["storing", "shipping", "transforming", "inspecting"],
+        "in_progress": ["transforming", "assembling", "packing", "inspecting"],
+        "in_transit": ["transporting", "shipping", "departing", "arriving"],
+        "damaged": ["inspecting", "repairing", "destroying", "rejecting"],
+        "destroyed": ["destroying"],
+        "expired": ["destroying", "disposing", "inspecting"],
+        "recalled": ["destroying", "returning", "inspecting"],
+        "container_closed": ["shipping", "storing", "transporting"],
+        "container_open": ["loading", "unloading", "inspecting", "packing"],
+        "dispensed": ["dispensing", "retail_selling", "shipping"],
+        "encoded": ["encoding", "commissioning", "shipping", "storing"],
+        "consumed": ["consuming", "tracking_usage", "waste_processing"],
+        "installed": ["installing", "commissioning", "testing"]
+      }
+    },
+    
+    "color_palette": {
+      "business_steps": {
+        "operational": "#2196F3",
+        "logistical": "#4CAF50", 
+        "transformation": "#FF9800",
+        "quality": "#F44336",
+        "commissioning": "#9C27B0"
+      },
+      "dispositions": {
+        "positive_states": ["#4CAF50", "#8BC34A", "#689F38", "#3F51B5"],
+        "negative_states": ["#F44336", "#B71C1C", "#E91E63", "#D32F2F"],
+        "neutral_states": ["#9E9E9E", "#757575", "#616161", "#FFC107"],
+        "transitional_states": ["#FF9800", "#2196F3", "#795548", "#CDDC39"]
+      }
+    },
+    
+    "search_index": {
+      "keywords": {
+        "transport": ["shipping", "transporting", "in_transit", "departing", "arriving"],
+        "quality": ["inspecting", "damaged", "expired", "recalled", "non_sellable"],
+        "inventory": ["receiving", "storing", "cycle_counting", "active", "reserved"],
+        "production": ["transforming", "assembling", "in_progress", "installing"],
+        "sales": ["retail_selling", "retail_sold", "sellable_accessible", "dispensing"],
+        "packaging": ["packing", "unpacking", "container_closed", "container_open"],
+        "lifecycle": ["commissioning", "destroying", "consumed", "disposed", "installed"],
+        "encoding": ["encoding", "encoding_pharma", "encoded", "commissioning"],
+        "pharmacy": ["dispensing_pharmacy", "commissioning_pharma", "decommissioning_pharma"]
+      },
+      
+      "urgent_states": {
+        "immediate_attention": ["damaged", "recalled", "stolen", "expired"],
+        "quality_issues": ["non_sellable", "damaged", "expired", "recalled"],
+        "security_concerns": ["stolen", "unknown", "unavailable"],
+        "regulatory_compliance": ["expired", "recalled", "destroyed", "disposed"]
+      }
+    },
+    
+    "integration_patterns": {
+      "typical_workflows": [
+        {
+          "name": "Reception Matière Première",
+          "sequence": ["receiving", "active", "inspecting", "storing", "sellable_accessible"],
+          "duration": "hours_to_days"
+        },
+        {
+          "name": "Production Standard",
+          "sequence": ["picking", "in_progress", "transforming", "active", "packing", "container_closed"],
+          "duration": "days"
+        },
+        {
+          "name": "Expédition Client",
+          "sequence": ["picking", "packing", "shipping", "in_transit", "arriving", "delivered"],
+          "duration": "days_to_weeks"
+        },
+        {
+          "name": "Processus Rappel",
+          "sequence": ["recalled", "inspecting", "quarantining", "destroying", "destroyed"],
+          "duration": "weeks"
+        },
+        {
+          "name": "Gestion Péremption",
+          "sequence": ["expired", "quarantining", "disposing", "disposed"],
+          "duration": "days"
+        }
+      ]
+    },
+    
+    "validation_rules": {
+      "required_fields": ["id", "name", "category", "type", "epcis_compliance"],
+      "business_constraints": [
+        "destroyed_items_cannot_transition_to_active",
+        "expired_items_cannot_be_sellable",
+        "recalled_items_require_quarantine",
+        "in_transit_requires_destination",
+        "encoded_items_require_readable_codes"
+      ],
+      "performance_targets": {
+        "search_response_time": "<500ms",
+        "workflow_validation": "<2s",
+        "bulk_operations": "<5s"
+      }
+    },
+    
+    "api_endpoints": {
+      "search": "/api/epcis/search?q={query}&category={category}&type={type}",
+      "business_steps": "/api/epcis/business-steps",
+      "dispositions": "/api/epcis/dispositions", 
+      "workflows": "/api/epcis/workflows",
+      "validate": "/api/epcis/validate/{element_id}",
+      "transitions": "/api/epcis/transitions/{from_state}/{to_state}"
+    },
+    
+    "compatibility_matrix": {
+      "high_compatibility": {
+        "receiving": ["active", "in_progress", "inspecting"],
+        "shipping": ["in_transit", "container_closed", "active"],
+        "transforming": ["in_progress", "active", "partially_dispensed"],
+        "storing": ["active", "sellable_accessible", "reserved"]
+      },
+      "incompatible_combinations": {
+        "destroyed": ["active", "sellable_accessible", "in_progress"],
+        "expired": ["sellable_accessible", "retail_sold", "active"],
+        "recalled": ["sellable_accessible", "retail_sold", "dispensed"],
+        "stolen": ["active", "sellable_accessible", "in_progress"]
+      }
+    }
+  }
+}

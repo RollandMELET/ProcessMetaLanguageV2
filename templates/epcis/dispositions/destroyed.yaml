@@ -1,0 +1,59 @@
+# <!-- START OF FILE: destroyed.yaml -->
+# FILENAME: destroyed.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "destroyed" - Détruit définitivement conforme CBV 2.0
+
+disposition_id: "destroyed"
+disposition_name: "Destroyed"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object has been permanently destroyed and is no longer available for use"
+  fr: "Objet définitivement détruit et plus disponible pour utilisation"
+
+state_category: "lifecycle"
+state_type: "negative"
+
+processmetalanguage_mapping:
+  state_color: "#424242" # Gris foncé - Cohérent avec state-creator.js
+  banner_style: "solid"
+  priority: "medium"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["destroying"] # Terminal state - peu de transitions possibles
+  can_result_from: ["destroying", "kill", "disposing"]
+
+workflow_transitions:
+  typical_next_states: [] # État terminal - aucune transition normale
+  prohibited_states: ["active", "sellable_accessible", "in_progress"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: false
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: [] # État terminal
+
+examples:
+  - object_type: "recalled_product"
+    scenario: "Produit rappelé et détruit selon procédure"
+    typical_duration: "permanent"
+  - object_type: "expired_material"
+    scenario: "Matière périmée détruite selon réglementation"
+    typical_duration: "permanent"
+    
+validation:
+  state_constraints: ["must_have_destruction_certificate", "must_have_authorization"]
+  business_rules: ["destruction_requires_approval", "destruction_audit_trail_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: destroyed.yaml -->

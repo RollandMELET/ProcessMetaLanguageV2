@@ -1,0 +1,59 @@
+# <!-- START OF FILE: non_sellable.yaml -->
+# FILENAME: non_sellable.yaml
+# Version: 1.0.0
+# Date: 2025-07-28 10:00
+# Author: Rolland MELET & Claude Code
+# Description: Disposition EPCIS 2.0 "non_sellable" - Non vendable conforme CBV 2.0
+
+disposition_id: "non_sellable"
+disposition_name: "Non Sellable"
+cbv_standard_version: "2.0"
+epcis_standard_version: "2.0"
+gs1_compliance: true
+
+description:
+  en: "Object is not sellable due to quality, regulatory, or business constraints"
+  fr: "Objet non vendable due à contraintes qualité, réglementaires ou commerciales"
+
+state_category: "quality"
+state_type: "negative"
+
+processmetalanguage_mapping:
+  state_color: "#E91E63" # Rose foncé
+  banner_style: "solid"
+  priority: "high"
+  visibility: "always"
+
+compatible_business_steps:
+  can_lead_to: ["inspecting", "quarantining", "destroying", "returning"]
+  can_result_from: ["inspecting", "quality_control", "receiving"]
+
+workflow_transitions:
+  typical_next_states: ["quarantine", "returned", "destroyed", "recalled"]
+  prohibited_states: ["sellable_accessible", "retail_sold", "active"]
+  
+quality_indicators:
+  is_sellable: false
+  is_usable: false
+  requires_action: true
+  
+api_generation:
+  state_endpoint: "/api/objects/{id}/state"
+  valid_transitions: ["/api/transitions/non_sellable-to-quarantine", "/api/transitions/non_sellable-to-destroyed"]
+
+examples:
+  - object_type: "quality_rejected"
+    scenario: "Produit rejeté contrôle qualité"
+    typical_duration: "investigation_period"
+  - object_type: "regulatory_hold"
+    scenario: "Produit bloqué pour conformité réglementaire"
+    typical_duration: "approval_process"
+    
+validation:
+  state_constraints: ["must_have_rejection_reason", "must_have_quality_report"]
+  business_rules: ["non_sellable_requires_segregation", "quality_investigation_mandatory"]
+  
+created_at: "2025-07-28T10:00:00.000Z"
+updated_at: "2025-07-28T10:00:00.000Z"
+
+# <!-- END OF FILE: non_sellable.yaml -->
