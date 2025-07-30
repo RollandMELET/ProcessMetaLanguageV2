@@ -1,0 +1,43 @@
+{
+  "templateId": "tpl_extended_in_progress_state_1753894805169_5d8p77",
+  "version": "1.0.0",
+  "created": "2025-07-30T17:00:05.169Z",
+  "author": "default",
+  "changeLog": "Hérite de: In Progress State vundefined",
+  "checksum": "985ec33ebcb1707e5d8340dfd966e39db9c5ac7f2e0653679e05d10ca55b4ccf",
+  "snapshot": {
+    "id": "tpl_extended_in_progress_state_1753894805169_5d8p77",
+    "name": "Extended In Progress State",
+    "type": "disposition",
+    "category": "operational",
+    "description": "Extension de l'état en cours avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T17:00:05.169Z",
+    "modified": "2025-07-30T17:00:05.169Z",
+    "metadata": {
+      "disposition": "in_progress",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_in_progress_state_1753894805169_5d8p77",
+      "source": "inheritance",
+      "parentTemplate": "test_in_progress_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_in_progress_001",
+          "name": "In Progress State"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "quality_check",
+            "progress_tracking"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {}
+  }
+}

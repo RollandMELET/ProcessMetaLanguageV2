@@ -1,0 +1,242 @@
+{
+  "test_active_001": {
+    "id": "test_active_001",
+    "name": "Active State",
+    "type": "disposition",
+    "category": "operational",
+    "metadata": {
+      "disposition": "active",
+      "epcisCompliant": true
+    }
+  },
+  "test_in_progress_001": {
+    "id": "test_in_progress_001",
+    "name": "In Progress State",
+    "type": "disposition",
+    "category": "operational",
+    "metadata": {
+      "disposition": "in_progress",
+      "epcisCompliant": true
+    }
+  },
+  "tpl_extended_in_progress_state_1753894805169_5d8p77": {
+    "id": "tpl_extended_in_progress_state_1753894805169_5d8p77",
+    "name": "Extended In Progress State",
+    "type": "disposition",
+    "category": "operational",
+    "description": "Extension de l'état en cours avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T17:00:05.169Z",
+    "modified": "2025-07-30T17:00:05.169Z",
+    "metadata": {
+      "disposition": "in_progress",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_in_progress_state_1753894805169_5d8p77",
+      "source": "inheritance",
+      "parentTemplate": "test_in_progress_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_in_progress_001",
+          "name": "In Progress State"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "quality_check",
+            "progress_tracking"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {},
+    "filePath": "/Users/rollandmelet/Développement/Projets/ProcessMetaLanguage/templates/user-templates/disposition/tpl_extended_in_progress_state_1753894805169_5d8p77.md",
+    "versions": [
+      "1.0.0"
+    ],
+    "parentId": "test_in_progress_001"
+  },
+  "tpl_extended_in_progress_state_1753894842642_7a4roj": {
+    "id": "tpl_extended_in_progress_state_1753894842642_7a4roj",
+    "name": "Extended In Progress State",
+    "type": "disposition",
+    "category": "operational",
+    "description": "Extension de l'état en cours avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T17:00:42.642Z",
+    "modified": "2025-07-30T17:00:42.642Z",
+    "metadata": {
+      "disposition": "in_progress",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_in_progress_state_1753894842642_7a4roj",
+      "source": "inheritance",
+      "parentTemplate": "test_in_progress_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_in_progress_001",
+          "name": "In Progress State"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "quality_check",
+            "progress_tracking"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {},
+    "filePath": "/Users/rollandmelet/Développement/Projets/ProcessMetaLanguage/templates/user-templates/disposition/tpl_extended_in_progress_state_1753894842642_7a4roj.md",
+    "versions": [
+      "1.0.0"
+    ],
+    "parentId": "test_in_progress_001"
+  },
+  "tpl_extended_in_progress_state_1753894867364_2mjxsi": {
+    "id": "tpl_extended_in_progress_state_1753894867364_2mjxsi",
+    "name": "Extended In Progress State",
+    "type": "disposition",
+    "category": "operational",
+    "description": "Extension de l'état en cours avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T17:01:07.364Z",
+    "modified": "2025-07-30T17:01:07.364Z",
+    "metadata": {
+      "disposition": "in_progress",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_in_progress_state_1753894867364_2mjxsi",
+      "source": "inheritance",
+      "parentTemplate": "test_in_progress_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_in_progress_001",
+          "name": "In Progress State"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "quality_check",
+            "progress_tracking"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {},
+    "filePath": "/Users/rollandmelet/Développement/Projets/ProcessMetaLanguage/templates/user-templates/disposition/tpl_extended_in_progress_state_1753894867364_2mjxsi.md",
+    "versions": [
+      "1.0.0"
+    ],
+    "parentId": "test_in_progress_001"
+  },
+  "test_receiving_001": {
+    "id": "test_receiving_001",
+    "name": "Receiving Process",
+    "type": "business_step",
+    "category": "logistics",
+    "metadata": {
+      "businessStep": "receiving",
+      "epcisCompliant": true
+    }
+  },
+  "test_shipping_001": {
+    "id": "test_shipping_001",
+    "name": "Shipping Process",
+    "type": "business_step",
+    "category": "logistics",
+    "metadata": {
+      "businessStep": "shipping",
+      "epcisCompliant": true
+    }
+  },
+  "tpl_extended_shipping_process_1753894871812_hwexvn": {
+    "id": "tpl_extended_shipping_process_1753894871812_hwexvn",
+    "name": "Extended Shipping Process",
+    "type": "business_step",
+    "category": "logistics",
+    "description": "Extension du processus d'expédition avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T17:01:11.812Z",
+    "modified": "2025-07-30T17:01:11.812Z",
+    "metadata": {
+      "businessStep": "shipping",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_shipping_process_1753894871812_hwexvn",
+      "source": "inheritance",
+      "parentTemplate": "test_shipping_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_shipping_001",
+          "name": "Shipping Process"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "weight_check",
+            "dimension_check"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {},
+    "filePath": "/Users/rollandmelet/Développement/Projets/ProcessMetaLanguage/templates/user-templates/business_step/tpl_extended_shipping_process_1753894871812_hwexvn.md",
+    "versions": [
+      "1.0.0"
+    ],
+    "parentId": "test_shipping_001"
+  },
+  "tpl_extended_shipping_process_1753894878866_ucsuof": {
+    "id": "tpl_extended_shipping_process_1753894878866_ucsuof",
+    "name": "Extended Shipping Process",
+    "type": "business_step",
+    "category": "logistics",
+    "description": "Extension du processus d'expédition avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T17:01:18.866Z",
+    "modified": "2025-07-30T17:01:18.866Z",
+    "metadata": {
+      "businessStep": "shipping",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_shipping_process_1753894878866_ucsuof",
+      "source": "inheritance",
+      "parentTemplate": "test_shipping_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_shipping_001",
+          "name": "Shipping Process"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "weight_check",
+            "dimension_check"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {},
+    "filePath": "/Users/rollandmelet/Développement/Projets/ProcessMetaLanguage/templates/user-templates/business_step/tpl_extended_shipping_process_1753894878866_ucsuof.md",
+    "versions": [
+      "1.0.0"
+    ],
+    "parentId": "test_shipping_001"
+  }
+}

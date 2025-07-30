@@ -30,6 +30,7 @@
     "vitest": "^1.0.0"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "uuid": "^11.1.0"
   }
 }
