@@ -1,4 +1,18 @@
+// <!-- START OF FILE: add-template-selector.js -->
+// FILENAME: add-template-selector.js
+// Version: 1.0.0
+// Date: 2025-01-31 20:45
+// Author: Rolland MELET & Claude Code
+// Description: Ajout du sélecteur de templates EPCIS au plugin
 
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const addTemplateSelectorPlugin = `
 var obsidian = require('obsidian');
 
 // Configuration basique
@@ -45,9 +59,6 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
         this.stateCount = 0;
         this.actionCount = 0;
         this.templatesVisible = false;
-        this.selectedObject = null;
-        this.selectedState = null;
-        this.elements = new Map(); // Stockage des éléments créés
     }
 
     async onload() {
@@ -107,12 +118,6 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             callback: () => this.createAction()
         });
         
-        this.addCommand({
-            id: 'pml-link-state-to-object',
-            name: 'Link State to Selected Object',
-            callback: () => this.linkStateToObject()
-        });
-        
         console.log('ProcessMetaLanguage: Full features initialized');
     }
     
@@ -144,35 +149,15 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
         const container = document.createElement('div');
         container.id = 'pml-interface';
         container.className = 'pml-interface';
-        container.innerHTML = `
+        container.innerHTML = \`
             <div class="pml-toolbar">
                 <h3>ProcessMetaLanguage</h3>
                 <button class="pml-button" onclick="app.plugins.plugins.processmetalanguage.createObject()">
                     🔷 Create Object (Hexagon)
                 </button>
-                
-                <div class="pml-selection-info">
-                    <div id="pml-selected-object" class="pml-selected-item">
-                        No object selected
-                    </div>
-                </div>
-                
-                <button class="pml-button" onclick="app.plugins.plugins.processmetalanguage.linkStateToObject()" 
-                        id="pml-add-state-btn" disabled>
-                    🚩 Add State to Object
+                <button class="pml-button" onclick="app.plugins.plugins.processmetalanguage.createState()">
+                    🚩 Create State (Banner)
                 </button>
-                
-                <div class="pml-selection-info">
-                    <div id="pml-selected-state" class="pml-selected-item">
-                        No state selected
-                    </div>
-                </div>
-                
-                <button class="pml-button" onclick="app.plugins.plugins.processmetalanguage.linkActionToState()" 
-                        id="pml-add-action-btn" disabled>
-                    🎯 Add Action to State
-                </button>
-                
                 <button class="pml-button" onclick="app.plugins.plugins.processmetalanguage.createAction()">
                     ⚡ Create Action (Rectangle)
                 </button>
@@ -190,8 +175,8 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
                         <label>Business Steps (41)</label>
                         <select id="pml-business-steps" class="pml-select">
                             <option value="">Select business step...</option>
-                            ${EPCIS_TEMPLATES.businessSteps.map(step => 
-                                `<option value="${step}">${step.replace(/_/g, ' ')}</option>`
+                            \${EPCIS_TEMPLATES.businessSteps.map(step => 
+                                \`<option value="\${step}">\${step.replace(/_/g, ' ')}</option>\`
                             ).join('')}
                         </select>
                         <button class="pml-button pml-button-small" onclick="app.plugins.plugins.processmetalanguage.applyBusinessStep()">
@@ -203,8 +188,8 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
                         <label>Dispositions (25)</label>
                         <select id="pml-dispositions" class="pml-select">
                             <option value="">Select disposition...</option>
-                            ${EPCIS_TEMPLATES.dispositions.map(disp => 
-                                `<option value="${disp}">${disp.replace(/_/g, ' ')}</option>`
+                            \${EPCIS_TEMPLATES.dispositions.map(disp => 
+                                \`<option value="\${disp}">\${disp.replace(/_/g, ' ')}</option>\`
                             ).join('')}
                         </select>
                         <button class="pml-button pml-button-small" onclick="app.plugins.plugins.processmetalanguage.applyDisposition()">
@@ -221,19 +206,16 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
                         📊 Beta Test Mode
                     </div>
                     <div class="pml-status pml-help">
-                        💡 Select object first
+                        💡 Templates ready
                     </div>
                 </div>
             </div>
-        `;
+        \`;
         
         document.body.appendChild(container);
         
         // Ajouter les styles
         this.addStyles();
-        
-        // Écouter les clics sur le canvas
-        this.setupCanvasClickListener();
         
         new obsidian.Notice('ProcessMetaLanguage Interface opened');
     }
@@ -243,122 +225,46 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
         if (container) {
             container.remove();
         }
-        
-        // Arrêter l'écouteur de sélection
-        if (this.selectionInterval) {
-            window.clearInterval(this.selectionInterval);
-            this.selectionInterval = null;
-        }
-        
         new obsidian.Notice('ProcessMetaLanguage Interface closed');
     }
     
-    setupCanvasClickListener() {
-        console.log('Setting up safe canvas selection listener...');
-        
-        let lastCheckTime = 0;
-        const CHECK_INTERVAL = 1000; // Vérifier toutes les secondes
-        
-        const checkSelection = () => {
-            const now = Date.now();
-            if (now - lastCheckTime < CHECK_INTERVAL) return;
-            lastCheckTime = now;
-            
-            if (!this.excalidrawAPI || !this.interfaceVisible) return;
-            
-            const view = this.getActiveExcalidrawView();
-            if (!view) return;
-            
-            try {
-                const ea = this.excalidrawAPI;
-                ea.setView(view);
-                
-                // Utiliser getExcalidrawAPI() de la vue au lieu de getViewSelectedElements()
-                const api = view.excalidrawAPI;
-                if (!api) return;
-                
-                const selectedElements = api.getSceneElements().filter(el => el.isSelected);
-                
-                if (selectedElements && selectedElements.length > 0) {
-                    // Chercher si un objet ou un état est sélectionné
-                    for (const [elementId, elementData] of this.elements) {
-                        if (elementData.elementIds) {
-                            // Vérifier si un des éléments est sélectionné
-                            const isSelected = elementData.elementIds.some(id => 
-                                selectedElements.some(el => el.id === id)
-                            );
-                            
-                            if (isSelected) {
-                                if (elementData.type === 'object' && this.selectedObject?.id !== elementId) {
-                                    const objectName = elementData.name || elementId.replace('obj_', 'Object #');
-                                    this.selectObject(elementId, objectName);
-                                    return;
-                                } else if (elementData.type === 'state' && this.selectedState?.id !== elementId) {
-                                    const stateName = elementData.name || elementId.replace('state_', 'State #');
-                                    this.selectState(elementId, stateName);
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                // Ignorer les erreurs silencieusement
-                console.log('Selection check error (ignored):', error.message);
-            }
-        };
-        
-        // Vérifier périodiquement la sélection
-        this.selectionInterval = window.setInterval(checkSelection, 500);
-        this.registerInterval(this.selectionInterval);
-        
-        console.log('Safe canvas selection listener setup completed');
+    toggleTemplates() {
+        const panel = document.getElementById('pml-templates-panel');
+        if (panel) {
+            this.templatesVisible = !this.templatesVisible;
+            panel.style.display = this.templatesVisible ? 'block' : 'none';
+        }
     }
     
-    selectObject(objectId, objectName) {
-        this.selectedObject = { id: objectId, name: objectName };
-        
-        // Mettre à jour l'interface
-        const selectedInfo = document.getElementById('pml-selected-object');
-        const addStateBtn = document.getElementById('pml-add-state-btn');
-        
-        if (selectedInfo) {
-            selectedInfo.innerHTML = `✅ Selected: ${objectName}`;
-            selectedInfo.className = 'pml-selected-item pml-selected-active';
-        }
-        
-        if (addStateBtn) {
-            addStateBtn.disabled = false;
-        }
-        
-        new obsidian.Notice(`Object selected: ${objectName}`);
-    }
-    
-    selectState(stateId, stateName) {
-        this.selectedState = { id: stateId, name: stateName };
-        
-        // Mettre à jour l'interface
-        const selectedInfo = document.getElementById('pml-selected-state');
-        const addActionBtn = document.getElementById('pml-add-action-btn');
-        
-        if (selectedInfo) {
-            selectedInfo.innerHTML = `✅ Selected: ${stateName}`;
-            selectedInfo.className = 'pml-selected-item pml-selected-active';
-        }
-        
-        if (addActionBtn) {
-            addActionBtn.disabled = false;
-        }
-        
-        new obsidian.Notice(`State selected: ${stateName}`);
-    }
-    
-    async linkStateToObject() {
-        if (!this.selectedObject) {
-            new obsidian.Notice('Please select an object first!');
+    async applyBusinessStep() {
+        const select = document.getElementById('pml-business-steps');
+        if (!select || !select.value) {
+            new obsidian.Notice('Please select a business step');
             return;
         }
         
+        const businessStep = select.value;
+        new obsidian.Notice(\`Applied business step: \${businessStep}\`);
+        
+        // Créer un objet avec le business step
+        await this.createTemplatedObject('Business Step', businessStep);
+    }
+    
+    async applyDisposition() {
+        const select = document.getElementById('pml-dispositions');
+        if (!select || !select.value) {
+            new obsidian.Notice('Please select a disposition');
+            return;
+        }
+        
+        const disposition = select.value;
+        new obsidian.Notice(\`Applied disposition: \${disposition}\`);
+        
+        // Créer un état avec la disposition
+        await this.createTemplatedState('Disposition', disposition);
+    }
+    
+    async createTemplatedObject(type, template) {
         if (!this.excalidrawAPI) {
             new obsidian.Notice('Please open an Excalidraw drawing first!');
             return;
@@ -374,17 +280,89 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             
             ea.setView(view);
             
-            // Position du state sous l'objet sélectionné
-            const objectData = this.elements.get(this.selectedObject.id);
-            const centerX = objectData ? objectData.x : 400;
-            const centerY = objectData ? objectData.y + 150 : 450; // 150px sous l'objet
+            // Position
+            const offset = this.objectCount * 150;
+            const centerX = 400 + offset;
+            const centerY = 300;
+            const radius = 60;
             
-            // Dimensions du fanion
+            // Style
+            ea.style.backgroundColor = PML_CONFIG.colors.object;
+            ea.style.strokeColor = "#000000";
+            ea.style.fillStyle = "solid";
+            ea.style.strokeWidth = 2;
+            ea.style.roughness = 0;
+            
+            // Hexagone
+            if (ea.addPolygon) {
+                ea.addPolygon(centerX, centerY, radius, 6);
+            } else {
+                const points = [];
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i - Math.PI / 2;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    points.push([x, y]);
+                }
+                points.push(points[0]);
+                ea.addLine(points);
+            }
+            
+            // Texte
+            ea.style.fontSize = 14;
+            ea.style.fontFamily = 1;
+            ea.style.strokeColor = "#000000";
+            ea.style.backgroundColor = "transparent";
+            
+            const objectText = template.replace(/_/g, ' ');
+            ea.addText(centerX - objectText.length * 4, centerY - 10, objectText);
+            
+            // Tag
+            ea.style.fontSize = 10;
+            ea.style.strokeColor = "#666666";
+            ea.addText(centerX - 40, centerY + radius + 20, "#process-object");
+            
+            // Métadonnées EPCIS
+            ea.style.fontSize = 9;
+            ea.style.strokeColor = "#999999";
+            ea.addText(centerX - 50, centerY + radius + 35, \`EPCIS: \${type}\`);
+            
+            await ea.create({
+                filename: "ProcessMetaLanguage.excalidraw",
+                onNewPane: false
+            });
+            
+            this.objectCount++;
+            new obsidian.Notice(\`✅ \${type} Object created: \${template}\`);
+            
+        } catch (error) {
+            console.error('Error creating templated object:', error);
+            new obsidian.Notice('Error: ' + error.message);
+        }
+    }
+    
+    async createTemplatedState(type, template) {
+        if (!this.excalidrawAPI) {
+            new obsidian.Notice('Please open an Excalidraw drawing first!');
+            return;
+        }
+        
+        try {
+            const ea = this.excalidrawAPI;
+            const view = this.getActiveExcalidrawView();
+            if (!view) {
+                new obsidian.Notice('Please focus on an Excalidraw drawing!');
+                return;
+            }
+            
+            ea.setView(view);
+            
+            // Position
+            const offset = this.stateCount * 130;
+            const centerX = 400 + offset;
+            const centerY = 450;
             const width = PML_CONFIG.stateSize.width;
             const height = PML_CONFIG.stateSize.height;
-            
-            // Tableau pour stocker les IDs
-            const elementIds = [];
             
             // Points du fanion
             const points = [
@@ -398,175 +376,44 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
                 [centerX - width/2, centerY - height/2]
             ];
             
-            // Style de l'état
+            // Style
             ea.style.backgroundColor = PML_CONFIG.colors.state;
             ea.style.strokeColor = "#000000";
             ea.style.fillStyle = "solid";
             ea.style.strokeWidth = 2;
             ea.style.roughness = 0;
             
-            // Créer le fanion
-            const stateId = ea.addLine(points);
-            if (stateId) elementIds.push(stateId);
+            ea.addLine(points);
             
             // Texte
-            ea.style.fontSize = 14;
+            ea.style.fontSize = 12;
             ea.style.fontFamily = 1;
             ea.style.strokeColor = "#FFFFFF";
             ea.style.backgroundColor = "transparent";
             
-            const stateText = "State #" + (this.stateCount + 1);
-            const textId = ea.addText(centerX - 35, centerY - 7, stateText);
-            if (textId) elementIds.push(textId);
+            const stateText = template.replace(/_/g, ' ');
+            ea.addText(centerX - stateText.length * 3, centerY - 7, stateText);
             
-            // Tag visuel supprimé pour les états liés
+            // Tag
+            ea.style.fontSize = 10;
+            ea.style.strokeColor = "#666666";
+            ea.addText(centerX - 40, centerY + height/2 + 15, "#process-state");
             
-            // Créer une flèche entre l'objet et l'état
-            ea.style.strokeColor = "#000000";
-            ea.style.strokeWidth = 2;
-            ea.style.strokeStyle = "solid";
-            ea.style.startArrowhead = null;
-            ea.style.endArrowhead = "arrow";
+            // Métadonnées EPCIS
+            ea.style.fontSize = 9;
+            ea.style.strokeColor = "#999999";
+            ea.addText(centerX - 50, centerY + height/2 + 30, \`EPCIS: \${type}\`);
             
-            const arrowY1 = objectData ? objectData.y + 60 : 360;
-            const arrowY2 = centerY - height/2 - 10;
-            
-            const arrowId = ea.addArrow([[centerX, arrowY1], [centerX, arrowY2]]);
-            if (arrowId) elementIds.push(arrowId);
-            
-            // Grouper les éléments avec addToGroup()
-            if (elementIds.length > 0 && ea.addToGroup) {
-                console.log('Grouping state elements with IDs:', elementIds);
-                const groupId = ea.addToGroup(elementIds);
-                console.log('State group created with ID:', groupId);
-            }
-            
-            // Créer avec options
             await ea.create({
                 filename: "ProcessMetaLanguage.excalidraw",
                 onNewPane: false
-            });
-            
-            // Stocker l'état
-            const stateId2 = 'state_' + this.stateCount;
-            this.elements.set(stateId2, { 
-                x: centerX, 
-                y: centerY, 
-                parentObject: this.selectedObject.id,
-                elementIds: elementIds,
-                type: "state",
-                tag: "#process-state",
-                name: stateText
             });
             
             this.stateCount++;
-            new obsidian.Notice(`✅ State linked to ${this.selectedObject.name}!`);
+            new obsidian.Notice(\`✅ \${type} State created: \${template}\`);
             
         } catch (error) {
-            console.error('Error creating linked state:', error);
-            new obsidian.Notice('Error: ' + error.message);
-        }
-    }
-    
-    async linkActionToState() {
-        if (!this.selectedState) {
-            new obsidian.Notice('Please select a state first!');
-            return;
-        }
-        
-        if (!this.excalidrawAPI) {
-            new obsidian.Notice('Please open an Excalidraw drawing first!');
-            return;
-        }
-        
-        try {
-            const ea = this.excalidrawAPI;
-            const view = this.getActiveExcalidrawView();
-            if (!view) {
-                new obsidian.Notice('Please focus on an Excalidraw drawing!');
-                return;
-            }
-            
-            ea.setView(view);
-            
-            // Position de l'action sous l'état sélectionné
-            const stateData = this.elements.get(this.selectedState.id);
-            const centerX = stateData ? stateData.x : 400;
-            const centerY = stateData ? stateData.y + 100 : 550; // 100px sous l'état
-            
-            // Tableau pour stocker les IDs
-            const elementIds = [];
-            
-            // Style de l'action
-            ea.style.backgroundColor = PML_CONFIG.colors.action;
-            ea.style.strokeColor = "#000000";
-            ea.style.fillStyle = "solid";
-            ea.style.strokeWidth = 2;
-            ea.style.roughness = 0;
-            ea.style.roundness = { type: 2 };
-            
-            // Créer rectangle arrondi pour l'action
-            const rectId = ea.addRect(
-                centerX - PML_CONFIG.actionSize.width / 2,
-                centerY - PML_CONFIG.actionSize.height / 2,
-                PML_CONFIG.actionSize.width,
-                PML_CONFIG.actionSize.height
-            );
-            if (rectId) elementIds.push(rectId);
-            
-            // Style du texte
-            ea.style.fontSize = 16;
-            ea.style.fontFamily = 1;
-            ea.style.strokeColor = "#000000";
-            ea.style.backgroundColor = "transparent";
-            
-            // Texte
-            const actionText = "Action #" + (this.actionCount + 1);
-            const textId = ea.addText(centerX - 35, centerY - 8, actionText);
-            if (textId) elementIds.push(textId);
-            
-            // Créer une flèche entre l'état et l'action
-            ea.style.strokeColor = "#000000";
-            ea.style.strokeWidth = 2;
-            ea.style.strokeStyle = "solid";
-            ea.style.startArrowhead = null;
-            ea.style.endArrowhead = "arrow";
-            
-            const arrowY1 = stateData ? stateData.y + 25 : 475;
-            const arrowY2 = centerY - PML_CONFIG.actionSize.height/2 - 10;
-            
-            const arrowId = ea.addArrow([[centerX, arrowY1], [centerX, arrowY2]]);
-            if (arrowId) elementIds.push(arrowId);
-            
-            // Grouper les éléments
-            if (elementIds.length > 0 && ea.addToGroup) {
-                const groupId = ea.addToGroup(elementIds);
-                console.log('Action elements grouped with ID:', groupId);
-            }
-            
-            // Créer avec options
-            await ea.create({
-                filename: "ProcessMetaLanguage.excalidraw",
-                onNewPane: false
-            });
-            
-            // Stocker l'action
-            const actionId = 'action_' + this.actionCount;
-            this.elements.set(actionId, { 
-                x: centerX, 
-                y: centerY,
-                parentState: this.selectedState.id,
-                elementIds: elementIds,
-                type: "action",
-                tag: "#process-action",
-                name: actionText
-            });
-            
-            this.actionCount++;
-            new obsidian.Notice(`✅ Action linked to ${this.selectedState.name}!`);
-            
-        } catch (error) {
-            console.error('Error creating linked action:', error);
+            console.error('Error creating templated state:', error);
             new obsidian.Notice('Error: ' + error.message);
         }
     }
@@ -591,15 +438,12 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             ea.setView(view);
             
             // Position avec décalage pour éviter la superposition
-            const offset = this.objectCount * 200;
+            const offset = this.objectCount * 150;
             const centerX = 400 + offset;
-            const centerY = 200;
+            const centerY = 300;
             
             // Rayon de l'hexagone régulier
             const radius = 60;
-            
-            // Tableau pour stocker les IDs des éléments
-            const elementIds = [];
             
             // Style pour l'hexagone
             ea.style.backgroundColor = PML_CONFIG.colors.object;
@@ -608,29 +452,24 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             ea.style.strokeWidth = 2;
             ea.style.roughness = 0;
             
-            // Créer l'hexagone comme polygone fermé avec remplissage
-            const points = [];
-            
-            // Calculer les 7 points de l'hexagone (le dernier est identique au premier)
-            for (let i = 0; i <= 6; i++) {
-                const angle = (Math.PI / 3) * i - Math.PI / 2;
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-                points.push([x, y]);
+            // Créer l'hexagone avec addPolygon si disponible, sinon utiliser addLine
+            if (ea.addPolygon) {
+                // Utiliser addPolygon si disponible
+                console.log('Using addPolygon for hexagon');
+                ea.addPolygon(centerX, centerY, radius, 6);
+            } else {
+                // Sinon, utiliser addLine avec les points calculés
+                console.log('Using addLine for hexagon');
+                const points = [];
+                for (let i = 0; i < 6; i++) {
+                    const angle = (Math.PI / 3) * i - Math.PI / 2;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+                    points.push([x, y]);
+                }
+                points.push(points[0]); // Fermer le polygone
+                ea.addLine(points);
             }
-            
-            // S'assurer que le polygone est bien fermé
-            if (points[0][0] !== points[6][0] || points[0][1] !== points[6][1]) {
-                points[6] = [...points[0]];
-            }
-            
-            // Créer le polygone avec le style défini
-            const hexagonId = ea.addLine(points);
-            if (hexagonId) {
-                elementIds.push(hexagonId);
-                console.log('Hexagon polygon created with ID:', hexagonId);
-            }
-            
             
             // Style du texte
             ea.style.fontSize = 16;
@@ -642,19 +481,97 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             
             // Ajouter le texte au centre
             const objectText = "Object #" + (this.objectCount + 1);
-            const textId = ea.addText(centerX - 40, centerY - 10, objectText);
-            if (textId) {
-                elementIds.push(textId);
-                console.log('Text created with ID:', textId);
+            ea.addText(centerX - 40, centerY - 10, objectText);
+            
+            // Style du tag
+            ea.style.fontSize = 10;
+            ea.style.strokeColor = "#666666";
+            
+            // Ajouter le tag sous l'hexagone
+            const tagY = centerY + radius + 20;
+            ea.addText(centerX - 40, tagY, "#process-object");
+            
+            // Créer tous les éléments
+            console.log('Calling ea.create()...');
+            await ea.create({
+                filename: "ProcessMetaLanguage.excalidraw",
+                onNewPane: false
+            });
+            
+            this.objectCount++;
+            new obsidian.Notice(\`✅ Hexagon Object #\${this.objectCount} created!\`);
+            console.log(\`Hexagon Object #\${this.objectCount} created successfully\`);
+            
+        } catch (error) {
+            console.error('Error creating object:', error);
+            console.error('Error stack:', error.stack);
+            new obsidian.Notice('Error creating object: ' + error.message);
+        }
+    }
+    
+    async createState() {
+        if (!this.excalidrawAPI) {
+            new obsidian.Notice('Please open an Excalidraw drawing first!');
+            return;
+        }
+        
+        try {
+            const ea = this.excalidrawAPI;
+            const view = this.getActiveExcalidrawView();
+            if (!view) {
+                new obsidian.Notice('Please focus on an Excalidraw drawing!');
+                return;
             }
             
-            // Tag supprimé visuellement mais conservé dans les métadonnées
+            ea.setView(view);
             
-            // Grouper les éléments
-            if (elementIds.length > 0 && ea.addToGroup) {
-                const groupId = ea.addToGroup(elementIds);
-                console.log('Object elements grouped with ID:', groupId);
-            }
+            // Position avec décalage
+            const offset = this.stateCount * 130;
+            const centerX = 400 + offset;
+            const centerY = 450;
+            
+            // Dimensions du fanion
+            const width = PML_CONFIG.stateSize.width;
+            const height = PML_CONFIG.stateSize.height;
+            
+            // Points du fanion - forme plus stable et reconnaissable
+            const points = [
+                [centerX - width/2, centerY - height/2],          // Haut gauche
+                [centerX + width/2 - 20, centerY - height/2],     // Haut droit (avant encoche)
+                [centerX + width/2, centerY - height/2 + 15],     // Début encoche haute
+                [centerX + width/2 - 15, centerY],                // Milieu encoche
+                [centerX + width/2, centerY + height/2 - 15],     // Fin encoche basse
+                [centerX + width/2 - 20, centerY + height/2],     // Bas droit (après encoche)
+                [centerX - width/2, centerY + height/2],          // Bas gauche
+                [centerX - width/2, centerY - height/2]           // Retour au début pour fermer
+            ];
+            
+            // Style de l'état
+            ea.style.backgroundColor = PML_CONFIG.colors.state;
+            ea.style.strokeColor = "#000000";
+            ea.style.fillStyle = "solid";
+            ea.style.strokeWidth = 2;
+            ea.style.roughness = 0;
+            
+            // Créer le fanion
+            ea.addLine(points);
+            
+            // Style du texte
+            ea.style.fontSize = 14;
+            ea.style.fontFamily = 1;
+            ea.style.strokeColor = "#FFFFFF";
+            ea.style.backgroundColor = "transparent";
+            
+            // Texte au centre
+            const stateText = "State #" + (this.stateCount + 1);
+            ea.addText(centerX - 35, centerY - 7, stateText);
+            
+            // Style du tag
+            ea.style.fontSize = 10;
+            ea.style.strokeColor = "#666666";
+            
+            // Tag
+            ea.addText(centerX - 40, centerY + height/2 + 15, "#process-state");
             
             // Créer avec options
             await ea.create({
@@ -662,22 +579,8 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
                 onNewPane: false
             });
             
-            // Stocker l'objet et le sélectionner automatiquement
-            const objectId = 'obj_' + this.objectCount;
-            this.elements.set(objectId, { 
-                x: centerX, 
-                y: centerY,
-                type: "object",
-                tag: "#process-object",
-                elementIds: elementIds,
-                name: objectText
-            });
-            
-            this.objectCount++;
-            new obsidian.Notice(`✅ Hexagon Object #${this.objectCount} created and grouped!`);
-            
-            // Sélectionner automatiquement l'objet créé
-            this.selectObject(objectId, objectText);
+            this.stateCount++;
+            new obsidian.Notice(\`✅ Banner State #\${this.stateCount} created!\`);
             
         } catch (error) {
             console.error('Error creating state:', error);
@@ -706,9 +609,6 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             const centerX = 400 + offset;
             const centerY = 600;
             
-            // Tableau pour stocker les IDs
-            const elementIds = [];
-            
             // Style de l'action
             ea.style.backgroundColor = PML_CONFIG.colors.action;
             ea.style.strokeColor = "#000000";
@@ -718,13 +618,12 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             ea.style.roundness = { type: 2 };
             
             // Créer rectangle arrondi pour l'action
-            const rectId = ea.addRect(
+            ea.addRect(
                 centerX - PML_CONFIG.actionSize.width / 2,
                 centerY - PML_CONFIG.actionSize.height / 2,
                 PML_CONFIG.actionSize.width,
                 PML_CONFIG.actionSize.height
             );
-            if (rectId) elementIds.push(rectId);
             
             // Style du texte
             ea.style.fontSize = 16;
@@ -734,16 +633,14 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             
             // Texte
             const actionText = "Action #" + (this.actionCount + 1);
-            const textId = ea.addText(centerX - 35, centerY - 8, actionText);
-            if (textId) elementIds.push(textId);
+            ea.addText(centerX - 35, centerY - 8, actionText);
             
-            // Tag supprimé visuellement mais conservé dans les métadonnées
+            // Style du tag
+            ea.style.fontSize = 10;
+            ea.style.strokeColor = "#666666";
             
-            // Grouper les éléments
-            if (elementIds.length > 0 && ea.addToGroup) {
-                const groupId = ea.addToGroup(elementIds);
-                console.log('Action elements grouped with ID:', groupId);
-            }
+            // Tag
+            ea.addText(centerX - 40, centerY + PML_CONFIG.actionSize.height/2 + 15, "#process-action");
             
             // Créer avec options
             await ea.create({
@@ -752,7 +649,7 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             });
             
             this.actionCount++;
-            new obsidian.Notice(`✅ Action #${this.actionCount} created and grouped!`);
+            new obsidian.Notice(\`✅ Action #\${this.actionCount} created!\`);
             
         } catch (error) {
             console.error('Error creating action:', error);
@@ -760,17 +657,9 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
         }
     }
     
-    async createTemplatedObject(type, template) {
-        // ... (code inchangé)
-    }
-    
-    async createTemplatedState(type, template) {
-        // ... (code inchangé)
-    }
-    
     addStyles() {
         const style = document.createElement('style');
-        style.textContent = `
+        style.textContent = \`
             .pml-interface {
                 position: fixed;
                 right: 20px;
@@ -809,14 +698,9 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
                 transition: all 0.2s;
             }
             
-            .pml-button:hover:not(:disabled) {
+            .pml-button:hover {
                 background: var(--interactive-hover);
                 transform: translateX(2px);
-            }
-            
-            .pml-button:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
             }
             
             .pml-templates-button {
@@ -832,24 +716,6 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
                 margin-top: 15px;
                 padding-top: 10px;
                 border-top: 1px solid var(--background-modifier-border);
-            }
-            
-            .pml-selection-info {
-                margin: 10px 0;
-                padding: 8px;
-                background: var(--background-secondary);
-                border-radius: 4px;
-            }
-            
-            .pml-selected-item {
-                font-size: 12px;
-                color: var(--text-muted);
-                text-align: center;
-            }
-            
-            .pml-selected-active {
-                color: var(--text-normal);
-                font-weight: bold;
             }
             
             .pml-templates-panel {
@@ -894,7 +760,7 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
             .pml-help {
                 font-style: italic;
             }
-        `;
+        \`;
         document.head.appendChild(style);
     }
     
@@ -905,3 +771,19 @@ class ProcessMetaLanguagePlugin extends obsidian.Plugin {
 }
 
 module.exports = ProcessMetaLanguagePlugin;
+`;
+
+// Sauvegarder dans dist
+const distPath = path.join(__dirname, '../dist/main.js');
+fs.writeFileSync(distPath, addTemplateSelectorPlugin);
+
+// Copier vers le vault de test
+const testVaultPath = '/Users/rollandmelet/Développement/Projets/ProcessMetaLanguage/VaultTestObsidian/PML-Beta-Test-v2/.obsidian/plugins/processmetalanguage/main.js';
+fs.writeFileSync(testVaultPath, addTemplateSelectorPlugin);
+
+console.log('✅ Template selector added to plugin!');
+console.log('🔄 Please reload Obsidian (Cmd+R) to test.');
+console.log('📝 Changes:');
+console.log('   - Added Templates EPCIS button');
+console.log('   - Shows 41 business steps + 25 dispositions');
+console.log('   - Creates templated objects and states with EPCIS metadata');

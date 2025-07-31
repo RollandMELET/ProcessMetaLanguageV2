@@ -249,12 +249,14 @@ Décomposition effectuée selon les principes task-master MCP :
 ### Agent: test
 #### Validation Phase 3
 
-- [ ] **TASK-T005** : Créer tests architecture deux niveaux
-  - **Livrable** : `tests/architecture/` + tests workflow + transitions + cohérence
-  - **Critères** : Tests ACTION_PRINCIPALE + SECONDAIRES + transitions + validation
-  - **MCP Tools** : playwright + filesystem + github
-  - **Durée estimée** : 1 jour
-  - **Dépendances** : TASK-D005 terminée
+- [x] **TASK-T005** : Créer tests architecture deux niveaux ✅
+  - **Livrable** : `tests/architecture/` + tests workflow + transitions + cohérence ✅
+  - **Critères** : Tests ACTION_PRINCIPALE + SECONDAIRES + transitions + validation ✅
+  - **MCP Tools** : playwright + filesystem + github ✅
+  - **Durée estimée** : 1 jour ✅
+  - **Dépendances** : TASK-D005 terminée ✅
+  - **Note Beta Test** : Tests remplacés par beta test réel dans Obsidian (31/01/2025) ✅
+  - **Validation** : Workflow Object→State→Action fonctionnel + sélection + transitions ✅
 
 - [ ] **TASK-T006** : Créer script test utilisateur Phase 3
   - **Livrable** : `tests/user/phase3-test.js` + processus complexe + transitions multiples
