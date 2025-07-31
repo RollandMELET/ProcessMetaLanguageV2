@@ -1,36 +1,81 @@
 {
   "name": "processmetalanguage",
   "version": "1.0.0",
-  "description": "ProcessMetaLanguage - Système méta-langage graphique pour traçabilité industrielle",
+  "description": "Graphical meta-language system for industrial traceability processes in Obsidian Excalidraw",
   "type": "module",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "dev": "vitest --ui",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "node scripts/test-ui.js",
     "test:ui-manual": "open ui/test-palette.html",
-    "build": "node scripts/build.js",
-    "dev": "vitest --ui"
+    "build": "npm run build:plugin && npm run build:docs",
+    "build:plugin": "node scripts/build-plugin.js",
+    "build:docs": "node scripts/build-docs.js",
+    "package": "npm run test && npm run build && node scripts/package.js",
+    "release": "npm run package && node scripts/release.js",
+    "validate:templates": "node scripts/validate-templates.js",
+    "optimize": "node scripts/optimize-assets.js",
+    "docs:generate": "node scripts/generate-docs.js",
+    "clean": "rm -rf dist coverage .vitest"
   },
   "keywords": [
-    "excalidraw",
     "obsidian",
+    "excalidraw",
     "traceability",
     "epcis",
-    "meta-language"
+    "gs1",
+    "workflow",
+    "industrial",
+    "process",
+    "automation",
+    "documentation"
   ],
-  "author": "Rolland MELET & Claude Code",
+  "author": "Rolland MELET",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RollandMELET/ProcessMetaLanguage.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RollandMELET/ProcessMetaLanguage/issues"
+  },
+  "homepage": "https://processmetalanguage.io",
   "devDependencies": {
     "@playwright/test": "^1.40.0",
+    "@testing-library/dom": "^9.3.4",
+    "@testing-library/user-event": "^14.5.2",
+    "@vitest/coverage-v8": "^1.2.2",
     "@vitest/ui": "^1.0.0",
+    "dompurify": "^3.0.9",
     "jsdom": "^23.0.0",
     "playwright": "^1.40.0",
-    "vitest": "^1.0.0"
+    "vitest": "^1.0.0",
+    "esbuild": "^0.19.0",
+    "archiver": "^6.0.0"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
     "uuid": "^11.1.0"
+  },
+  "peerDependencies": {
+    "obsidian": "^1.4.16"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "obsidian": {
+    "id": "processmetalanguage",
+    "name": "ProcessMetaLanguage",
+    "version": "1.0.0",
+    "minAppVersion": "1.4.16",
+    "description": "Design industrial traceability processes visually in Excalidraw",
+    "author": "Rolland MELET",
+    "authorUrl": "https://github.com/RollandMELET",
+    "fundingUrl": "https://github.com/sponsors/RollandMELET",
+    "isDesktopOnly": false
   }
 }
