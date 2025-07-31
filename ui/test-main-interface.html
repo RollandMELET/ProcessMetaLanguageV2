@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<!-- START OF FILE: test-main-interface.html -->
+<!-- FILENAME: test-main-interface.html -->
+<!-- Version: 1.0.0 -->
+<!-- Date: 2025-07-31 20:30 -->
+<!-- Author: Rolland MELET & Claude Code -->
+<!-- Description: Page test interface principale ProcessMetaLanguage - TASK-F007 Phase 6 démo -->
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProcessMetaLanguage Interface - Demo</title>
+    
+    <!-- Simuler variables CSS Obsidian -->
+    <style>
+        :root {
+            /* Obsidian CSS Variables Simulation */
+            --background-primary: #ffffff;
+            --background-secondary: #f8f9fa;
+            --background-modifier-hover: #f0f0f0;
+            --background-modifier-active: #e8e8e8;
+            --background-modifier-border: #e1e4e8;
+            --text-normal: #24292e;
+            --text-muted: #586069;
+            --text-accent: #0366d6;
+            --interactive-accent: #0366d6;
+            --interactive-accent-hover: #0256cc;
+            --font-interface: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+        
+        /* Dark theme */
+        .theme-dark {
+            --background-primary: #1e1e1e;
+            --background-secondary: #2d2d30;
+            --background-modifier-hover: #3e3e42;
+            --background-modifier-active: #4e4e50;
+            --background-modifier-border: #3e3e42;
+            --text-normal: #cccccc;
+            --text-muted: #969696;
+            --text-accent: #4fc3f7;
+            --interactive-accent: #7c3aed;
+            --interactive-accent-hover: #8b5cf6;
+        }
+        
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-interface);
+            background: var(--background-primary);
+            color: var(--text-normal);
+            overflow: hidden;
+        }
+        
+        /* Theme toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 2000;
+            padding: 8px 12px;
+            background: var(--interactive-accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .theme-toggle:hover {
+            background: var(--interactive-accent-hover);
+        }
+        
+        /* Demo info */
+        .demo-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            z-index: 2000;
+            padding: 8px 12px;
+            background: var(--background-secondary);
+            border: 1px solid var(--background-modifier-border);
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        /* Responsive fixes for demo */
+        @media (max-width: 1024px) {
+            .pml-interface .pml-sidebar {
+                width: 280px !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .pml-interface .pml-sidebar {
+                position: absolute;
+                z-index: 100;
+                height: 100%;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+            
+            .pml-interface .pml-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</button>
+    
+    <div class="demo-info">
+        📋 ProcessMetaLanguage Interface Demo - TASK-F007 Phase 6
+    </div>
+    
+    <!-- Container pour l'interface -->
+    <div id="pml-demo-container"></div>
+    
+    <script type="module">
+        // Simuler environnement Obsidian minimal
+        window.mockObsidianApp = {
+            workspace: {
+                on: (event, callback) => {
+                    console.log(`📡 Mock event listener: ${event}`);
+                    return { unload: () => {} };
+                },
+                getActiveViewOfType: (type) => {
+                    console.log(`👁️ Mock getActiveViewOfType: ${type}`);
+                    return type === 'excalidraw' ? { file: { name: 'demo.excalidraw' } } : null;
+                }
+            },
+            vault: {
+                read: async (file) => {
+                    console.log(`📖 Mock vault read: ${file}`);
+                    return '{"type":"excalidraw","version":2,"source":"demo","elements":[]}';
+                }
+            }
+        };
+        
+        // Simuler ExcalidrawAutomate API
+        window.ExcalidrawAutomate = {
+            create: (options) => {
+                console.log('🎨 Mock ExcalidrawAutomate.create:', options);
+                return { id: `mock_${Date.now()}` };
+            },
+            addToGroup: (elements) => {
+                console.log('👥 Mock ExcalidrawAutomate.addToGroup:', elements.length);
+            },
+            mostRecentDrawing: {
+                id: 'mock_drawing_001'
+            },
+            style: {
+                strokeColor: '#000000',
+                backgroundColor: '#ffffff',
+                fillStyle: 'solid',
+                strokeWidth: 2,
+                roughness: 1
+            }
+        };
+        
+        // Importer et initialiser interface
+        try {
+            const { ProcessMetaLanguageInterface } = await import('./main-interface.js');
+            
+            console.log('🚀 Initialisation ProcessMetaLanguage Interface Demo...');
+            
+            // Créer instance interface
+            const pmlInterface = new ProcessMetaLanguageInterface(
+                window.mockObsidianApp,
+                window.ExcalidrawAutomate,
+                {
+                    theme: 'auto',
+                    autoSave: true,
+                    layout: {
+                        sidebar: 'right',
+                        toolbar: 'top',
+                        width: 350
+                    }
+                }
+            );
+            
+            // Initialiser et afficher
+            await pmlInterface.initialize();
+            pmlInterface.show();
+            
+            // Stocker pour debug
+            window.pmlInterface = pmlInterface;
+            
+            console.log('✅ Interface ProcessMetaLanguage Demo prête!');
+            
+            // Simuler quelques métriques pour la démo
+            setTimeout(() => {
+                pmlInterface.metrics.objectsCreated = 3;
+                pmlInterface.metrics.statesCreated = 7;
+                pmlInterface.metrics.actionsCreated = 12;
+                pmlInterface.metrics.templatesUsed.add('receiving');
+                pmlInterface.metrics.templatesUsed.add('inspecting');
+                pmlInterface.metrics.templatesUsed.add('storing');
+                pmlInterface.updateMetrics();
+                
+                console.log('📊 Métriques demo mises à jour');
+            }, 2000);
+            
+            // Simuler navigation automatique pour démo
+            setTimeout(() => {
+                const views = ['dashboard', 'creation', 'templates', 'export', 'validation'];
+                let currentIndex = 0;
+                
+                setInterval(() => {
+                    if (window.demoAutoNav) {
+                        currentIndex = (currentIndex + 1) % views.length;
+                        pmlInterface.switchView(views[currentIndex]);
+                        console.log(`🔄 Demo auto-nav: ${views[currentIndex]}`);
+                    }
+                }, 5000);
+            }, 5000);
+            
+        } catch (error) {
+            console.error('❌ Erreur chargement interface:', error);
+            
+            // Afficher erreur à l'utilisateur
+            document.body.innerHTML = `
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100vh;
+                    flex-direction: column;
+                    gap: 16px;
+                    padding: 20px;
+                    text-align: center;
+                ">
+                    <h1 style="color: #e74c3c; margin: 0;">❌ Erreur Chargement Interface</h1>
+                    <p style="color: var(--text-muted); margin: 0; max-width: 600px;">
+                        Impossible de charger l'interface ProcessMetaLanguage. 
+                        Vérifiez la console pour plus de détails.
+                    </p>
+                    <pre style="
+                        background: var(--background-secondary);
+                        padding: 16px;
+                        border-radius: 4px;
+                        color: #e74c3c;
+                        font-size: 12px;
+                        max-width: 80%;
+                        overflow-x: auto;
+                    ">${error.message}</pre>
+                    <button onclick="location.reload()" style="
+                        padding: 8px 16px;
+                        background: var(--interactive-accent);
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                    ">🔄 Recharger</button>
+                </div>
+            `;
+        }
+    </script>
+    
+    <script>
+        // Fonctions globales pour la démo
+        
+        /**
+         * Toggle le thème entre light et dark
+         */
+        function toggleTheme() {
+            document.body.classList.toggle('theme-dark');
+            
+            const isDark = document.body.classList.contains('theme-dark');
+            console.log(`🎨 Thème changé: ${isDark ? 'dark' : 'light'}`);
+            
+            // Mise à jour du bouton
+            const btn = document.querySelector('.theme-toggle');
+            btn.textContent = isDark ? '☀️ Light Theme' : '🌙 Dark Theme';
+        }
+        
+        /**
+         * Toggle navigation automatique demo
+         */
+        function toggleAutoNav() {
+            window.demoAutoNav = !window.demoAutoNav;
+            console.log(`🔄 Auto-navigation: ${window.demoAutoNav ? 'ON' : 'OFF'}`);
+        }
+        
+        /**
+         * Simuler création composant
+         */
+        function simulateComponentCreation(type) {
+            if (window.pmlInterface) {
+                window.pmlInterface.onComponentCreated(type, `mock_${type}_${Date.now()}`);
+                console.log(`✅ Composant ${type} simulé`);
+            }
+        }
+        
+        /**
+         * Afficher console pour debug
+         */
+        function showConsole() {
+            console.log('🔍 Interface Debug Info:', {
+                interface: window.pmlInterface,
+                isVisible: window.pmlInterface?.isVisible,
+                currentView: window.pmlInterface?.currentView,
+                metrics: window.pmlInterface?.metrics,
+                modules: window.pmlInterface?.modules
+            });
+        }
+        
+        // Raccourcis clavier pour la démo
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case 't':
+                        e.preventDefault();
+                        toggleTheme();
+                        break;
+                    case 'n':
+                        e.preventDefault();
+                        toggleAutoNav();
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        simulateComponentCreation('object');
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        simulateComponentCreation('state');
+                        break;
+                    case 'a':
+                        e.preventDefault();
+                        simulateComponentCreation('action');
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        showConsole();
+                        break;
+                }
+            }
+        });
+        
+        // Log des raccourcis disponibles
+        console.log(`
+🎯 ProcessMetaLanguage Interface Demo - Raccourcis:
+
+Ctrl/Cmd + T = Toggle Theme
+Ctrl/Cmd + N = Toggle Auto-Navigation
+Ctrl/Cmd + O = Simuler création Objet
+Ctrl/Cmd + S = Simuler création État
+Ctrl/Cmd + A = Simuler création Action
+Ctrl/Cmd + I = Afficher debug info
+
+📊 Interface initialisée avec succès!
+        `);
+        
+        // Démarrer en thème sombre si préféré
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            toggleTheme();
+        }
+    </script>
+</body>
+</html>
+<!-- END OF FILE: test-main-interface.html -->
