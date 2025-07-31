@@ -26,8 +26,8 @@
 import { BatchProcessor } from './batch-processor.js';
 import { MetadataCache } from '../cache/metadata-cache.js';
 import { BidirectionalSync } from './bidirectional-sync.js';
-import { EventEmitter } from 'events';
-import { performance } from 'perf_hooks';
+import { EventEmitter } from '../utils/obsidian-adapter.js';
+import { performance } from '../utils/obsidian-adapter.js';
 
 /**
  * Configuration de l'optimiseur performance
@@ -1082,8 +1082,7 @@ export class PerformanceOptimizer extends EventEmitter {
 }
 
 // Export ES6 par défaut
-export { PerformanceOptimizer, PERFORMANCE_OPTIMIZER_CONFIG };
-
+// Export already done
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {
     window.ProcessMetaLanguagePerformanceOptimizer = {

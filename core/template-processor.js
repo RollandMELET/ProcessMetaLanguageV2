@@ -17,8 +17,8 @@
  * - Performance optimisée <5s pour 50 templates
  */
 
-import fs from 'fs/promises';
-import path from 'path';
+import { fs } from '../utils/obsidian-adapter.js';
+import { path } from '../utils/obsidian-adapter.js';
 import yaml from 'js-yaml';
 
 /**

@@ -23,10 +23,10 @@
  * - Métriques de performance et conformité
  */
 
-import { EventEmitter } from 'events';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { performance } from 'perf_hooks';
+import { EventEmitter } from '../utils/obsidian-adapter.js';
+import { fs } from '../utils/obsidian-adapter.js';
+import { path } from '../utils/obsidian-adapter.js';
+import { performance } from '../utils/obsidian-adapter.js';
 
 /**
  * Configuration du générateur de matrices
@@ -1033,8 +1033,7 @@ export class MatrixGenerator extends EventEmitter {
     }
 }
 
-// Export ES6 par défaut
-export { MatrixGenerator, MATRIX_GENERATOR_CONFIG };
+// Export already done via export class
 
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {

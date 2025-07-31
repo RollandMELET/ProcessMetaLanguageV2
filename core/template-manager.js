@@ -17,8 +17,7 @@
  * - Performance optimisée pour grandes bibliothèques
  */
 
-import fs from 'fs/promises';
-import path from 'path';
+import { fs, path, crypto } from '../utils/obsidian-adapter.js';
 import yaml from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
 import { TemplateProcessor } from './template-processor.js';
@@ -1403,12 +1402,17 @@ business_step: {{BUSINESS_STEP}}
      * @private
      */
     calculateChecksum(template) {
-        const crypto = require('crypto');
         const content = JSON.stringify({
             frontmatter: template.frontmatter,
             body: template.body
         });
-        return crypto.createHash('sha256').update(content).digest('hex');
+        // Simple hash for browser environment
+        let hash = 0;
+        for (let i = 0; i < content.length; i++) {
+            hash = ((hash << 5) - hash) + content.charCodeAt(i);
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(36);
     }
 
     /**

@@ -1193,8 +1193,7 @@ export class ArchitectureValidator {
     }
 }
 
-// Export ES6 par défaut
-export { ArchitectureValidator, ARCHITECTURE_VALIDATOR_CONFIG };
+// Export déjà fait via export class
 
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {

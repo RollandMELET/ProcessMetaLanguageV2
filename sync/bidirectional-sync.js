@@ -630,7 +630,7 @@ export class BidirectionalSync {
     
     async calculateCanvasChecksum(canvasFile) {
         // Calculer checksum du fichier canvas
-        const fs = await import('fs/promises');
+        const { fs } = await import('../utils/obsidian-adapter.js');
         try {
             const content = await fs.readFile(canvasFile, 'utf8');
             return Buffer.from(content).toString('base64').slice(0, 32);
@@ -641,10 +641,16 @@ export class BidirectionalSync {
     
     async calculateFileChecksum(filePath) {
         // Calculer checksum d'un fichier
-        const fs = await import('fs/promises');
+        const { fs } = await import('../utils/obsidian-adapter.js');
         try {
-            const content = await fs.readFile(filePath, 'utf8');
-            return Buffer.from(content).toString('base64').slice(0, 32);
+            const content = await fs.promises.readFile(filePath, 'utf8');
+            // Simple hash for browser environment
+            let hash = 0;
+            for (let i = 0; i < content.length; i++) {
+                hash = ((hash << 5) - hash) + content.charCodeAt(i);
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return Math.abs(hash).toString(36);
         } catch (error) {
             return null;
         }
@@ -789,8 +795,7 @@ export class BidirectionalSync {
 }
 
 // Export ES6 par défaut
-export { BidirectionalSync, BIDIRECTIONAL_SYNC_CONFIG };
-
+// Export already done
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {
     window.ProcessMetaLanguageBidirectionalSync = {

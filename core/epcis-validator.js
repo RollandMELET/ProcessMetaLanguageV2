@@ -5,8 +5,8 @@
 // Author: Rolland MELET & Claude Code
 // Description: Validateur conformité EPCIS 2.0 CBV 2.0 pour ProcessMetaLanguage - TASK-D003
 
-import fs from 'fs/promises';
-import path from 'path';
+import { fs } from '../utils/obsidian-adapter.js';
+import { path } from '../utils/obsidian-adapter.js';
 
 /**
  * Validateur de conformité EPCIS 2.0 et CBV 2.0

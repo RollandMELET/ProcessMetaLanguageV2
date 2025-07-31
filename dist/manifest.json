@@ -1,0 +1,11 @@
+{
+  "id": "processmetalanguage",
+  "name": "ProcessMetaLanguage",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.16",
+  "description": "Design industrial traceability processes visually in Excalidraw with EPCIS 2.0 compliance",
+  "author": "Rolland MELET",
+  "authorUrl": "https://github.com/RollandMELET",
+  "fundingUrl": "https://github.com/sponsors/RollandMELET",
+  "isDesktopOnly": false
+}

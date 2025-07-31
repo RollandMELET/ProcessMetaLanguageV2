@@ -1533,7 +1533,6 @@ export class ProcessMetaLanguageInterface {
     }
 }
 
-// Export pour utilisation
-export { ProcessMetaLanguageInterface };
+// Export déjà fait via export class
 
 // <!-- END OF FILE: main-interface.js -->

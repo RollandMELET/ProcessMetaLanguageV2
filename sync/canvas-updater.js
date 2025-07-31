@@ -763,8 +763,7 @@ export class CanvasUpdater {
 }
 
 // Export ES6 par défaut
-export { CanvasUpdater, CANVAS_UPDATER_CONFIG };
-
+// Export already done
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {
     window.ProcessMetaLanguageCanvasUpdater = {

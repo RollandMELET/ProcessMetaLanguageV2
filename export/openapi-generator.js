@@ -24,10 +24,10 @@
  * - Monitoring et métriques OpenTelemetry
  */
 
-import { EventEmitter } from 'events';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { performance } from 'perf_hooks';
+import { EventEmitter } from '../utils/obsidian-adapter.js';
+import { fs } from '../utils/obsidian-adapter.js';
+import { path } from '../utils/obsidian-adapter.js';
+import { performance } from '../utils/obsidian-adapter.js';
 
 /**
  * Configuration du générateur OpenAPI
@@ -1282,8 +1282,7 @@ export class OpenAPIGenerator extends EventEmitter {
     createEPCISSchemas() { return {}; }
 }
 
-// Export ES6 par défaut
-export { OpenAPIGenerator, OPENAPI_GENERATOR_CONFIG };
+// Export already done via export class
 
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {

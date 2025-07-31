@@ -22,10 +22,10 @@
  * - Templates prêts-à-implémenter
  */
 
-import { promises as fs } from 'fs';
-import path from 'path';
-import { EventEmitter } from 'events';
-import { performance } from 'perf_hooks';
+import { fs } from '../utils/obsidian-adapter.js';
+import { path } from '../utils/obsidian-adapter.js';
+import { EventEmitter } from '../utils/obsidian-adapter.js';
+import { performance } from '../utils/obsidian-adapter.js';
 
 /**
  * Configuration du compilateur workflow
@@ -1273,8 +1273,7 @@ export class WorkflowCompiler extends EventEmitter {
     }
 }
 
-// Export ES6 par défaut
-export { WorkflowCompiler, WORKFLOW_COMPILER_CONFIG };
+// Export already done via export class
 
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {

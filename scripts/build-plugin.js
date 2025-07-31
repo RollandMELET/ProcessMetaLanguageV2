@@ -24,7 +24,7 @@ async function build() {
         // Ensure dist directory exists
         await fs.mkdir(path.join(ROOT_DIR, 'dist'), { recursive: true });
         
-        // Bundle main plugin file
+        // Bundle main plugin file with all dependencies
         await esbuild.build({
             entryPoints: [path.join(ROOT_DIR, 'main.js')],
             bundle: true,
@@ -35,6 +35,21 @@ async function build() {
             sourcemap: 'inline',
             treeShaking: true,
             outfile: path.join(ROOT_DIR, 'dist', 'main.js'),
+            // Important: resolve all local modules
+            loader: {
+                '.js': 'js',
+            },
+            define: {
+                'process.env.NODE_ENV': '"production"'
+            },
+            minify: false, // Disable for debugging
+            // Include all dependencies in bundle
+            platform: 'browser', // Changed from node to browser for Obsidian
+            // Handle export issues
+            logOverride: {
+                'duplicate-export-name': 'warning',
+                'commonjs-variable-in-esm': 'warning'
+            },
         });
         
         // Copy manifest

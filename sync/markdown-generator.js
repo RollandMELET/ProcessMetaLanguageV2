@@ -18,8 +18,8 @@
  * @version 1.0.0
  */
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import { fs } from '../utils/obsidian-adapter.js';
+import { path } from '../utils/obsidian-adapter.js';
 import { TemplateProcessor } from '../core/template-processor.js';
 
 /**

@@ -22,9 +22,9 @@
  * - Support streaming pour gros volumes
  */
 
-import { performance } from 'perf_hooks';
+import { performance } from '../utils/obsidian-adapter.js';
 import { Worker } from 'worker_threads';
-import { EventEmitter } from 'events';
+import { EventEmitter } from '../utils/obsidian-adapter.js';
 
 /**
  * Configuration du processeur batch
@@ -901,8 +901,7 @@ export class BatchProcessor extends EventEmitter {
 }
 
 // Export ES6 par défaut
-export { BatchProcessor, BATCH_PROCESSOR_CONFIG };
-
+// Export already done
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {
     window.ProcessMetaLanguageBatchProcessor = {

@@ -1,0 +1,94 @@
+/* ProcessMetaLanguage Styles */
+.pml-interface {
+    position: fixed;
+    right: 20px;
+    top: 100px;
+    width: 300px;
+    max-height: 80vh;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 8px;
+    padding: 15px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pml-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pml-button {
+    padding: 8px 12px;
+    background: var(--interactive-normal);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.pml-button:hover {
+    background: var(--interactive-hover);
+}
+
+.pml-button:active {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.pml-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--background-modifier-border);
+}
+
+.pml-section-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.pml-template-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+
+.pml-template-button {
+    padding: 6px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.pml-panel {
+    background: var(--background-secondary);
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 10px;
+}
+
+.pml-input {
+    width: 100%;
+    padding: 6px 10px;
+    background: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.pml-status {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+.pml-success {
+    color: var(--text-success);
+}
+
+.pml-error {
+    color: var(--text-error);
+}

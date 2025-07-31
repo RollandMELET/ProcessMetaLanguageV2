@@ -21,8 +21,8 @@
  * - Conformité architecture État-Actions deux niveaux
  */
 
-import { promises as fs } from 'fs';
-import path from 'path';
+import { fs } from '../utils/obsidian-adapter.js';
+import { path } from '../utils/obsidian-adapter.js';
 import yaml from 'js-yaml';
 
 /**
@@ -679,8 +679,7 @@ export class MarkdownReader {
 }
 
 // Export ES6 par défaut
-export { MarkdownReader, MARKDOWN_READER_CONFIG };
-
+// Export already done
 // Export browser pour utilisation dans Obsidian
 if (typeof window !== 'undefined') {
     window.ProcessMetaLanguageMarkdownReader = {
