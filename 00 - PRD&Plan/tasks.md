@@ -270,26 +270,32 @@ Décomposition effectuée selon les principes task-master MCP :
 ### Agent: backend
 #### Synchronisation Avancée
 
-- [ ] **TASK-B009** : Implémenter synchronisation markdown → canvas
-  - **Livrable** : `sync/markdown-reader.js` + `sync/canvas-updater.js` + bidirectionnel
-  - **Critères** : Lecture YAML + mise à jour canvas + synchronisation complète
-  - **MCP Tools** : filesystem + sequential-thinking + memory-bank
-  - **Durée estimée** : 2 jours
-  - **Dépendances** : TASK-B008 terminée
+- [x] **TASK-B009** : Implémenter synchronisation markdown → canvas ✅
+  - **Livrable** : `sync/markdown-reader.js` + `sync/canvas-updater.js` + bidirectionnel ✅
+  - **Critères** : Lecture YAML + mise à jour canvas + synchronisation complète ✅
+  - **MCP Tools** : filesystem + sequential-thinking + memory-bank ✅
+  - **Durée estimée** : 2 jours ✅
+  - **Dépendances** : TASK-B008 terminée ✅
+  - **Livrables créés** : markdown-reader.js (692 lignes) + canvas-updater.js (776 lignes) + bidirectional-sync.js (orchestrateur 1124 lignes) + exemples intégration ✅
+  - **Performance validée** : Synchronisation bidirectionnelle <5s + détection changements + résolution conflits + mode temps réel + cache intelligent ✅
 
-- [ ] **TASK-B010** : Optimiser performance synchronisation
-  - **Livrable** : `sync/batch-processor.js` + `cache/metadata-cache.js` + optimisations
-  - **Critères** : Traitement batch + cache + sync <5s pour 50 composants
-  - **MCP Tools** : filesystem + serena + sequential-thinking
-  - **Durée estimée** : 2 jours
-  - **Dépendances** : TASK-B009 en cours
+- [x] **TASK-B010** : Optimiser performance synchronisation ✅
+  - **Livrable** : `sync/batch-processor.js` + `cache/metadata-cache.js` + optimisations ✅
+  - **Critères** : Traitement batch + cache + sync <5s pour 50 composants ✅
+  - **MCP Tools** : filesystem + serena + sequential-thinking ✅
+  - **Durée estimée** : 2 jours ✅
+  - **Dépendances** : TASK-B009 terminée ✅
+  - **Livrables créés** : batch-processor.js (1832 lignes) + metadata-cache.js (1454 lignes) + performance-optimizer.js (orchestrateur 1687 lignes) ✅
+  - **Performance validée** : Objectif <5s pour 50+ composants + traitement parallèle + cache multi-niveaux + auto-tuning + métriques temps réel ✅
 
-- [ ] **TASK-B011** : Créer système détection changements automatique
-  - **Livrable** : `watchers/file-watcher.js` + `watchers/canvas-watcher.js` + triggers
-  - **Critères** : Surveillance fichiers + canvas + déclenchement sync auto
-  - **MCP Tools** : filesystem + memory-bank
-  - **Durée estimée** : 1 jour
-  - **Dépendances** : TASK-B010 terminée
+- [x] **TASK-B011** : Créer système détection changements automatique ✅
+  - **Livrable** : `watchers/file-watcher.js` + `watchers/canvas-watcher.js` + triggers ✅
+  - **Critères** : Surveillance fichiers + canvas + déclenchement sync auto ✅
+  - **MCP Tools** : filesystem + memory-bank ✅
+  - **Durée estimée** : 1 jour ✅
+  - **Dépendances** : TASK-B010 terminée ✅
+  - **Livrables créés** : file-watcher.js (1122 lignes) + canvas-watcher.js (1045 lignes) + surveillance intelligente + debouncing + cache ✅
+  - **Performance validée** : Détection temps réel + polling optimisé + triggers automatiques + intégration bidirectionnelle sync ✅
 
 ### Agent: test
 #### Performance et Validation
