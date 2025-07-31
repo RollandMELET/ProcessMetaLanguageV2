@@ -1,0 +1,43 @@
+{
+  "templateId": "tpl_extended_shipping_process_1753910800014_38giol",
+  "version": "1.0.0",
+  "created": "2025-07-30T21:26:40.017Z",
+  "author": "default",
+  "changeLog": "Hérite de: Shipping Process vundefined",
+  "checksum": "985ec33ebcb1707e5d8340dfd966e39db9c5ac7f2e0653679e05d10ca55b4ccf",
+  "snapshot": {
+    "id": "tpl_extended_shipping_process_1753910800014_38giol",
+    "name": "Extended Shipping Process",
+    "type": "business_step",
+    "category": "logistics",
+    "description": "Extension du processus d'expédition avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T21:26:40.014Z",
+    "modified": "2025-07-30T21:26:40.014Z",
+    "metadata": {
+      "businessStep": "shipping",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_shipping_process_1753910800014_38giol",
+      "source": "inheritance",
+      "parentTemplate": "test_shipping_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_shipping_001",
+          "name": "Shipping Process"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "weight_check",
+            "dimension_check"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {}
+  }
+}

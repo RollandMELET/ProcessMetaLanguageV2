@@ -1,0 +1,491 @@
+{
+  "checklistVersion": "1.0.0",
+  "taskId": "TASK-T002",
+  "title": "Checklist Validation Test Utilisateur Phase 1",
+  "description": "Validation complète test utilisateur création processus 3 composants",
+  "createdAt": "2025-07-28T19:20:00Z",
+  "author": "Rolland MELET & Claude Code",
+  
+  "testConfiguration": {
+    "duration": "10-15 minutes",
+    "components": 3,
+    "performanceTarget": "< 5 secondes",
+    "successThreshold": "90%",
+    "environment": "Obsidian + Excalidraw + ProcessMetaLanguage"
+  },
+  
+  "categories": {
+    "preparation": {
+      "title": "🛠️ Préparation Test",
+      "weight": 10,
+      "criteria": [
+        {
+          "id": "prep001",
+          "description": "Obsidian ouvert avec vault de test",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "prep002", 
+          "description": "Fichier processus-test-phase1.excalidraw créé",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "prep003",
+          "description": "ExcalidrawAutomate activé et fonctionnel",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "prep004",
+          "description": "ProcessMetaLanguage configuré correctement",
+          "type": "boolean", 
+          "required": true,
+          "status": "pending"
+        }
+      ]
+    },
+    
+    "objectCreation": {
+      "title": "🔷 Création OBJECT (Hexagone)",
+      "weight": 25,
+      "criteria": [
+        {
+          "id": "obj001",
+          "description": "Hexagone créé avec nom 'Lot Acier A001'",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "obj002",
+          "description": "Dimensions exactes 120x80px",
+          "type": "measurement",
+          "expected": {"width": 120, "height": 80},
+          "tolerance": 1,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "obj003",
+          "description": "Couleur verte #4CAF50 appliquée",
+          "type": "color",
+          "expected": "#4CAF50",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "obj004",
+          "description": "Tag #process-object ajouté automatiquement",
+          "type": "textContains",
+          "expected": "#process-object",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "obj005",
+          "description": "Position (200, 200) respectée",
+          "type": "position", 
+          "expected": {"x": 200, "y": 200},
+          "tolerance": 5,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "obj006",
+          "description": "Type 'raw-material' inféré correctement",
+          "type": "inference",
+          "expected": "raw-material",
+          "required": false,
+          "status": "pending" 
+        }
+      ]
+    },
+    
+    "stateCreation": {
+      "title": "🏃 Création STATE (Bannière)",
+      "weight": 25,
+      "criteria": [
+        {
+          "id": "state001",
+          "description": "Bannière créée avec nom 'En Production'",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "state002", 
+          "description": "Dimensions exactes 80x40px",
+          "type": "measurement",
+          "expected": {"width": 80, "height": 40},
+          "tolerance": 1,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "state003",
+          "description": "Couleur bleue #2196F3 appliquée",
+          "type": "color",
+          "expected": "#2196F3", 
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "state004",
+          "description": "Tag #process-state ajouté automatiquement",
+          "type": "textContains",
+          "expected": "#process-state",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "state005",
+          "description": "Superposition sur OBJECT (position 210, 180)",
+          "type": "position",
+          "expected": {"x": 210, "y": 180},
+          "tolerance": 10,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "state006",
+          "description": "Disposition 'active' inférée correctement",
+          "type": "inference",
+          "expected": "active",
+          "required": false,
+          "status": "pending"
+        },
+        {
+          "id": "state007",
+          "description": "Relation parent-enfant avec OBJECT détectée",
+          "type": "relationship",
+          "expected": "state_belongs_to_object",
+          "required": true,
+          "status": "pending"
+        }
+      ]
+    },
+    
+    "actionCreation": {
+      "title": "🎬 Création ACTION (Rectangle)",
+      "weight": 25,
+      "criteria": [
+        {
+          "id": "action001",
+          "description": "Rectangle créé avec nom 'Contrôler Qualité'",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "action002",
+          "description": "Dimensions exactes 140x60px",
+          "type": "measurement", 
+          "expected": {"width": 140, "height": 60},
+          "tolerance": 1,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "action003",
+          "description": "Coins arrondis avec radius 8px",
+          "type": "style",
+          "expected": {"roundness": {"type": 2, "value": 8}},
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "action004",
+          "description": "Couleur rouge #F44336 appliquée",
+          "type": "color",
+          "expected": "#F44336",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "action005",
+          "description": "Tag #process-action ajouté automatiquement",
+          "type": "textContains",
+          "expected": "#process-action",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "action006",
+          "description": "Position proche de STATE (350, 190)",
+          "type": "position",
+          "expected": {"x": 350, "y": 190},
+          "tolerance": 10, 
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "action007",
+          "description": "Type 'validation_action' inféré correctement",
+          "type": "inference",
+          "expected": "validation_action",
+          "required": false,
+          "status": "pending"
+        },
+        {
+          "id": "action008",
+          "description": "Relation parent-enfant avec STATE détectée",
+          "type": "relationship",
+          "expected": "action_belongs_to_state",
+          "required": true,
+          "status": "pending"
+        }
+      ]
+    },
+    
+    "workflow": {
+      "title": "🔄 Relations et Workflow",
+      "weight": 10,
+      "criteria": [
+        {
+          "id": "wf001",
+          "description": "Flèche OBJECT → STATE créée",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "wf002",
+          "description": "Flèche STATE → ACTION créée",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "wf003",
+          "description": "Relations spatiales détectées par proximité",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "wf004",
+          "description": "Architecture État-Actions deux niveaux validée",
+          "type": "boolean",
+          "required": true,
+          "status": "pending"
+        }
+      ]
+    },
+    
+    "synchronization": {
+      "title": "🔄 Synchronisation Canvas → Markdown",
+      "weight": 20,
+      "criteria": [
+        {
+          "id": "sync001",
+          "description": "Synchronisation déclenchée avec succès",
+          "type": "boolean", 
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "sync002",
+          "description": "Performance < 5 secondes respectée",
+          "type": "performance",
+          "expected": 5000,
+          "unit": "ms",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "sync003",
+          "description": "3 composants ProcessMetaLanguage détectés",
+          "type": "count",
+          "expected": 3,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "sync004",
+          "description": "4+ fichiers markdown générés",
+          "type": "countMinimum",
+          "expected": 4,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "sync005",
+          "description": "Structure dossiers correcte (objects/, states/, actions/)",
+          "type": "fileStructure",
+          "expected": ["objects/", "states/", "actions/"],
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "sync006",
+          "description": "Fichier workflow consolidé généré",
+          "type": "fileExists",
+          "expected": "workflow-consolide.md",
+          "required": true,
+          "status": "pending"
+        }
+      ]
+    },
+    
+    "documentation": {
+      "title": "📊 Qualité Documentation Générée",
+      "weight": 15,
+      "criteria": [
+        {
+          "id": "doc001",
+          "description": "Métadonnées EPCIS 2.0 présentes dans chaque fichier",
+          "type": "contentValidation",
+          "expected": ["businessStep", "disposition"],
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "doc002",
+          "description": "Action principale automatique générée pour l'état",
+          "type": "contentValidation", 
+          "expected": "Consulter_En_Production",
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "doc003",
+          "description": "Workflow interne complet pour l'action",
+          "type": "contentValidation",
+          "expected": ["Validation entrée", "Exécution", "Validation sortie"],
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "doc004",
+          "description": "Paramètres I/O définis pour l'action",
+          "type": "contentValidation",
+          "expected": ["inputParameters", "outputParameters"],
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "doc005",
+          "description": "Stratégie rollback définie si applicable",
+          "type": "contentValidation",
+          "expected": "rollback",
+          "required": false,
+          "status": "pending"
+        },
+        {
+          "id": "doc006",
+          "description": "Correspondances 360SmartConnect présentes",
+          "type": "contentValidation",
+          "expected": "apiMapping",
+          "required": false,
+          "status": "pending"
+        }
+      ]
+    },
+    
+    "usability": {
+      "title": "🎯 Utilisabilité et Expérience",
+      "weight": 10,
+      "criteria": [
+        {
+          "id": "ux001",
+          "description": "Processus intuitif sans documentation",
+          "type": "subjective",
+          "scale": 10,
+          "threshold": 7,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "ux002",
+          "description": "Feedback visuel clair à chaque étape",
+          "type": "subjective",
+          "scale": 10,
+          "threshold": 7,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "ux003",
+          "description": "Récupération après erreur facile",
+          "type": "subjective",
+          "scale": 10,
+          "threshold": 6,
+          "required": false,
+          "status": "pending"
+        },
+        {
+          "id": "ux004",
+          "description": "Résultats exploitables immédiatement",
+          "type": "subjective",
+          "scale": 10,
+          "threshold": 8,
+          "required": true,
+          "status": "pending"
+        },
+        {
+          "id": "ux005",
+          "description": "Temps total < 15 minutes pour processus complet",
+          "type": "performance",
+          "expected": 900,
+          "unit": "seconds",
+          "required": true,
+          "status": "pending"
+        }
+      ]
+    }
+  },
+  
+  "validation": {
+    "automaticChecks": [
+      "dimensions", "colors", "tags", "positions", "fileStructure", "performance"
+    ],
+    "manualChecks": [
+      "usability", "contentQuality", "workflowLogic", "businessRelevance"
+    ],
+    "successCriteria": {
+      "minimumScore": 90,
+      "requiredCriteriaPass": "100%",
+      "performanceThresholds": {
+        "creationTime": "< 2min per component",
+        "syncTime": "< 5s total",
+        "totalTime": "< 15min complete process"
+      }
+    }
+  },
+  
+  "reporting": {
+    "outputFormats": ["json", "html", "markdown"],
+    "includeScreenshots": true,
+    "includeLogs": true,
+    "archiveResults": true,
+    "notificationTargets": ["console", "file", "webhook"]
+  },
+  
+  "postTest": {
+    "cleanup": {
+      "removeTemporaryFiles": false,
+      "preserveSuccessfulResults": true,
+      "archiveFailedAttempts": true
+    },
+    "feedback": {
+      "collectUserRating": true,
+      "collectSuggestions": true,
+      "collectBugReports": true,
+      "collectPerformanceFeedback": true
+    },
+    "nextPhase": {
+      "goNoGoDecision": true,
+      "criteriaForPhase2": [
+        "score >= 90%",
+        "performance < 5s",
+        "no blocking bugs",
+        "user satisfaction >= 7/10"
+      ]
+    }
+  }
+}

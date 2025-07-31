@@ -238,5 +238,85 @@
       "1.0.0"
     ],
     "parentId": "test_shipping_001"
+  },
+  "tpl_extended_in_progress_state_1753909114651_jldlw0": {
+    "id": "tpl_extended_in_progress_state_1753909114651_jldlw0",
+    "name": "Extended In Progress State",
+    "type": "disposition",
+    "category": "operational",
+    "description": "Extension de l'état en cours avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T20:58:34.651Z",
+    "modified": "2025-07-30T20:58:34.651Z",
+    "metadata": {
+      "disposition": "in_progress",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_in_progress_state_1753909114651_jldlw0",
+      "source": "inheritance",
+      "parentTemplate": "test_in_progress_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_in_progress_001",
+          "name": "In Progress State"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "quality_check",
+            "progress_tracking"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {},
+    "filePath": "/Users/rollandmelet/Développement/Projets/ProcessMetaLanguage/templates/user-templates/disposition/tpl_extended_in_progress_state_1753909114651_jldlw0.md",
+    "versions": [
+      "1.0.0"
+    ],
+    "parentId": "test_in_progress_001"
+  },
+  "tpl_extended_shipping_process_1753910800014_38giol": {
+    "id": "tpl_extended_shipping_process_1753910800014_38giol",
+    "name": "Extended Shipping Process",
+    "type": "business_step",
+    "category": "logistics",
+    "description": "Extension du processus d'expédition avec validations personnalisées",
+    "version": "1.0.0",
+    "author": "default",
+    "created": "2025-07-30T21:26:40.014Z",
+    "modified": "2025-07-30T21:26:40.014Z",
+    "metadata": {
+      "businessStep": "shipping",
+      "epcisCompliant": true,
+      "templateId": "tpl_extended_shipping_process_1753910800014_38giol",
+      "source": "inheritance",
+      "parentTemplate": "test_shipping_001",
+      "inheritance": {
+        "parent": {
+          "id": "test_shipping_001",
+          "name": "Shipping Process"
+        },
+        "overrides": {},
+        "extensions": {
+          "customValidations": [
+            "weight_check",
+            "dimension_check"
+          ]
+        },
+        "locked": false
+      },
+      "isSystem": false,
+      "isLocked": false
+    },
+    "frontmatter": {},
+    "filePath": "/Users/rollandmelet/Développement/Projets/ProcessMetaLanguage/templates/user-templates/business_step/tpl_extended_shipping_process_1753910800014_38giol.md",
+    "versions": [
+      "1.0.0"
+    ],
+    "parentId": "test_shipping_001"
   }
 }

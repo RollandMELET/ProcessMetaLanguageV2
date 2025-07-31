@@ -169,8 +169,17 @@ class TemplateProcessor {
     validateTemplateStructure(template, templateName) {
         const { frontmatter, body } = template;
         
-        // Validation champs requis frontmatter
-        for (const requiredField of this.config.requiredYamlFields) {
+        // Validation champs requis frontmatter selon le type de template
+        let requiredFields;
+        if (templateName.includes('state')) {
+            requiredFields = ['state_id', 'state_name', 'disposition', 'created_at', 'position', 'sync_status'];
+        } else if (templateName.includes('action')) {
+            requiredFields = ['action_id', 'action_name', 'action_type', 'created_at', 'position', 'sync_status'];
+        } else {
+            requiredFields = this.config.requiredYamlFields;
+        }
+            
+        for (const requiredField of requiredFields) {
             if (!(requiredField in frontmatter)) {
                 throw new Error(`Champ requis '${requiredField}' manquant dans frontmatter du template '${templateName}'`);
             }
@@ -187,8 +196,15 @@ class TemplateProcessor {
             console.warn(`⚠️ Aucune variable trouvée dans le corps du template '${templateName}'`);
         }
         
-        // Validation sections markdown obligatoires
-        const requiredSections = ['# Object:', '## Description', '## État Actuel', '## Actions Disponibles'];
+        // Validation sections markdown obligatoires selon type de template
+        let requiredSections;
+        if (templateName.includes('state')) {
+            requiredSections = ['# État:', '## Description État', '## Architecture État-Actions', '## Métadonnées Techniques'];
+        } else if (templateName.includes('action')) {
+            requiredSections = ['# Action:', '## Description Action', '## Paramètres d\'Entrée', '## Workflow Interne'];
+        } else {
+            requiredSections = ['# Object:', '## Description', '## État Actuel', '## Actions Disponibles'];
+        }
         const missingSections = requiredSections.filter(section => !body.includes(section));
         if (missingSections.length > 0) {
             console.warn(`⚠️ Sections manquantes dans template '${templateName}': ${missingSections.join(', ')}`);
@@ -361,7 +377,7 @@ class TemplateProcessor {
             const template = await this.loadTemplate(templateName);
             
             // Préparer variables depuis données canvas
-            const templateVariables = this.prepareTemplateVariables(canvasData);
+            const templateVariables = this.prepareTemplateVariables(canvasData, this.getTemplateType(templateName));
             
             // Traiter frontmatter en remplaçant variables directement dans l'objet
             const processedFrontmatter = this.processObjectVariables(template.frontmatter, templateVariables);
@@ -420,19 +436,21 @@ class TemplateProcessor {
     /**
      * Prépare les variables template depuis les données canvas ProcessMetaLanguage
      * @param {Object} canvasData - Données objet depuis object-creator.js
+     * @param {string} templateType - Type de template ('object' ou 'state')
      * @returns {Object} Variables formatées pour remplacement template
      * @example
      * const variables = processor.prepareTemplateVariables({
      *   objectName: "Lot-Acier-A001",
      *   objectType: "raw-material",
      *   position: {x: 100, y: 200}
-     * });
+     * }, 'object');
      * // Returns: {OBJECT_NAME: "Lot-Acier-A001", OBJECT_TYPE: "raw-material", ...}
      */
-    prepareTemplateVariables(canvasData) {
+    prepareTemplateVariables(canvasData, templateType = 'object') {
         const timestamp = new Date().toISOString();
         
-        return {
+        // Variables communes pour tous les types de templates
+        const commonVariables = {
             // Identifiants
             OBJECT_ID: canvasData.uniqueId || canvasData.objectId || 'unknown',
             OBJECT_NAME: canvasData.objectName || 'Unnamed Object',
@@ -497,6 +515,22 @@ class TemplateProcessor {
                 }
             ]
         };
+        
+        // Variables spécifiques selon le type de template
+        if (templateType === 'state') {
+            return {
+                ...commonVariables,
+                ...this.prepareStateVariables(canvasData)
+            };
+        } else if (templateType === 'action') {
+            return {
+                ...commonVariables,
+                ...this.prepareActionVariables(canvasData)
+            };
+        }
+        
+        // Variables par défaut pour les objets
+        return commonVariables;
     }
 
     /**
@@ -544,7 +578,12 @@ class TemplateProcessor {
             
             const batchPromises = batch.map(async (canvasData, index) => {
                 try {
-                    const objectName = (canvasData.objectName || `object_${i + index}`).replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+                    const objectName = (canvasData.objectName || `object_${i + index}`)
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-zA-Z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '')
+                        .toLowerCase();
                     const outputPath = path.join(outputDir, `${objectName}.md`);
                     
                     const result = await this.generateFromCanvas(canvasData, templateName, outputPath);
@@ -596,7 +635,12 @@ class TemplateProcessor {
      */
     async syncCanvasToTemplate(canvasData, templateName = 'object-template') {
         try {
-            const objectName = (canvasData.objectName || 'unnamed').replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+            const objectName = (canvasData.objectName || 'unnamed')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .toLowerCase();
             const outputPath = path.join(this.config.outputDir, 'objects', `${objectName}.md`);
             
             await this.generateFromCanvas(canvasData, templateName, outputPath);
@@ -632,6 +676,355 @@ class TemplateProcessor {
         this.templateCache.clear();
         this.loadedTemplates.clear();
         console.log('🗑️ Caches template processor vidés');
+    }
+
+    /**
+     * Détermine le type de template depuis son nom
+     * @param {string} templateName - Nom du template
+     * @returns {string} Type de template ('object', 'state', 'action', etc.)
+     */
+    getTemplateType(templateName) {
+        if (templateName.includes('state')) return 'state';
+        if (templateName.includes('action')) return 'action';
+        if (templateName.includes('object')) return 'object';
+        return 'object'; // Par défaut
+    }
+
+    /**
+     * Prépare les variables spécifiques pour un template STATE
+     * @param {Object} stateData - Données état depuis state-creator.js
+     * @returns {Object} Variables formatées pour template STATE
+     * @example
+     * const stateVars = processor.prepareStateVariables({
+     *   stateName: "En_Production",
+     *   disposition: "active",
+     *   parentObjectId: "obj_123"
+     * });
+     */
+    prepareStateVariables(stateData) {
+        const timestamp = new Date().toISOString();
+        
+        // Récupérer les couleurs de disposition depuis STATE_DISPOSITION_COLORS
+        const dispositionColors = {
+            'active': '#4CAF50',
+            'in_progress': '#FF9800',
+            'in_transit': '#2196F3',
+            'destroyed': '#424242',
+            'damaged': '#F44336',
+            'expired': '#9C27B0',
+            'inactive': '#757575',
+            'unknown': '#9E9E9E'
+        };
+        
+        return {
+            // Identifiants État
+            STATE_ID: stateData.uniqueId || stateData.stateId || 'unknown',
+            STATE_NAME: stateData.stateName || 'Unnamed State',
+            DISPOSITION: stateData.disposition || 'unknown',
+            DISPOSITION_DESCRIPTION: stateData.dispositionDescription || this.getDispositionDescription(stateData.disposition),
+            DISPOSITION_COLOR: dispositionColors[stateData.disposition] || '#9E9E9E',
+            
+            // Relations avec objet parent
+            PARENT_OBJECT_ID: stateData.parentObjectId || null,
+            PARENT_OBJECT_NAME: stateData.parentObjectName || 'Unknown Object',
+            PARENT_OBJECT_TYPE: stateData.parentObjectType || 'custom',
+            
+            // Horodatage
+            TIMESTAMP: timestamp,
+            CREATED_AT: stateData.createdAt || timestamp,
+            MODIFIED_AT: stateData.lastModified || timestamp,
+            GENERATION_TIMESTAMP: timestamp,
+            EVENT_TIME: stateData.eventTime || timestamp,
+            EVENT_TIMEZONE: stateData.eventTimeZone || '+00:00',
+            LAST_SYNC: stateData.lastSync || timestamp,
+            
+            // Position et dimensions
+            X_COORDINATE: stateData.position?.x || 0,
+            Y_COORDINATE: stateData.position?.y || 0,
+            DIMENSIONS_WIDTH: stateData.dimensions?.width || 80,
+            DIMENSIONS_HEIGHT: stateData.dimensions?.height || 40,
+            
+            // EPCIS 2.0
+            BUSINESS_STEP: stateData.businessStep || stateData.userMetadata?.businessStep || 'observing',
+            BUSINESS_LOCATION: stateData.businessLocation || stateData.userMetadata?.businessLocation || 'urn:epc:id:sgln:0000001.00000.0',
+            
+            // Architecture État-Actions deux niveaux
+            MAIN_ACTION: {
+                generated: true,
+                type: 'data_exposition',
+                name: `Consulter État ${stateData.stateName || 'Unknown'}`
+            },
+            SECONDARY_ACTIONS: stateData.secondaryActions || [],
+            AVAILABLE_SECONDARY_ACTIONS: stateData.availableSecondaryActions || [],
+            
+            // Canvas
+            CANVAS_ELEMENT_ID: stateData.elementId || stateData.id || 'unknown',
+            BANNER_COLOR: stateData.backgroundColor || dispositionColors[stateData.disposition] || '#9E9E9E',
+            TEXT_COLOR: stateData.textColor || '#FFFFFF',
+            BORDER_STYLE: stateData.borderStyle || 'solid',
+            VERTICAL_OFFSET: stateData.verticalOffset || -50,
+            Z_INDEX: stateData.zIndex || 100,
+            
+            // Synchronisation
+            SYNC_STATUS: stateData.syncStatus || 'synchronized',
+            TEMPLATE_VERSION: this.config.templateVersion,
+            RELATIONS_INTEGRITY: stateData.relationsIntegrity || 'valid',
+            
+            // 360SmartConnect
+            AVATAR_ID: stateData.userMetadata?.avatarId || stateData.parentMetadata?.avatarId || 'avatar_001',
+            STATE_METADATA: JSON.stringify(stateData.userMetadata || {}, null, 2),
+            
+            // Transitions et règles business
+            ALLOWED_TRANSITIONS: stateData.allowedTransitions || [],
+            BUSINESS_CONSTRAINTS: stateData.businessConstraints || [],
+            RELATED_STATES: stateData.relatedStates || [],
+            
+            // Historique
+            PREVIOUS_STATE: stateData.previousState || 'Initial',
+            TRANSITION_ACTION: stateData.transitionAction || 'Created',
+            OPERATOR: stateData.operator || stateData.userMetadata?.operator || 'System',
+            
+            // Données spécifiques état
+            STATE_SPECIFIC_DATA: stateData.stateSpecificData || stateData.userMetadata || {}
+        };
+    }
+
+    /**
+     * Obtient la description d'une disposition EPCIS 2.0
+     * @param {string} disposition - Code disposition EPCIS
+     * @returns {string} Description de la disposition
+     */
+    getDispositionDescription(disposition) {
+        const descriptions = {
+            'active': 'État opérationnel actif',
+            'in_progress': 'En cours de traitement',
+            'in_transit': 'En déplacement ou transport',
+            'destroyed': 'Détruit définitivement',
+            'damaged': 'Défaillant ou endommagé',
+            'expired': 'Expiré ou périmé',
+            'inactive': 'Temporairement inactif',
+            'container_closed': 'Conteneur fermé et scellé',
+            'container_open': 'Conteneur ouvert et accessible',
+            'dispensed': 'Distribué ou dispensé',
+            'encoded': 'Encodé avec marquage traçabilité',
+            'non_sellable': 'Non vendable pour contraintes',
+            'partially_dispensed': 'Partiellement dispensé',
+            'recalled': 'Rappelé pour défaut',
+            'reserved': 'Réservé ou alloué',
+            'retail_sold': 'Vendu au détail',
+            'returned': 'Retourné par client',
+            'sellable_accessible': 'Vendable et accessible',
+            'sellable_not_accessible': 'Vendable mais non accessible',
+            'stolen': 'Volé ou perdu',
+            'unavailable': 'Temporairement indisponible',
+            'unknown': 'État indéterminé',
+            'consumed': 'Consommé ou utilisé',
+            'installed': 'Installé en place',
+            'disposed': 'Mis au rebut selon réglementations'
+        };
+        
+        return descriptions[disposition] || 'État non défini dans EPCIS 2.0';
+    }
+
+    /**
+     * Synchronise un état canvas vers son fichier markdown template
+     * @param {Object} stateData - Données état canvas mises à jour
+     * @param {string} templateName - Template à utiliser (par défaut 'state-template')
+     * @returns {Promise<string>} Chemin du fichier synchronisé
+     * @sideEffect Met à jour ou crée le fichier markdown correspondant
+     */
+    async syncStateToTemplate(stateData, templateName = 'state-template') {
+        try {
+            const stateName = (stateData.stateName || 'unnamed-state')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .toLowerCase();
+            const outputPath = path.join(this.config.outputDir, 'states', `${stateName}.md`);
+            
+            await this.generateFromCanvas(stateData, templateName, outputPath);
+            
+            console.log(`🔄 Synchronisation état → template: ${path.basename(outputPath)}`);
+            return outputPath;
+            
+        } catch (error) {
+            console.error(`❌ Erreur synchronisation état:`, error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Prépare les variables spécifiques pour un template ACTION
+     * @param {Object} actionData - Données action depuis action-creator.js
+     * @returns {Object} Variables formatées pour template ACTION
+     * @example
+     * const actionVars = processor.prepareActionVariables({
+     *   actionName: "Valider_Qualite",
+     *   actionType: "secondary_action",
+     *   sourceState: "En_Production"
+     * });
+     */
+    prepareActionVariables(actionData) {
+        const timestamp = new Date().toISOString();
+        
+        // Couleurs par type d'action
+        const actionTypeColors = {
+            'main_action': '#2196F3',
+            'secondary_action': '#FF9800', 
+            'workflow_action': '#4CAF50',
+            'api_action': '#9C27B0',
+            'validation_action': '#F44336',
+            'transformation_action': '#607D8B'
+        };
+        
+        return {
+            // Identifiants Action
+            ACTION_ID: actionData.uniqueId || actionData.actionId || 'unknown',
+            ACTION_NAME: actionData.actionName || 'Unnamed Action',
+            ACTION_TYPE: actionData.actionType || 'secondary_action',
+            ACTION_CATEGORY: actionData.actionCategory || this.getActionCategory(actionData.actionType),
+            ACTION_COLOR: actionTypeColors[actionData.actionType] || '#9E9E9E',
+            
+            // Relations avec état parent
+            PARENT_STATE_ID: actionData.parentStateId || null,
+            PARENT_STATE_NAME: actionData.parentStateName || 'Unknown State',
+            PARENT_OBJECT_ID: actionData.parentObjectId || null,
+            
+            // Transitions
+            SOURCE_STATE: actionData.sourceState || actionData.parentStateName || 'Current State',
+            TARGET_STATE: actionData.targetState || 'Next State',
+            TARGET_DISPOSITION: actionData.targetDisposition || 'active',
+            
+            // Horodatage
+            TIMESTAMP: timestamp,
+            CREATED_AT: actionData.createdAt || timestamp,
+            MODIFIED_AT: actionData.lastModified || timestamp,
+            GENERATION_TIMESTAMP: timestamp,
+            EVENT_TIME: actionData.eventTime || timestamp,
+            EVENT_TIMEZONE: actionData.eventTimeZone || '+00:00',
+            LAST_SYNC: actionData.lastSync || timestamp,
+            
+            // Position et dimensions
+            X_COORDINATE: actionData.position?.x || 0,
+            Y_COORDINATE: actionData.position?.y || 0,
+            DIMENSIONS_WIDTH: actionData.dimensions?.width || 140,
+            DIMENSIONS_HEIGHT: actionData.dimensions?.height || 60,
+            
+            // EPCIS 2.0
+            BUSINESS_STEP: actionData.businessStep || actionData.userMetadata?.businessStep || 'observing',
+            BUSINESS_LOCATION: actionData.businessLocation || actionData.userMetadata?.businessLocation || 'urn:epc:id:sgln:0000001.00000.0',
+            EPCIS_ACTION_TYPE: actionData.epcisActionType || 'observe',
+            
+            // Paramètres et workflow
+            INPUT_PARAMETERS: JSON.stringify(actionData.inputParameters || {
+                required: [],
+                optional: []
+            }, null, 2),
+            OUTPUT_PARAMETERS: JSON.stringify(actionData.outputParameters || {
+                success: [],
+                metadata: []
+            }, null, 2),
+            WORKFLOW_INTERNAL: JSON.stringify(actionData.workflowInternal || {
+                steps: [],
+                initial_state: actionData.sourceState || 'current',
+                final_state: actionData.targetState || 'next',
+                intermediate_states: []
+            }, null, 2),
+            
+            // Validations
+            VALIDATION_RULES: JSON.stringify(actionData.validationRules || {
+                pre_execution: [],
+                post_execution: [],
+                business_constraints: []
+            }, null, 2),
+            
+            // API
+            API_SPECIFICATIONS: JSON.stringify(actionData.apiSpecifications || null, null, 2),
+            API_TOKEN: '${API_TOKEN}',
+            
+            // Canvas
+            CANVAS_ELEMENT_ID: actionData.elementId || actionData.id || 'unknown',
+            RECTANGLE_COLOR: actionData.backgroundColor || actionTypeColors[actionData.actionType] || '#9E9E9E',
+            TEXT_COLOR: actionData.textColor || '#FFFFFF',
+            BORDER_STYLE: actionData.borderStyle || 'solid',
+            BORDER_RADIUS: actionData.borderRadius || 8,
+            Z_INDEX: actionData.zIndex || 50,
+            
+            // Synchronisation
+            SYNC_STATUS: actionData.syncStatus || 'synchronized',
+            TEMPLATE_VERSION: this.config.templateVersion,
+            
+            // 360SmartConnect
+            AVATAR_ID: actionData.userMetadata?.avatarId || actionData.parentMetadata?.avatarId || 'avatar_001',
+            
+            // Métriques
+            AVERAGE_EXECUTION_TIME: actionData.metrics?.averageExecutionTime || 0,
+            SUCCESS_RATE: actionData.metrics?.successRate || 100,
+            ROLLBACK_COUNT: actionData.metrics?.rollbackCount || 0,
+            LAST_OPTIMIZATION: actionData.metrics?.lastOptimization || timestamp,
+            
+            // Exécution
+            OPERATOR: actionData.operator || actionData.userMetadata?.operator || 'System',
+            EXECUTION_PARAMS: JSON.stringify(actionData.lastExecutionParams || {}, null, 2),
+            RESULT: actionData.lastExecutionResult || 'N/A',
+            DURATION: actionData.lastExecutionDuration || 0,
+            FINAL_STATE: actionData.lastExecutionFinalState || actionData.targetState || 'N/A',
+            
+            // Sécurité
+            SECURITY_RULES: actionData.securityRules ? JSON.stringify(actionData.securityRules, null, 2) : null,
+            
+            // Tests
+            UNIT_TESTS: actionData.unitTests || [],
+            INTEGRATION_TESTS: actionData.integrationTests || [],
+            API_VALIDATION_STATUS: actionData.apiValidationStatus || '✅ Validé'
+        };
+    }
+
+    /**
+     * Obtient la catégorie d'une action selon son type
+     * @param {string} actionType - Type d'action
+     * @returns {string} Catégorie de l'action
+     */
+    getActionCategory(actionType) {
+        const categories = {
+            'main_action': 'data_exposition',
+            'secondary_action': 'state_transition',
+            'workflow_action': 'transformation',
+            'api_action': 'data_capture',
+            'validation_action': 'validation',
+            'transformation_action': 'transformation'
+        };
+        
+        return categories[actionType] || 'data_capture';
+    }
+
+    /**
+     * Synchronise une action canvas vers son fichier markdown template
+     * @param {Object} actionData - Données action canvas mises à jour
+     * @param {string} templateName - Template à utiliser (par défaut 'action-template')
+     * @returns {Promise<string>} Chemin du fichier synchronisé
+     * @sideEffect Met à jour ou crée le fichier markdown correspondant
+     */
+    async syncActionToTemplate(actionData, templateName = 'action-template') {
+        try {
+            const actionName = (actionData.actionName || 'unnamed-action')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-zA-Z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .toLowerCase();
+            const outputPath = path.join(this.config.outputDir, 'actions', `${actionName}.md`);
+            
+            await this.generateFromCanvas(actionData, templateName, outputPath);
+            
+            console.log(`🔄 Synchronisation action → template: ${path.basename(outputPath)}`);
+            return outputPath;
+            
+        } catch (error) {
+            console.error(`❌ Erreur synchronisation action:`, error.message);
+            throw error;
+        }
     }
 }
 

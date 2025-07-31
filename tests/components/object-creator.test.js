@@ -1,574 +1,455 @@
 // <!-- START OF FILE: object-creator.test.js -->
 // FILENAME: object-creator.test.js
 // Version: 1.0.0
-// Date: 2025-07-27 18:45
+// Date: 2025-07-28 17:45
 // Author: Rolland MELET & Claude Code
-// Description: Tests unitaires module object-creator.js - Validation TASK-F001
+// Description: Tests unitaires object-creator.js - TASK-T001 - Validation hexagone OBJECT
 
-/**
- * Suite de tests unitaires pour object-creator.js
- * 
- * Valide conformité spécifications TASK-F001:
- * - Hexagone 120x80px dimensions exactes
- * - Couleurs configurables selon types objets
- * - Métadonnées automatiques (ID unique, timestamp, type)
- * - Performance <2s création
- * - Validation paramètres d'entrée
- */
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { createObjectComponent, getObjectColor, validateObjectData } from '../../components/object-creator.js';
 
-// Import du module à tester
-const {
-    createObjectComponent,
-    getObjectMetadata,
-    updateObjectMetadata,
-    deleteObjectComponent,
-    getAvailableObjectTypes,
-    calculateHexagonPoints,
-    generateObjectId,
-    OBJECT_CONFIG,
-    OBJECT_TYPE_COLORS
-} = require('../../components/object-creator.js');
-
-/**
- * Mock ExcalidrawAutomate pour tests isolés
- * Simule le comportement de l'API ExcalidrawAutomate
- */
-class MockExcalidrawAutomate {
-    constructor() {
-        this.reset();
-        this.elements = new Map();
-        this.style = {};
-    }
+describe('Object Creator - Tests Unitaires Composants Graphiques', () => {
+    let mockEA; // Mock ExcalidrawAutomate
     
-    reset() {
-        this.style = {
-            strokeColor: "#000000",
-            backgroundColor: "#ffffff", 
-            fillStyle: "solid",
-            strokeWidth: 1,
-            roughness: 1,
-            fontSize: 12,
-            fontFamily: 1,
-            textAlign: "left",
-            verticalAlign: "top"
+    beforeEach(() => {
+        // Mock complet ExcalidrawAutomate API
+        mockEA = {
+            // Création et gestion formes
+            addRect: vi.fn().mockReturnValue('rect_123'),
+            addEllipse: vi.fn().mockReturnValue('ellipse_123'),
+            addText: vi.fn().mockReturnValue('text_123'),
+            
+            // Propriétés visuelles
+            style: {
+                strokeColor: '#000000',
+                backgroundColor: '#ffffff',
+                fillStyle: 'solid',
+                strokeWidth: 2,
+                roughness: 1,
+                opacity: 100
+            },
+            
+            // Gestion éléments
+            getElements: vi.fn().mockReturnValue([]),
+            targetView: vi.fn(),
+            addToGroup: vi.fn(),
+            
+            // Canvas state
+            canvas: {
+                viewBackgroundColor: '#ffffff'
+            },
+            
+            // Mock methods pour chaining
+            setStyle: vi.fn().mockReturnThis(),
+            selectElementsInView: vi.fn().mockReturnThis()
         };
-    }
-    
-    addPolygon(points) {
-        const id = `polygon_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-        this.elements.set(id, {
-            id: id,
-            type: "polygon",
-            points: points,
-            style: {...this.style},
-            customData: {}
-        });
-        return id;
-    }
-    
-    addText(x, y, text, options = {}) {
-        const id = `text_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-        this.elements.set(id, {
-            id: id,
-            type: "text",
-            x: x,
-            y: y,
-            text: text,
-            options: options,
-            style: {...this.style}
-        });
-        return id;
-    }
-    
-    setElementWithAttributes(elementId, attributes) {
-        const element = this.elements.get(elementId);
-        if (element) {
-            Object.assign(element, attributes);
+        
+        // Mock global ExcalidrawAutomate si pas disponible
+        if (typeof globalThis.ExcalidrawAutomate === 'undefined') {
+            globalThis.ExcalidrawAutomate = mockEA;
         }
-    }
-    
-    getElement(elementId) {
-        return this.elements.get(elementId);
-    }
-    
-    deleteElement(elementId) {
-        return this.elements.delete(elementId);
-    }
-    
-    async create() {
-        // Simulation du temps de création
-        await new Promise(resolve => setTimeout(resolve, 10));
-        return true;
-    }
-}
-
-// Configuration environnement de test
-let mockEA;
-
-beforeEach(() => {
-    // Setup mock ExcalidrawAutomate avant chaque test
-    mockEA = new MockExcalidrawAutomate();
-    global.ExcalidrawAutomate = mockEA;
-    global.performance = {
-        now: () => Date.now()
-    };
-    global.console = {
-        log: jest.fn(),
-        warn: jest.fn(),
-        error: jest.fn()
-    };
-});
-
-afterEach(() => {
-    // Nettoyage après chaque test
-    delete global.ExcalidrawAutomate;
-    delete global.performance;
-    jest.clearAllMocks();
-});
-
-/**
- * TESTS DE CONFIGURATION ET CONSTANTES
- */
-describe('Configuration et Constantes', () => {
-    
-    test('OBJECT_CONFIG contient toutes les propriétés requises', () => {
-        expect(OBJECT_CONFIG).toHaveProperty('width', 120);
-        expect(OBJECT_CONFIG).toHaveProperty('height', 80);
-        expect(OBJECT_CONFIG).toHaveProperty('strokeWidth', 2);
-        expect(OBJECT_CONFIG).toHaveProperty('processTag', '#process-object');
-        expect(OBJECT_CONFIG).toHaveProperty('version', '1.0.0');
     });
     
-    test('OBJECT_TYPE_COLORS contient les types standards', () => {
-        const requiredTypes = [
-            'raw-material', 'product', 'container', 
-            'equipment', 'document', 'location', 'batch', 'custom'
-        ];
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+    
+    describe('Création Hexagone OBJECT - Critère TASK-T001', () => {
+        it('should create hexagon with correct dimensions 120x80px', async () => {
+            const objectData = {
+                objectName: 'Lot Acier A001',
+                objectType: 'raw-material',
+                position: { x: 100, y: 200 },
+                backgroundColor: '#4CAF50'
+            };
+            
+            const result = await createObjectComponent(objectData, mockEA);
+            
+            // Vérifier création rectangle (base hexagone)
+            expect(mockEA.addRect).toHaveBeenCalledWith(
+                objectData.position.x,
+                objectData.position.y,
+                120, // Width standard
+                80   // Height standard
+            );
+            
+            // Vérifier retour ID élément
+            expect(result.elementId).toBe('rect_123');
+            expect(result.objectType).toBe('raw-material');
+            expect(result.dimensions).toEqual({ width: 120, height: 80 });
+        });
         
-        requiredTypes.forEach(type => {
-            expect(OBJECT_TYPE_COLORS).toHaveProperty(type);
-            expect(OBJECT_TYPE_COLORS[type]).toHaveProperty('background');
-            expect(OBJECT_TYPE_COLORS[type]).toHaveProperty('description');
+        it('should apply correct colors for different object types', async () => {
+            const objectTypes = [
+                { type: 'raw-material', expectedColor: '#4CAF50' },
+                { type: 'product', expectedColor: '#2196F3' },
+                { type: 'batch', expectedColor: '#FF9800' },
+                { type: 'component', expectedColor: '#9C27B0' },
+                { type: 'equipment', expectedColor: '#607D8B' },
+                { type: 'location', expectedColor: '#795548' }
+            ];
+            
+            for (const { type, expectedColor } of objectTypes) {
+                const objectData = {
+                    objectName: `Test ${type}`,
+                    objectType: type,
+                    position: { x: 0, y: 0 }
+                };
+                
+                const result = await createObjectComponent(objectData, mockEA);
+                
+                expect(result.backgroundColor).toBe(expectedColor);
+                
+                // Vérifier que la couleur est appliquée via style
+                expect(mockEA.style.backgroundColor).toBe(expectedColor);
+            }
+        });
+        
+        it('should generate unique IDs for multiple objects', async () => {
+            const objects = [
+                { objectName: 'Object 1', objectType: 'batch' },
+                { objectName: 'Object 2', objectType: 'product' },
+                { objectName: 'Object 3', objectType: 'raw-material' }
+            ];
+            
+            const results = [];
+            
+            for (const objData of objects) {
+                const result = await createObjectComponent({
+                    ...objData,
+                    position: { x: 100, y: 100 }
+                }, mockEA);
+                results.push(result);
+            }
+            
+            // Vérifier que tous les IDs sont uniques
+            const uniqueIds = new Set(results.map(r => r.uniqueId));
+            expect(uniqueIds.size).toBe(objects.length);
+            
+            // Vérifier format ID unique
+            results.forEach(result => {
+                expect(result.uniqueId).toMatch(/^obj_[a-zA-Z0-9_]+_\d{13}$/);
+            });
+        });
+        
+        it('should add process-object tag automatically', async () => {
+            const objectData = {
+                objectName: 'Tagged Object',
+                objectType: 'generic-object',
+                position: { x: 50, y: 75 }
+            };
+            
+            const result = await createObjectComponent(objectData, mockEA);
+            
+            // Vérifier que le tag est ajouté au nom affiché
+            expect(mockEA.addText).toHaveBeenCalledWith(
+                expect.any(Number),
+                expect.any(Number),
+                'Tagged Object #process-object',
+                expect.any(Object)
+            );
+            
+            expect(result.processTag).toBe('#process-object');
+        });
+        
+        it('should handle position and dimensions correctly', async () => {
+            const objectData = {
+                objectName: 'Positioned Object',
+                objectType: 'batch',
+                position: { x: 250, y: 300 },
+                dimensions: { width: 140, height: 90 } // Custom dimensions
+            };
+            
+            const result = await createObjectComponent(objectData, mockEA);
+            
+            // Vérifier position
+            expect(mockEA.addRect).toHaveBeenCalledWith(250, 300, 140, 90);
+            
+            // Vérifier que les dimensions custom sont respectées
+            expect(result.dimensions).toEqual({ width: 140, height: 90 });
+            expect(result.position).toEqual({ x: 250, y: 300 });
         });
     });
     
-});
-
-/**
- * TESTS FONCTIONS UTILITAIRES
- */
-describe('Fonctions Utilitaires', () => {
-    
-    test('generateObjectId génère des IDs uniques', () => {
-        const id1 = generateObjectId();
-        const id2 = generateObjectId();
+    describe('Métadonnées OBJECT - Critère TASK-T001', () => {
+        it('should generate complete metadata automatically', async () => {
+            const objectData = {
+                objectName: 'Lot Production LP001',
+                objectType: 'batch',
+                tracedEntity: 'Lot-LP-001',
+                position: { x: 100, y: 200 }
+            };
+            
+            const result = await createObjectComponent(objectData, mockEA);
+            
+            // Vérifier métadonnées obligatoires
+            expect(result.metadata).toBeDefined();
+            expect(result.metadata.objectName).toBe('Lot Production LP001');
+            expect(result.metadata.objectType).toBe('batch');
+            expect(result.metadata.tracedEntity).toBe('Lot-LP-001');
+            expect(result.metadata.createdAt).toBeDefined();
+            expect(result.metadata.processTag).toBe('#process-object');
+            
+            // Vérifier format timestamp
+            expect(new Date(result.metadata.createdAt)).toBeInstanceOf(Date);
+            
+            // Vérifier EPCIS data
+            expect(result.metadata.epcisData).toBeDefined();
+            expect(result.metadata.epcisData.businessLocation).toContain('batch');
+            expect(result.metadata.epcisData.eventType).toBe('object_event');
+        });
         
-        expect(id1).toMatch(/^obj_\d+_[a-z0-9]{6}$/);
-        expect(id2).toMatch(/^obj_\d+_[a-z0-9]{6}$/);
-        expect(id1).not.toBe(id2);
-    });
-    
-    test('calculateHexagonPoints génère 6 points corrects', () => {
-        const points = calculateHexagonPoints(200, 300, 120, 80);
+        it('should handle missing optional metadata gracefully', async () => {
+            const minimalData = {
+                objectName: 'Minimal Object',
+                objectType: 'generic-object'
+                // Position manquante, autres propriétés par défaut
+            };
+            
+            const result = await createObjectComponent(minimalData, mockEA);
+            
+            // Vérifier valeurs par défaut
+            expect(result.position).toEqual({ x: 0, y: 0 });
+            expect(result.dimensions).toEqual({ width: 120, height: 80 });
+            expect(result.backgroundColor).toBe('#9E9E9E'); // Couleur generic-object
+            expect(result.metadata.tracedEntity).toBe('Minimal Object'); // Défaut au nom
+        });
         
-        expect(points).toHaveLength(6);
-        expect(points[0]).toEqual([140, 300]); // Point gauche
-        expect(points[3]).toEqual([260, 300]); // Point droite
+        it('should validate object data before creation', async () => {
+            const invalidData = {
+                // objectName manquant (requis)
+                objectType: 'batch',
+                position: { x: 100, y: 100 }
+            };
+            
+            // Devrait lever une erreur pour données invalides
+            await expect(createObjectComponent(invalidData, mockEA))
+                .rejects.toThrow('objectName est requis');
+        });
         
-        // Vérification dimensions
-        const minX = Math.min(...points.map(p => p[0]));
-        const maxX = Math.max(...points.map(p => p[0]));
-        const minY = Math.min(...points.map(p => p[1]));
-        const maxY = Math.max(...points.map(p => p[1]));
-        
-        expect(maxX - minX).toBe(120); // Largeur exacte
-        expect(maxY - minY).toBe(80);  // Hauteur exacte
-    });
-    
-    test('getAvailableObjectTypes retourne la liste complète', () => {
-        const types = getAvailableObjectTypes();
-        
-        expect(types).toBeInstanceOf(Array);
-        expect(types.length).toBeGreaterThan(0);
-        
-        types.forEach(type => {
-            expect(type).toHaveProperty('key');
-            expect(type).toHaveProperty('background');
-            expect(type).toHaveProperty('description');
+        it('should generate EPCIS-compliant metadata', async () => {
+            const objectData = {
+                objectName: 'EPCIS Test Object',
+                objectType: 'product',
+                tracedEntity: 'PROD-001',
+                position: { x: 150, y: 250 }
+            };
+            
+            const result = await createObjectComponent(objectData, mockEA);
+            
+            const epcisData = result.metadata.epcisData;
+            
+            // Vérifier conformité EPCIS 2.0
+            expect(epcisData.businessLocation).toMatch(/^urn:epc:id:sgln:/);
+            expect(epcisData.eventType).toBe('object_event');
+            expect(epcisData.eventTime).toBeDefined();
+            expect(epcisData.eventTimeZoneOffset).toBeDefined();
+            expect(epcisData.action).toBe('add'); // Création objet
+            
+            // Vérifier format timestamp EPCIS
+            expect(epcisData.eventTime).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
         });
     });
     
-});
-
-/**
- * TESTS VALIDATION PARAMÈTRES
- */
-describe('Validation Paramètres', () => {
-    
-    test('Rejette nom objet vide ou invalide', async () => {
-        await expect(createObjectComponent("", "raw-material", {x: 100, y: 200}))
-            .rejects.toThrow("Le nom de l'objet est requis");
-        
-        await expect(createObjectComponent(null, "raw-material", {x: 100, y: 200}))
-            .rejects.toThrow("Le nom de l'objet est requis");
-        
-        await expect(createObjectComponent("x".repeat(51), "raw-material", {x: 100, y: 200}))
-            .rejects.toThrow("ne peut pas dépasser 50 caractères");
-    });
-    
-    test('Rejette type objet invalide', async () => {
-        await expect(createObjectComponent("Test", "", {x: 100, y: 200}))
-            .rejects.toThrow("Le type d'objet est requis");
-        
-        await expect(createObjectComponent("Test", null, {x: 100, y: 200}))
-            .rejects.toThrow("Le type d'objet est requis");
-    });
-    
-    test('Rejette position invalide', async () => {
-        await expect(createObjectComponent("Test", "raw-material", null))
-            .rejects.toThrow("La position est requise");
-        
-        await expect(createObjectComponent("Test", "raw-material", {x: "invalid", y: 200}))
-            .rejects.toThrow("coordonnées x et y numériques");
-        
-        await expect(createObjectComponent("Test", "raw-material", {x: 100}))
-            .rejects.toThrow("coordonnées x et y numériques");
-    });
-    
-    test('Accepte métadonnées optionnelles valides', async () => {
-        const metadata = {supplier: "Test Corp", batch: "B001"};
-        
-        await expect(createObjectComponent("Test", "raw-material", {x: 100, y: 200}, metadata))
-            .resolves.toBeDefined();
-    });
-    
-    test('Rejette métadonnées non-objet', async () => {
-        await expect(createObjectComponent("Test", "raw-material", {x: 100, y: 200}, "invalid"))
-            .rejects.toThrow("Les métadonnées doivent être un objet");
-    });
-    
-});
-
-/**
- * TESTS CRÉATION OBJET PRINCIPAL
- */
-describe('Création Objet Principal', () => {
-    
-    test('Crée objet avec paramètres minimaux valides', async () => {
-        const objectId = await createObjectComponent(
-            "Lot-Test-001",
-            "raw-material", 
-            {x: 200, y: 300}
-        );
-        
-        expect(objectId).toMatch(/^obj_\d+_[a-z0-9]{6}$/);
-        expect(mockEA.elements.size).toBeGreaterThan(0);
-    });
-    
-    test('Applique couleur selon type objet', async () => {
-        await createObjectComponent("Test", "raw-material", {x: 100, y: 200});
-        
-        const polygonElement = Array.from(mockEA.elements.values())
-            .find(el => el.type === 'polygon');
-        
-        expect(polygonElement.style.backgroundColor)
-            .toBe(OBJECT_TYPE_COLORS['raw-material'].background);
-    });
-    
-    test('Génère métadonnées complètes automatiques', async () => {
-        const objectId = await createObjectComponent(
-            "Test-Metadata",
-            "product",
-            {x: 150, y: 250},
-            {customField: "customValue"}
-        );
-        
-        const element = mockEA.getElement(objectId);
-        const metadata = element.customData;
-        
-        // Vérifications métadonnées obligatoires
-        expect(metadata).toHaveProperty('processType', 'object');
-        expect(metadata).toHaveProperty('processTag', '#process-object');
-        expect(metadata).toHaveProperty('uniqueId');
-        expect(metadata).toHaveProperty('objectName', 'Test-Metadata');
-        expect(metadata).toHaveProperty('objectType', 'product');
-        expect(metadata).toHaveProperty('createdAt');
-        expect(metadata).toHaveProperty('position', {x: 150, y: 250});
-        expect(metadata).toHaveProperty('dimensions', {width: 120, height: 80});
-        expect(metadata).toHaveProperty('userMetadata', {customField: "customValue"});
-        expect(metadata).toHaveProperty('epcisCompliant', true);
-        expect(metadata).toHaveProperty('syncTags');
-        
-        // Validation format horodatage ISO
-        expect(new Date(metadata.createdAt)).toBeInstanceOf(Date);
-    });
-    
-    test('Génère tags synchronisation requis', async () => {
-        const objectId = await createObjectComponent(
-            "Test-Tags",
-            "raw-material",
-            {x: 100, y: 200}
-        );
-        
-        const element = mockEA.getElement(objectId);
-        const tags = element.customData.syncTags;
-        
-        expect(tags).toContain('#process-object');
-        expect(tags).toContain('#object-raw-material');
-        expect(tags).toContain('#object-test-tags');
-        expect(tags.some(tag => tag.startsWith('#object-id-'))).toBe(true);
-    });
-    
-    test('Mesure et valide performance <2s', async () => {
-        const startTime = performance.now();
-        
-        await createObjectComponent("Test-Performance", "raw-material", {x: 100, y: 200});
-        
-        const endTime = performance.now();
-        const executionTime = endTime - startTime;
-        
-        expect(executionTime).toBeLessThan(2000); // Critère TASK-F001
-    });
-    
-});
-
-/**
- * TESTS FONCTIONS GESTION MÉTADONNÉES
- */
-describe('Gestion Métadonnées', () => {
-    
-    let testObjectId;
-    
-    beforeEach(async () => {
-        testObjectId = await createObjectComponent(
-            "Test-Metadata-Ops",
-            "raw-material",
-            {x: 100, y: 200},
-            {initialData: "test"}
-        );
-    });
-    
-    test('getObjectMetadata récupère métadonnées existantes', () => {
-        const metadata = getObjectMetadata(testObjectId);
-        
-        expect(metadata).toBeDefined();
-        expect(metadata.objectName).toBe("Test-Metadata-Ops");
-        expect(metadata.userMetadata.initialData).toBe("test");
-    });
-    
-    test('getObjectMetadata retourne null pour objet inexistant', () => {
-        const metadata = getObjectMetadata("nonexistent_id");
-        expect(metadata).toBeNull();
-    });
-    
-    test('updateObjectMetadata met à jour correctement', () => {
-        const success = updateObjectMetadata(testObjectId, {
-            status: "validated",
-            quality: "A"
+    describe('Integration avec ExcalidrawAutomate', () => {
+        it('should handle ExcalidrawAutomate API correctly', async () => {
+            const objectData = {
+                objectName: 'API Test Object',
+                objectType: 'raw-material',
+                position: { x: 300, y: 400 },
+                backgroundColor: '#FF5722'
+            };
+            
+            const result = await createObjectComponent(objectData, mockEA);
+            
+            // Vérifier séquence d'appels ExcalidrawAutomate
+            expect(mockEA.addRect).toHaveBeenCalledTimes(1);
+            expect(mockEA.addText).toHaveBeenCalledTimes(1);
+            
+            // Vérifier que les éléments sont ajoutés avec les bonnes propriétés
+            const rectCall = mockEA.addRect.mock.calls[0];
+            expect(rectCall).toEqual([300, 400, 120, 80]);
+            
+            const textCall = mockEA.addText.mock.calls[0];
+            expect(textCall[2]).toBe('API Test Object #process-object');
         });
         
-        expect(success).toBe(true);
-        
-        const updatedMetadata = getObjectMetadata(testObjectId);
-        expect(updatedMetadata.status).toBe("validated");
-        expect(updatedMetadata.quality).toBe("A");
-        expect(updatedMetadata).toHaveProperty('lastModified');
+        it('should handle ExcalidrawAutomate errors gracefully', async () => {
+            // Simuler erreur ExcalidrawAutomate
+            mockEA.addRect.mockImplementation(() => {
+                throw new Error('ExcalidrawAutomate error');
+            });
+            
+            const objectData = {
+                objectName: 'Error Test',
+                objectType: 'batch',
+                position: { x: 0, y: 0 }
+            };
+            
+            await expect(createObjectComponent(objectData, mockEA))
+                .rejects.toThrow('Erreur création composant objet');
+        });
     });
     
-    test('updateObjectMetadata échoue pour objet inexistant', () => {
-        const success = updateObjectMetadata("nonexistent_id", {test: "value"});
-        expect(success).toBe(false);
+    describe('Utility Functions', () => {
+        it('should get correct colors for object types', () => {
+            expect(getObjectColor('raw-material')).toBe('#4CAF50');
+            expect(getObjectColor('product')).toBe('#2196F3');
+            expect(getObjectColor('batch')).toBe('#FF9800');
+            expect(getObjectColor('component')).toBe('#9C27B0');
+            expect(getObjectColor('equipment')).toBe('#607D8B');
+            expect(getObjectColor('location')).toBe('#795548');
+            expect(getObjectColor('container')).toBe('#00BCD4');
+            expect(getObjectColor('document')).toBe('#FFC107');
+            expect(getObjectColor('unknown_type')).toBe('#9E9E9E'); // Default
+        });
+        
+        it('should validate object data correctly', () => {
+            // Données valides
+            const validData = {
+                objectName: 'Valid Object',
+                objectType: 'batch',
+                position: { x: 100, y: 100 }
+            };
+            
+            expect(() => validateObjectData(validData)).not.toThrow();
+            
+            // Données invalides - nom manquant
+            const invalidName = {
+                objectType: 'batch',
+                position: { x: 100, y: 100 }
+            };
+            
+            expect(() => validateObjectData(invalidName))
+                .toThrow('objectName est requis');
+            
+            // Données invalides - type manquant
+            const invalidType = {
+                objectName: 'Test Object',
+                position: { x: 100, y: 100 }
+            };
+            
+            expect(() => validateObjectData(invalidType))
+                .toThrow('objectType est requis');
+            
+            // Position invalide
+            const invalidPosition = {
+                objectName: 'Test Object',
+                objectType: 'batch',
+                position: { x: 'invalid', y: 100 }
+            };
+            
+            expect(() => validateObjectData(invalidPosition))
+                .toThrow('Position x doit être un nombre');
+        });
     });
     
-    test('deleteObjectComponent supprime objet et nettoie', () => {
-        const success = deleteObjectComponent(testObjectId);
+    describe('Performance et Memory', () => {
+        it('should create objects within performance limits', async () => {
+            const objectData = {
+                objectName: 'Performance Test',
+                objectType: 'batch',
+                position: { x: 100, y: 100 }
+            };
+            
+            const startTime = Date.now();
+            
+            // Créer 10 objets pour tester performance
+            const promises = [];
+            for (let i = 0; i < 10; i++) {
+                promises.push(createObjectComponent({
+                    ...objectData,
+                    objectName: `Performance Test ${i}`
+                }, mockEA));
+            }
+            
+            const results = await Promise.all(promises);
+            const totalTime = Date.now() - startTime;
+            
+            // Vérifier que tous les objets ont été créés
+            expect(results).toHaveLength(10);
+            results.forEach(result => {
+                expect(result.elementId).toBeDefined();
+                expect(result.metadata).toBeDefined();
+            });
+            
+            // Vérifier performance (< 1s pour 10 objets)
+            expect(totalTime).toBeLessThan(1000);
+            
+            console.log(`⚡ Performance: 10 objets créés en ${totalTime}ms`);
+        });
         
-        expect(success).toBe(true);
-        expect(mockEA.getElement(testObjectId)).toBeUndefined();
+        it('should handle memory cleanup correctly', async () => {
+            const objectData = {
+                objectName: 'Memory Test',
+                objectType: 'batch',
+                position: { x: 100, y: 100 }
+            };
+            
+            // Créer et vérifier plusieurs objets
+            for (let i = 0; i < 5; i++) {
+                const result = await createObjectComponent({
+                    ...objectData,
+                    objectName: `Memory Test ${i}`
+                }, mockEA);
+                
+                // Vérifier que chaque objet a des références uniques
+                expect(result.uniqueId).toBeDefined();
+                expect(result.metadata.createdAt).toBeDefined();
+            }
+            
+            // Les mocks devraient avoir été appelés 5 fois
+            expect(mockEA.addRect).toHaveBeenCalledTimes(5);
+            expect(mockEA.addText).toHaveBeenCalledTimes(5);
+        });
     });
     
-});
-
-/**
- * TESTS GESTION ERREURS
- */
-describe('Gestion Erreurs', () => {
-    
-    test('Gère absence ExcalidrawAutomate gracieusement', async () => {
-        delete global.ExcalidrawAutomate;
+    describe('Edge Cases et Error Handling', () => {
+        it('should handle extreme position values', async () => {
+            const extremeData = {
+                objectName: 'Extreme Position',
+                objectType: 'batch',
+                position: { x: -1000, y: 5000 } // Positions extrêmes
+            };
+            
+            const result = await createObjectComponent(extremeData, mockEA);
+            
+            expect(result.position).toEqual({ x: -1000, y: 5000 });
+            expect(mockEA.addRect).toHaveBeenCalledWith(-1000, 5000, 120, 80);
+        });
         
-        await expect(createObjectComponent("Test", "raw-material", {x: 100, y: 200}))
-            .rejects.toThrow("ExcalidrawAutomate non disponible");
+        it('should handle special characters in object names', async () => {
+            const specialCharsData = {
+                objectName: 'Objet Spécial #123 & Co. @Test',
+                objectType: 'batch',
+                position: { x: 100, y: 100 }
+            };
+            
+            const result = await createObjectComponent(specialCharsData, mockEA);
+            
+            expect(result.objectName).toBe('Objet Spécial #123 & Co. @Test');
+            expect(mockEA.addText).toHaveBeenCalledWith(
+                expect.any(Number),
+                expect.any(Number),
+                'Objet Spécial #123 & Co. @Test #process-object',
+                expect.any(Object)
+            );
+        });
+        
+        it('should handle null/undefined ExcalidrawAutomate', async () => {
+            const objectData = {
+                objectName: 'Null EA Test',
+                objectType: 'batch',
+                position: { x: 100, y: 100 }
+            };
+            
+            await expect(createObjectComponent(objectData, null))
+                .rejects.toThrow('ExcalidrawAutomate instance requise');
+            
+            await expect(createObjectComponent(objectData, undefined))
+                .rejects.toThrow('ExcalidrawAutomate instance requise');
+        });
     });
-    
-    test('Log warnings pour types objets non reconnus', async () => {
-        await createObjectComponent("Test", "unknown-type", {x: 100, y: 200});
-        
-        expect(console.warn).toHaveBeenCalledWith(
-            expect.stringContaining("Type d'objet 'unknown-type' non reconnu")
-        );
-    });
-    
-    test('Log performance warnings si >2s', async () => {
-        // Mock performance lente
-        const originalNow = performance.now;
-        let callCount = 0;
-        performance.now = () => {
-            callCount++;
-            return callCount === 1 ? 0 : 2500; // Simulation 2.5s
-        };
-        
-        await createObjectComponent("Test-Slow", "raw-material", {x: 100, y: 200});
-        
-        expect(console.warn).toHaveBeenCalledWith(
-            expect.stringContaining("Performance warning")
-        );
-        
-        // Restaurer performance.now
-        performance.now = originalNow;
-    });
-    
-});
-
-/**
- * TESTS TYPES OBJETS SPÉCIALISÉS
- */
-describe('Types Objets Spécialisés', () => {
-    
-    test('Crée objet raw-material avec couleur spécifique', async () => {
-        await createObjectComponent("Matière-Test", "raw-material", {x: 100, y: 200});
-        
-        const element = Array.from(mockEA.elements.values())
-            .find(el => el.type === 'polygon');
-        
-        expect(element.style.backgroundColor).toBe("#E3F2FD");
-    });
-    
-    test('Crée objet product avec métadonnées appropriées', async () => {
-        const objectId = await createObjectComponent(
-            "Produit-Test",
-            "product",
-            {x: 200, y: 300},
-            {serialNumber: "SN123456"}
-        );
-        
-        const metadata = getObjectMetadata(objectId);
-        expect(metadata.objectType).toBe("product");
-        expect(metadata.objectTypeDescription).toContain("Produit fini");
-        expect(metadata.userMetadata.serialNumber).toBe("SN123456");
-    });
-    
-    test('Gère type custom avec couleur par défaut', async () => {
-        const objectId = await createObjectComponent(
-            "Custom-Test",
-            "unknown-type",
-            {x: 100, y: 200}
-        );
-        
-        const element = Array.from(mockEA.elements.values())
-            .find(el => el.type === 'polygon');
-        
-        expect(element.style.backgroundColor).toBe("#F5F5F5");
-    });
-    
-});
-
-/**
- * TESTS INTÉGRATION ET RÉGRESSION
- */
-describe('Tests Intégration', () => {
-    
-    test('Crée multiple objets sans interférence', async () => {
-        const obj1Id = await createObjectComponent("Objet-1", "raw-material", {x: 100, y: 200});
-        const obj2Id = await createObjectComponent("Objet-2", "product", {x: 300, y: 400});
-        
-        expect(obj1Id).not.toBe(obj2Id);
-        
-        const metadata1 = getObjectMetadata(obj1Id);
-        const metadata2 = getObjectMetadata(obj2Id);
-        
-        expect(metadata1.objectName).toBe("Objet-1");
-        expect(metadata2.objectName).toBe("Objet-2");
-        expect(metadata1.objectType).toBe("raw-material");
-        expect(metadata2.objectType).toBe("product");
-    });
-    
-    test('Workflow complet: création → lecture → modification → suppression', async () => {
-        // Création
-        const objectId = await createObjectComponent(
-            "Workflow-Test",
-            "container",
-            {x: 150, y: 250},
-            {status: "initial"}
-        );
-        
-        // Lecture
-        let metadata = getObjectMetadata(objectId);
-        expect(metadata.objectName).toBe("Workflow-Test");
-        expect(metadata.userMetadata.status).toBe("initial");
-        
-        // Modification
-        const updated = updateObjectMetadata(objectId, {status: "processed"});
-        expect(updated).toBe(true);
-        
-        metadata = getObjectMetadata(objectId);
-        expect(metadata.status).toBe("processed");
-        
-        // Suppression
-        const deleted = deleteObjectComponent(objectId);
-        expect(deleted).toBe(true);
-        expect(getObjectMetadata(objectId)).toBeNull();
-    });
-    
-});
-
-/**
- * RÉSUMÉ VALIDATION SPÉCIFICATIONS TASK-F001
- */
-describe('Validation TASK-F001', () => {
-    
-    test('✅ Critère: Hexagone 120x80px dimensions exactes', () => {
-        const points = calculateHexagonPoints(200, 300, 120, 80);
-        const minX = Math.min(...points.map(p => p[0]));
-        const maxX = Math.max(...points.map(p => p[0]));
-        const minY = Math.min(...points.map(p => p[1]));
-        const maxY = Math.max(...points.map(p => p[1]));
-        
-        expect(maxX - minX).toBe(120);
-        expect(maxY - minY).toBe(80);
-    });
-    
-    test('✅ Critère: Couleurs configurables selon types objets', () => {
-        expect(Object.keys(OBJECT_TYPE_COLORS)).toContain('raw-material');
-        expect(Object.keys(OBJECT_TYPE_COLORS)).toContain('product');
-        expect(OBJECT_TYPE_COLORS['raw-material'].background).toBe("#E3F2FD");
-    });
-    
-    test('✅ Critère: Métadonnées automatiques (ID unique, timestamp, type)', async () => {
-        const objectId = await createObjectComponent("Test", "raw-material", {x: 100, y: 200});
-        const metadata = getObjectMetadata(objectId);
-        
-        expect(metadata.uniqueId).toMatch(/^obj_\d+_[a-z0-9]{6}$/);
-        expect(metadata.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
-        expect(metadata.objectType).toBe("raw-material");
-    });
-    
-    test('✅ Critère: Tag #process-object obligatoire pour synchronisation', async () => {
-        const objectId = await createObjectComponent("Test", "raw-material", {x: 100, y: 200});
-        const metadata = getObjectMetadata(objectId);
-        
-        expect(metadata.processTag).toBe("#process-object");
-        expect(metadata.syncTags).toContain("#process-object");
-    });
-    
-    test('✅ Critère: Performance <2s création', async () => {
-        const startTime = performance.now();
-        await createObjectComponent("Test-Performance", "raw-material", {x: 100, y: 200});
-        const endTime = performance.now();
-        
-        expect(endTime - startTime).toBeLessThan(2000);
-    });
-    
 });
 
 // <!-- END OF FILE: object-creator.test.js -->

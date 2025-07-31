@@ -1,0 +1,35 @@
+{
+  "id": "tpl_extended_shipping_process_1753910800014_38giol",
+  "name": "Extended Shipping Process",
+  "type": "business_step",
+  "category": "logistics",
+  "description": "Extension du processus d'expédition avec validations personnalisées",
+  "version": "1.0.0",
+  "author": "default",
+  "created": "2025-07-30T21:26:40.014Z",
+  "modified": "2025-07-30T21:26:40.014Z",
+  "metadata": {
+    "businessStep": "shipping",
+    "epcisCompliant": true,
+    "templateId": "tpl_extended_shipping_process_1753910800014_38giol",
+    "source": "inheritance",
+    "parentTemplate": "test_shipping_001",
+    "inheritance": {
+      "parent": {
+        "id": "test_shipping_001",
+        "name": "Shipping Process"
+      },
+      "overrides": {},
+      "extensions": {
+        "customValidations": [
+          "weight_check",
+          "dimension_check"
+        ]
+      },
+      "locked": false
+    },
+    "isSystem": false,
+    "isLocked": false
+  },
+  "frontmatter": {}
+}
